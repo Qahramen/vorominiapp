@@ -520,84 +520,103 @@ const MARGIN     = 1.20;
 const RES_MULT = { "480p":0.465, "720p":1.0, "1080p":1.80, "1440p":2.25 };
 
 const BASE_RATE = {
-  "google/veo3.1/text-to-video":                0.408,
-  "google/veo3.1-fast/text-to-video":           0.104,
-  "google/veo3.1-lite/text-to-video":           0.052,
-  "bytedance/seedance-2.0/text-to-video":       0.206,
-  "bytedance/seedance-v1.5-pro/text-to-video":  0.062,
-  "kling/kling-v3.0/text-to-video":             0.256,
-  "kling/kling-v2.6/text-to-video":             0.190,
-  "alibaba/wan-2.7/text-to-video":              0.104,
-  "minimax/hailuo-2.3/text-to-video":           0.128,
-  "xai/grok-imagine-video-v1.5/image-to-video": 0.095,
-  "alibaba/happyhorse-1.0/text-to-video":       0.142,
-  "vidu/q3/reference-to-video":                 0.043,
+  // ── Video — bot BASE_RATE_PER_SEC bilan aynan mos ──
+  "google/veo3.1/reference-to-video":                0.40,
+  "google/veo3.1-fast/text-to-video":                0.10,
+  "google/veo3.1-lite/text-to-video":                0.05,
+  "google/veo3.1-lite/start-end-frame-to-video":     0.05,
+  "bytedance/seedance-2.0/text-to-video":            0.242,
+  "bytedance/seedance-2.0-fast/text-to-video":       0.163,
+  "bytedance/seedance-v1.5-pro/text-to-video":       0.047,
+  "kwaivgi/kling-v3.0-pro/text-to-video":            0.095,
+  "kwaivgi/kling-video-o3-pro/video-edit":           0.150,
+  "kwaivgi/kling-v2.6-pro/text-to-video":            0.14,
+  "alibaba/wan-2.7/text-to-video":                   0.10,
+  "alibaba/wan-2.7/image-to-video":                  0.10,
+  "minimax/hailuo-2.3/t2v-standard":                 0.08,
+  "minimax/hailuo-2.3/i2v-standard":                 0.08,
+  "xai/grok-imagine-video-v1.5/image-to-video":      0.096,
+  "alibaba/happyhorse-1.0/text-to-video":            0.14,
+  "vidu/q3/reference-to-video":                      0.042,
 };
 
 const IMAGE_COST = {
-  "google/nano-banana-2/text-to-image":           0.04,
-  "openai/gpt-image-2/text-to-image":             0.08,
-  "bytedance/seedream-v5.0-lite":                 0.04,
-  "alibaba/wan-2.7/text-to-image":                0.04,
-  "alibaba/wan-2.7-pro/text-to-image":            0.07,
-  "xai/grok-imagine-image-quality/text-to-image": 0.08,
-  "qwen/qwen-image-2.0/text-to-image":            0.04,
-  "flux/flux-pro-2.0/text-to-image":              0.08,
-  "flux/flux-kontext-max/text-to-image":          0.08,
-  "bytedance/seedream-v4.5/text-to-image":        0.04,
+  // Eng arzon resolution narxi (bot IMAGE_COST_USD.first_value bilan mos)
+  "google/nano-banana-2/reference-to-image":          0.048,
+  "openai/gpt-image-2/text-to-image":                 0.011,
+  "bytedance/seedream-v5.0-lite":                     0.040,
+  "alibaba/wan-2.7/text-to-image":                    0.013,
+  "alibaba/wan-2.7-pro/text-to-image":                0.038,
+  "xai/grok-imagine-image-quality/text-to-image":     0.060,
+  "qwen/qwen-image-2.0/text-to-image":                0.028,
+  "black-forest-labs/flux-1.1-pro":                   0.050,
+  "black-forest-labs/flux-kontext-max":               0.080,
+  "bytedance/seedream-v4.5/text-to-image":            0.040,
 };
 
 const MODEL_META = {
-  "google/veo3.1/text-to-video":               {badge:"💎 Premium",  min:2,max:8, res:["480p","720p","1080p"],        hook:"Dunyo #1 AI video modeli. Har bir kadr — jonli kino sifati."},
-  "google/veo3.1-fast/text-to-video":          {badge:"⚡ Tez",       min:1,max:8, res:["480p","720p","1080p"],        hook:"Veo 3.1 ning 3x tezroq versiyasi. Audio sinxronizatsiya."},
-  "google/veo3.1-lite/text-to-video":          {badge:"💰 Arzon",     min:1,max:8, res:["480p","720p"],                hook:"Eng arzon Veo seriyasi. Oz byudjet bilan kuchli natija."},
-  "bytedance/seedance-2.0/text-to-video":      {badge:"🔥 Mashhur",   min:1,max:8, res:["480p","720p","1080p","1440p"],hook:"4K video + audio + reference rasm. Mahsulotingizni jonlantiring!"},
-  "bytedance/seedance-v1.5-pro/text-to-video": {badge:"💰 Arzon",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Seedance 2.0 imkoniyatlari — 3x arzon narxda."},
-  "kling/kling-v3.0/text-to-video":            {badge:"💎 Premium",   min:2,max:10,res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, kino fizikasi. To'liq nazorat."},
-  "kling/kling-v2.6/text-to-video":            {badge:"🔥 Trend",     min:2,max:10,res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, audio. Professional format."},
-  "alibaba/wan-2.7/text-to-video":             {badge:"⚡ Tez",       min:1,max:8, res:["480p","720p","1080p"],        hook:"Alibaba'ning eng kuchli video modeli. Audio + reference."},
-  "minimax/hailuo-2.3/text-to-video":          {badge:"🆕 Yangi",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Ultra-real yuz ifodasi. Portret video uchun #1 model."},
-  "xai/grok-imagine-video-v1.5/image-to-video":{badge:"🔥 Trend",    min:2,max:8, res:["480p","720p","1080p"],        hook:"Rasmingizni jonlantiring! Rasm yuboring → video tayyor."},
-  "alibaba/happyhorse-1.0/text-to-video":      {badge:"🆕 Yangi",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Eksperimental model. G'ayrioddiy rakurs va effektlar."},
-  "vidu/q3/reference-to-video":               {badge:"🎯 Maxsus",    min:1,max:8, res:["480p","720p","1080p"],        hook:"4 ta reference — to'liq nazorat! Ko'p ob'ektli video."},
-  "google/nano-banana-2/text-to-image":        {badge:"⚡ Tez",       hook:"Google'ning tez modeli. 3 ta reference + 4K."},
-  "openai/gpt-image-2/text-to-image":          {badge:"💎 Premium",   hook:"Matnni AYNAN chizadi. ChatGPT'ning rasm modeli."},
-  "bytedance/seedream-v5.0-lite":              {badge:"🆕 Yangi",     hook:"Seedream 5.0 — batch yaratish va tahrirlash."},
-  "alibaba/wan-2.7/text-to-image":             {badge:"💰 Arzon",     hook:"Illustratsiya va reklama uchun optimal. Arzon."},
-  "alibaba/wan-2.7-pro/text-to-image":         {badge:"🔥 Trend",     hook:"Wan 2.7 Pro — yuqori aniqlik, 1 reference, 4K."},
-  "xai/grok-imagine-image-quality/text-to-image":{badge:"🔥 Trend",  hook:"Estetik va ifodali. 2K, portret uchun mukammal."},
-  "qwen/qwen-image-2.0/text-to-image":         {badge:"🆕 Yangi",     hook:"O'zbek tilida ham ishlaydi! Ko'p tilli, 2K."},
-  "flux/flux-pro-2.0/text-to-image":           {badge:"💎 Premium",   hook:"Eng aniq prompt bajarilishi. Detalni his qiling."},
-  "flux/flux-kontext-max/text-to-image":       {badge:"💎 Premium",   hook:"Mavjud rasmingizni TAHRIRLANG! Reference + prompt."},
-  "bytedance/seedream-v4.5/text-to-image":     {badge:"💰 Arzon",     hook:"4K aniqlik, tez va arzon. Content creator standarti."},
+  // ── VIDEO ──
+  "google/veo3.1/reference-to-video":             {badge:"🎬 Reference",        min:8, max:8,  res:["720p","1080p","4k"],         ref:true,  hook:"Rasmlarni reference sifatida bering — belgi va uslub saqlanib qoladi."},
+  "google/veo3.1-fast/text-to-video":             {badge:"⚡ Tez",               min:4, max:8,  res:["720p","1080p"],                         hook:"Veo 3.1 ning 3x tezroq versiyasi. Audio sinxronizatsiya."},
+  "google/veo3.1-lite/text-to-video":             {badge:"💰 Tejamkor",          min:4, max:8,  res:["720p","1080p"],                         hook:"Eng arzon Veo seriyasi. Oz byudjet bilan kuchli natija."},
+  "google/veo3.1-lite/start-end-frame-to-video":  {badge:"🎬 Start+End",         min:4, max:8,  res:["720p","1080p"],              ref:true,  hook:"Birinchi va oxirgi kadr berasiz — Veo o'rtasini yaratadi."},
+  "bytedance/seedance-2.0/text-to-video":         {badge:"🔥 Mashhur",           min:1, max:15, res:["480p","720p","1080p","1440p"],            hook:"4K video + audio + reference. Yuz nazorati kuchli."},
+  "bytedance/seedance-2.0-fast/text-to-video":    {badge:"⚡ Yangi · Tez",       min:1, max:15, res:["480p","720p","1080p"],                   hook:"Seedance 2.0 ning 3x tezroq versiyasi. Lipsync + reference."},
+  "bytedance/seedance-v1.5-pro/text-to-video":    {badge:"💰 Tejamkor",          min:1, max:5,  res:["480p","720p"],                           hook:"Seedance 2.0 imkoniyatlari — 3x arzon narxda. Audio + reference."},
+  "kwaivgi/kling-v3.0-pro/text-to-video":         {badge:"💎 Premium",           min:5, max:10, res:["480p","720p","1080p"],                   hook:"Kling'ning eng yangi avlodi. 10 sekund, audio, 2 reference."},
+  "kwaivgi/kling-video-o3-pro/video-edit":        {badge:"🎬 Video→Video",       min:5, max:10, res:["480p","720p","1080p"],      ref:true,  hook:"Mavjud videongizni transformatsiya qiling! Video → yangi video."},
+  "kwaivgi/kling-v2.6-pro/text-to-video":         {badge:"🔥 Trend",             min:5, max:10, res:["480p","720p","1080p"],                   hook:"10 sekund, 2 reference, kino fizikasi. Audio sinxron."},
+  "alibaba/wan-2.7/text-to-video":                {badge:"⚡ Tez",               min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Alibaba'ning kuchli video modeli. Audio + reference + karakter."},
+  "alibaba/wan-2.7/image-to-video":               {badge:"🖼→🎬 Rasm→Video",     min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"Rasmingizni to'liq jonlantiring! Wan 2.7 rasm→video rejimi."},
+  "minimax/hailuo-2.3/t2v-standard":              {badge:"🆕 Yangi",             min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Ultra-real yuz ifodasi. Portret video uchun #1 model."},
+  "minimax/hailuo-2.3/i2v-standard":              {badge:"😊 Yuz→Video",         min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"Portret rasmingizni jonlantiring! Ultra-real yuz emotsiyalari."},
+  "xai/grok-imagine-video-v1.5/image-to-video":   {badge:"🔥 Trend",             min:2, max:8,  res:["480p","720p"],              ref:true,  hook:"Rasmingizni jonlantiring! Bitta rasm yuborasiz → video tayyor."},
+  "alibaba/happyhorse-1.0/text-to-video":         {badge:"🆕 Yangi",             min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Eksperimental model. G'ayrioddiy rakurs va effektlar."},
+  "vidu/q3/reference-to-video":                   {badge:"🎯 Maxsus",            min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"4 ta reference — to'liq nazorat! Ko'p ob'ektli video."},
+  // ── IMAGE ──
+  "google/nano-banana-2/reference-to-image":      {badge:"🎬→🖼 Video→Rasm",     ref:true,  hook:"Videoni reference sifatida bering — model key kadrni yaratadi."},
+  "openai/gpt-image-2/text-to-image":             {badge:"💎 Premium",                       hook:"Matnni AYNAN chizadi. ChatGPT'ning rasm modeli."},
+  "bytedance/seedream-v5.0-lite":                 {badge:"🆕 Yangi",                         hook:"Seedream 5.0 — batch yaratish va aqlli tahrirlash."},
+  "alibaba/wan-2.7/text-to-image":                {badge:"💰 Tejamkor",                      hook:"Illustratsiya va reklama uchun optimal. Arzon va sifatli."},
+  "alibaba/wan-2.7-pro/text-to-image":            {badge:"🔥 Trend",                         hook:"Wan 2.7 Pro — yuqori aniqlik, 1 reference, 4K."},
+  "xai/grok-imagine-image-quality/text-to-image": {badge:"🔥 Trend",                         hook:"Estetik va ifodali. 2K, portret uchun mukammal."},
+  "qwen/qwen-image-2.0/text-to-image":            {badge:"🆕 Yangi",                         hook:"O'zbek tilida ham ishlaydi! Ko'p tilli, 2K."},
+  "black-forest-labs/flux-1.1-pro":               {badge:"💎 Premium",                       hook:"Eng aniq prompt bajarilishi. Detalni his qiling."},
+  "black-forest-labs/flux-kontext-max":           {badge:"✏️ Tahrirlash",        ref:true,  hook:"Mavjud rasmingizni TAHRIRLANG! Reference + prompt = yangi rasm."},
+  "bytedance/seedream-v4.5/text-to-image":        {badge:"💰 Tejamkor",                      hook:"4K aniqlik, tez va arzon. Content creator standarti."},
 };
 
 const VIDEO_MODELS = [
-  {id:"google/veo3.1/text-to-video",                name:"🎥 Veo 3.1"},
-  {id:"google/veo3.1-fast/text-to-video",           name:"🎥 Veo 3.1 Fast"},
-  {id:"google/veo3.1-lite/text-to-video",           name:"🎥 Veo 3.1 Lite"},
-  {id:"bytedance/seedance-2.0/text-to-video",       name:"🌱 Seedance 2.0"},
-  {id:"bytedance/seedance-v1.5-pro/text-to-video",  name:"🌱 Seedance 1.5 Pro"},
-  {id:"kling/kling-v3.0/text-to-video",             name:"⚡ Kling 3.0"},
-  {id:"kling/kling-v2.6/text-to-video",             name:"⚡ Kling 2.6"},
-  {id:"alibaba/wan-2.7/text-to-video",              name:"🌀 Wan 2.7"},
-  {id:"minimax/hailuo-2.3/text-to-video",           name:"🌊 Hailuo 2.3"},
-  {id:"xai/grok-imagine-video-v1.5/image-to-video", name:"🤖 Grok Video 1.5"},
-  {id:"alibaba/happyhorse-1.0/text-to-video",       name:"🐴 HappyHorse 1.0"},
-  {id:"vidu/q3/reference-to-video",                 name:"🎬 Vidu Q3"},
+  {id:"google/veo3.1/reference-to-video",             name:"🎬 Veo 3.1"},
+  {id:"google/veo3.1-fast/text-to-video",             name:"🎥 Veo 3.1 Fast"},
+  {id:"google/veo3.1-lite/text-to-video",             name:"🎥 Veo 3.1 Lite"},
+  {id:"google/veo3.1-lite/start-end-frame-to-video",  name:"🎬 Veo 3.1 Start/End"},
+  {id:"bytedance/seedance-2.0/text-to-video",         name:"🌱 Seedance 2.0"},
+  {id:"bytedance/seedance-2.0-fast/text-to-video",    name:"🌱 Seedance 2.0 Fast"},
+  {id:"bytedance/seedance-v1.5-pro/text-to-video",    name:"🌱 Seedance 1.5 Pro"},
+  {id:"kwaivgi/kling-v3.0-pro/text-to-video",         name:"⚡ Kling 3.0"},
+  {id:"kwaivgi/kling-video-o3-pro/video-edit",        name:"🎬 Kling O3 V2V"},
+  {id:"kwaivgi/kling-v2.6-pro/text-to-video",         name:"⚡ Kling 2.6"},
+  {id:"alibaba/wan-2.7/text-to-video",                name:"🌀 Wan 2.7"},
+  {id:"alibaba/wan-2.7/image-to-video",               name:"🌀 Wan 2.7 I2V"},
+  {id:"minimax/hailuo-2.3/t2v-standard",              name:"🌊 Hailuo 2.3"},
+  {id:"minimax/hailuo-2.3/i2v-standard",              name:"🌊 Hailuo 2.3 I2V"},
+  {id:"xai/grok-imagine-video-v1.5/image-to-video",   name:"🤖 Grok Video 1.5"},
+  {id:"alibaba/happyhorse-1.0/text-to-video",         name:"🐴 HappyHorse 1.0"},
+  {id:"vidu/q3/reference-to-video",                   name:"🎬 Vidu Q3"},
 ];
 
 const IMAGE_MODELS = [
-  {id:"google/nano-banana-2/text-to-image",             name:"🍌 Nano Banana 2"},
-  {id:"openai/gpt-image-2/text-to-image",               name:"🤖 GPT Image 2"},
-  {id:"bytedance/seedream-v5.0-lite",                   name:"🌸 Seedream 5.0"},
-  {id:"alibaba/wan-2.7/text-to-image",                  name:"🌀 Wan 2.7 Image"},
-  {id:"alibaba/wan-2.7-pro/text-to-image",              name:"🌀 Wan 2.7 Pro"},
-  {id:"xai/grok-imagine-image-quality/text-to-image",   name:"🤖 Grok Image"},
-  {id:"qwen/qwen-image-2.0/text-to-image",              name:"🔮 Qwen Image 2.0"},
-  {id:"flux/flux-pro-2.0/text-to-image",                name:"⚡ Flux Pro 2.0"},
-  {id:"flux/flux-kontext-max/text-to-image",            name:"⚡ Flux Kontext"},
-  {id:"bytedance/seedream-v4.5/text-to-image",          name:"🌸 Seedream 4.5"},
+  {id:"google/nano-banana-2/reference-to-image",       name:"🍌 Nano Banana 2"},
+  {id:"openai/gpt-image-2/text-to-image",              name:"🤖 GPT Image 2"},
+  {id:"bytedance/seedream-v5.0-lite",                  name:"🌸 Seedream 5.0"},
+  {id:"alibaba/wan-2.7/text-to-image",                 name:"🌀 Wan 2.7 Image"},
+  {id:"alibaba/wan-2.7-pro/text-to-image",             name:"🌀 Wan 2.7 Pro"},
+  {id:"xai/grok-imagine-image-quality/text-to-image",  name:"🤖 Grok Image"},
+  {id:"qwen/qwen-image-2.0/text-to-image",             name:"🔮 Qwen Image 2.0"},
+  {id:"black-forest-labs/flux-1.1-pro",                name:"⚡ Flux Pro"},
+  {id:"black-forest-labs/flux-kontext-max",            name:"✏️ Flux Kontext"},
+  {id:"bytedance/seedream-v4.5/text-to-image",         name:"🌸 Seedream 4.5"},
 ];
 
 const ASPECT_RATIOS = [
@@ -680,10 +699,8 @@ function buildModels() {
       priceLabel = `${p}⭐`;
     }
 
-    // Reference talab qiluvchi modellar
-    const isRef = m.id.includes("image-to-video") ||
-                  m.id.includes("reference-to-video") ||
-                  m.id.includes("start-end-frame");
+    // Reference talab qiluvchi modellar (MODEL_META.ref flag — bot bilan sinxron)
+    const isRef = (MODEL_META[m.id] || {}).ref === true;
     const refTag = isRef ? `<div class="m-ref-tag">📎 Reference botda so'raladi</div>` : "";
 
     const card = document.createElement("div");
