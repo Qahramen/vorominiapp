@@ -374,7 +374,7 @@ textarea::placeholder{color:var(--muted)}
     <h1>Voro Studio</h1>
     <p>AI Video &amp; Rasm Generatsiya</p>
   </div>
-  <div class="balance-chip" id="balanceChip">⭐ 0</div>
+  <div class="balance-chip" id="balanceChip">⚡️ 0</div>
 </div>
 
 <!-- TYPE SELECTOR -->
@@ -429,7 +429,7 @@ textarea::placeholder{color:var(--muted)}
       </div>
       <div class="dur-price">
         <span class="stars" id="durStars">0</span>
-        <span class="stars-label">⭐ to'lanadi</span>
+        <span class="stars-label">⚡️ to'lanadi</span>
       </div>
       <div class="dur-presets" id="durPresets"></div>
     </div>
@@ -506,7 +506,7 @@ textarea::placeholder{color:var(--muted)}
       <span class="gen-icon">✨</span>
       <span class="gen-text">Yaratish</span>
     </div>
-    <span class="gen-cost" id="genCostChip">0 ⭐</span>
+    <span class="gen-cost" id="genCostChip">0 ⚡️</span>
   </button>
 </div>
 
@@ -652,7 +652,7 @@ if (tg) {
   try {
     const ud = tg.initDataUnsafe;
     if (ud && ud.user) {
-      document.getElementById("balanceChip").textContent = "⭐ ...";
+      document.getElementById("balanceChip").textContent = "⚡️ ...";
     }
   } catch(e) {}
 }
@@ -693,10 +693,10 @@ function buildModels() {
       const minDur  = meta.min || 1;
       const cheapRes = (meta.res || ["720p"])[0];
       const p = calcStars(m.id, cheapRes, minDur);
-      priceLabel = `${minDur}s → ${p}⭐`;
+      priceLabel = `${minDur}s → ${p}⚡️`;
     } else {
       const p = calcStars(m.id, null, 0);
-      priceLabel = `${p}⭐`;
+      priceLabel = `${p}⚡️`;
     }
 
     // Reference talab qiluvchi modellar (MODEL_META.ref flag — bot bilan sinxron)
@@ -814,8 +814,8 @@ function updateSummary() {
   document.getElementById("sumRes").textContent   = state.type === "video" ? state.res : "Auto";
   document.getElementById("sumDur").textContent   = state.type === "video" ? `${state.dur}s` : "—";
   const cost = state.model ? calcStars(state.model, state.res, state.dur) : 0;
-  document.getElementById("sumCost").textContent     = cost ? `${cost} ⭐` : "—";
-  document.getElementById("genCostChip").textContent = `${cost || 0} ⭐`;
+  document.getElementById("sumCost").textContent     = cost ? `${cost} ⚡️` : "—";
+  document.getElementById("genCostChip").textContent = `${cost || 0} ⚡️`;
   document.getElementById("genBtn").classList.toggle("disabled", !state.model);
 }
 
@@ -908,10 +908,20 @@ try {
       selectModel(init.model);
     }
     if (init.balance) {
-      document.getElementById("balanceChip").textContent = `⭐ ${init.balance}`;
+      document.getElementById("balanceChip").textContent = `⚡️ ${init.balance}`;
     }
   }
 } catch(e) {}
+
+// Balance from URL ?bal= param (set by bot's persistent_kb)
+(function() {
+  try {
+    const urlBal = new URLSearchParams(window.location.search).get("bal");
+    if (urlBal !== null) {
+      document.getElementById("balanceChip").textContent = "⚡️ " + parseInt(urlBal, 10);
+    }
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
