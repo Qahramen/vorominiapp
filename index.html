@@ -3,195 +3,366 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Voro Creator</title>
+<title>Voro Studio</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  :root {
-    --bg:      #0d0f14;
-    --card:    #161a23;
-    --card2:   #1d2130;
-    --border:  #2a2f3f;
-    --accent:  #7c5cfa;
-    --accent2: #a87eff;
-    --gold:    #f5c542;
-    --green:   #3ecf8e;
-    --red:     #ff5f57;
-    --text:    #e8ecf4;
-    --muted:   #6b7491;
-    --label:   #9ba5c2;
-    --radius:  14px;
-    --r-sm:    8px;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-  body {
-    background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
-    font-size:15px; line-height:1.5; min-height:100vh; padding-bottom:100px;
-  }
-  /* HEADER */
-  .header {
-    background:linear-gradient(135deg,#1a1040 0%,#0d0f14 100%);
-    padding:18px 20px 14px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:12px;
-  }
-  .header-logo {
-    width:40px; height:40px; border-radius:12px;
-    background:linear-gradient(135deg,#7c5cfa,#a87eff);
-    display:flex; align-items:center; justify-content:center;
-    font-size:22px; flex-shrink:0;
-  }
-  .header-info h1 { font-size:18px; font-weight:700; letter-spacing:-.3px; }
-  .header-info p  { font-size:12px; color:var(--muted); margin-top:1px; }
-  .balance-chip {
-    margin-left:auto; background:rgba(245,197,66,.12); border:1px solid rgba(245,197,66,.25);
-    color:var(--gold); font-size:13px; font-weight:600;
-    padding:5px 12px; border-radius:20px; display:flex; align-items:center; gap:5px;
-  }
+/* ═══════════════════════ TOKENS ═══════════════════════ */
+:root {
+  --bg:        #07090e;
+  --bg2:       #0c0e18;
+  --gl:        rgba(255,255,255,0.042);
+  --gl-b:      rgba(255,255,255,0.07);
+  --gl-hi:     rgba(255,255,255,0.08);
+  --p:         #a855f7;
+  --pk:        #ec4899;
+  --gold:      #f5c84a;
+  --green:     #22d3a5;
+  --text:      #eef2ff;
+  --sub:       #94a3c8;
+  --muted:     #4a5175;
+  --r:         15px;
+  --r-sm:      10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  font-size:15px;line-height:1.5;
+  min-height:100vh;padding-bottom:116px;
+  overflow-x:hidden;
+}
 
-  /* SECTIONS */
-  .section { padding:16px 20px 0; }
-  .section-label {
-    font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase;
-    color:var(--muted); margin-bottom:8px;
-  }
+/* ═══════════════════ AMBIENT GLOWS ═══════════════════ */
+body::before{
+  content:'';position:fixed;top:-180px;left:-140px;
+  width:420px;height:420px;
+  background:radial-gradient(circle,rgba(168,85,247,.11) 0%,transparent 68%);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;bottom:-160px;right:-100px;
+  width:380px;height:380px;
+  background:radial-gradient(circle,rgba(236,72,153,.08) 0%,transparent 68%);
+  pointer-events:none;z-index:0;
+}
 
-  /* SELECT */
-  .select-wrap { position:relative; }
-  select {
-    width:100%; background:var(--card); border:1px solid var(--border);
-    color:var(--text); font-size:15px; padding:13px 40px 13px 14px;
-    border-radius:var(--radius); appearance:none; outline:none; cursor:pointer;
-    transition:border-color .2s;
-  }
-  select:focus { border-color:var(--accent); }
-  .select-arrow {
-    position:absolute; right:14px; top:50%; transform:translateY(-50%);
-    color:var(--muted); pointer-events:none; font-size:12px;
-  }
+/* ═══════════════════ HEADER ═══════════════════ */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,9,14,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--gl-b);
+  padding:16px 18px 13px;
+  display:flex;align-items:center;gap:11px;
+}
+.header-logo{
+  width:40px;height:40px;border-radius:13px;flex-shrink:0;
+  background:linear-gradient(135deg,#a855f7,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  font-size:21px;
+  box-shadow:0 4px 18px rgba(168,85,247,.45);
+}
+.header-info h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.header-info p{font-size:11px;color:var(--muted);margin-top:1px}
+.balance-chip{
+  margin-left:auto;
+  background:rgba(245,200,74,.09);
+  border:1px solid rgba(245,200,74,.2);
+  color:var(--gold);font-size:13px;font-weight:700;
+  padding:5px 12px;border-radius:20px;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;
+}
 
-  /* MODEL CARD */
-  .model-card {
-    background:var(--card2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:12px 14px; margin-top:8px; display:flex; gap:10px; align-items:flex-start;
-  }
-  .model-badge {
-    background:rgba(124,92,250,.15); border:1px solid rgba(124,92,250,.25);
-    color:var(--accent2); font-size:11px; font-weight:600; padding:3px 8px;
-    border-radius:6px; white-space:nowrap; flex-shrink:0;
-  }
-  .model-hook { font-size:13px; color:var(--label); line-height:1.4; }
+/* ═══════════════════ SECTIONS ═══════════════════ */
+.section{padding:14px 16px 0;position:relative;z-index:1}
+.sec-label{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:9px;
+}
 
-  /* DURATION */
-  .dur-row {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); padding:16px 14px;
-    display:flex; flex-direction:column; gap:10px;
-  }
-  .dur-controls { display:flex; align-items:center; gap:0; }
-  .dur-btn {
-    width:44px; height:44px; border-radius:var(--r-sm); border:1px solid var(--border);
-    background:var(--card2); color:var(--text); font-size:20px; font-weight:300;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    flex-shrink:0; transition:background .15s, border-color .15s; user-select:none;
-  }
-  .dur-btn:active { background:#2d3349; border-color:var(--accent); }
-  .dur-display {
-    flex:1; text-align:center; padding:0 10px;
-  }
-  .dur-value { font-size:28px; font-weight:700; letter-spacing:-1px; color:var(--text); }
-  .dur-unit  { font-size:12px; color:var(--muted); }
-  .dur-price { text-align:center; }
-  .dur-price .stars { font-size:22px; font-weight:700; color:var(--gold); }
-  .dur-price .stars-label { font-size:12px; color:var(--muted); margin-left:4px; }
-  .dur-presets { display:flex; gap:6px; flex-wrap:wrap; }
-  .dur-preset {
-    flex:1; min-width:56px; padding:7px 4px; border-radius:var(--r-sm);
-    background:var(--card2); border:1px solid var(--border);
-    color:var(--label); font-size:12px; text-align:center; cursor:pointer;
-    transition:all .15s; user-select:none;
-  }
-  .dur-preset.active { background:rgba(124,92,250,.15); border-color:var(--accent); color:var(--accent2); }
-  .dur-preset:active  { opacity:.7; }
+/* ═══════════════ GRADIENT BORDER MIXIN ═══════════════
+   Usage: .active class adds gradient border via background trick  */
+.gb-active{
+  border:1px solid transparent !important;
+  background:
+    linear-gradient(var(--bg2),var(--bg2)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box !important;
+  box-shadow:0 0 22px rgba(168,85,247,.18),0 4px 16px rgba(168,85,247,.12) !important;
+}
 
-  /* GRID OPTIONS */
-  .opts-grid { display:grid; gap:8px; }
-  .opts-grid.cols2 { grid-template-columns:1fr 1fr; }
-  .opts-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
-  .opts-grid.cols4 { grid-template-columns:1fr 1fr 1fr 1fr; }
-  .opt-btn {
-    padding:10px 6px; border-radius:var(--r-sm); border:1px solid var(--border);
-    background:var(--card); color:var(--label); font-size:13px; text-align:center;
-    cursor:pointer; transition:all .15s; user-select:none;
-  }
-  .opt-btn.active { background:rgba(124,92,250,.15); border-color:var(--accent); color:var(--text); }
-  .opt-btn:active  { opacity:.7; }
-  .opt-btn .opt-icon { font-size:18px; display:block; margin-bottom:3px; }
-  .opt-btn .opt-label { font-size:11px; }
-  /* Aspect ratio visual */
-  .ar-btn { aspect-ratio:auto; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; }
-  .ar-box { background:var(--border); border-radius:3px; }
+/* ═══════════════════ TYPE SELECTOR ═══════════════════ */
+.type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.type-btn{
+  padding:14px 10px;border-radius:var(--r);
+  border:1px solid var(--gl-b);background:var(--gl);
+  cursor:pointer;text-align:center;
+  transition:all .2s;user-select:none;
+}
+.type-btn .t-icon{font-size:26px;display:block;margin-bottom:4px}
+.type-btn .t-name{font-size:13px;font-weight:600;color:var(--sub);transition:color .2s}
+.type-btn.active{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--bg2),var(--bg2)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box;
+  box-shadow:0 0 28px rgba(168,85,247,.2),inset 0 0 24px rgba(168,85,247,.04);
+}
+.type-btn.active .t-name{color:var(--text)}
+.type-btn:active{transform:scale(.96)}
 
-  /* PROMPT */
-  .prompt-wrap { position:relative; margin-top:0; }
-  textarea {
-    width:100%; background:var(--card); border:1px solid var(--border);
-    color:var(--text); font-size:15px; padding:14px; border-radius:var(--radius);
-    resize:none; outline:none; height:100px; font-family:inherit; line-height:1.5;
-    transition:border-color .2s;
-  }
-  textarea:focus { border-color:var(--accent); }
-  textarea::placeholder { color:var(--muted); }
-  .char-count { position:absolute; bottom:10px; right:12px; font-size:11px; color:var(--muted); }
+/* ═══════════════════ MODEL GRID ═══════════════════ */
+.model-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m-card{
+  padding:12px 10px 10px;border-radius:var(--r);
+  border:1px solid var(--gl-b);background:var(--gl);
+  cursor:pointer;transition:all .2s;user-select:none;
+  position:relative;overflow:hidden;
+}
+.m-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 0% 0%,rgba(168,85,247,.1) 0%,transparent 65%);
+  opacity:0;transition:opacity .2s;pointer-events:none;
+}
+.m-card.active::before{opacity:1}
+.m-card.active{
+  border:1px solid transparent;
+  background:
+    linear-gradient(rgba(12,14,24,.88),rgba(12,14,24,.88)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box;
+  box-shadow:0 4px 28px rgba(168,85,247,.22);
+}
+.m-card:active{transform:scale(.96)}
+.m-badge-pill{
+  display:inline-block;font-size:9.5px;font-weight:700;
+  padding:2px 7px;border-radius:6px;letter-spacing:.2px;
+  background:rgba(168,85,247,.13);
+  border:1px solid rgba(168,85,247,.18);
+  color:#c084fc;margin-bottom:7px;
+}
+.m-card.active .m-badge-pill{
+  background:rgba(168,85,247,.22);
+  border-color:rgba(168,85,247,.35);
+}
+.m-emoji{font-size:23px;display:block;margin-bottom:4px}
+.m-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px}
+.m-price{font-size:11px;color:var(--gold);font-weight:700}
+.m-ref-tag{
+  display:inline-block;font-size:9px;font-weight:700;
+  padding:1px 6px;border-radius:5px;margin-top:5px;
+  background:rgba(236,72,153,.1);
+  border:1px solid rgba(236,72,153,.2);
+  color:#f472b6;letter-spacing:.2px;
+}
 
-  /* IMAGE TYPE */
-  .img-type-row { display:flex; gap:8px; }
-  .img-type-btn {
-    flex:1; padding:12px 8px; border-radius:var(--radius); border:1px solid var(--border);
-    background:var(--card); cursor:pointer; text-align:center; transition:all .15s;
-  }
-  .img-type-btn.active { border-color:var(--accent); background:rgba(124,92,250,.1); }
-  .img-type-btn .itype-icon { font-size:24px; margin-bottom:4px; }
-  .img-type-btn .itype-name { font-size:13px; font-weight:600; color:var(--text); }
-  .img-type-btn .itype-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+/* MODEL DETAIL */
+.model-detail{
+  margin-top:10px;padding:12px 14px;
+  border-radius:var(--r);
+  background:rgba(168,85,247,.06);
+  border:1px solid rgba(168,85,247,.14);
+  display:none;
+}
+.model-detail.show{display:block;animation:fadeUp .2s ease}
+.md-hook{font-size:13px;color:var(--sub);line-height:1.55}
 
-  /* DIVIDER */
-  .divider { height:1px; background:var(--border); margin:16px 20px 0; }
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(-5px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
-  /* GENERATE BTN */
-  .gen-wrap {
-    position:fixed; bottom:0; left:0; right:0;
-    background:linear-gradient(to top, var(--bg) 60%, transparent);
-    padding:16px 20px 20px;
-  }
-  .gen-btn {
-    width:100%; padding:16px; border-radius:16px; border:none;
-    background:linear-gradient(135deg,#7c5cfa,#a87eff);
-    color:#fff; font-size:16px; font-weight:700; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    box-shadow:0 8px 24px rgba(124,92,250,.35);
-    transition:opacity .2s, transform .1s;
-    letter-spacing:-.2px;
-  }
-  .gen-btn:active { opacity:.85; transform:scale(.99); }
-  .gen-btn.disabled { opacity:.45; pointer-events:none; }
-  .gen-btn .cost-chip {
-    background:rgba(255,255,255,.15); padding:3px 10px; border-radius:20px;
-    font-size:13px; font-weight:700;
-  }
+/* ═══════════════════ RESOLUTION ═══════════════════ */
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.res-btn{
+  padding:10px 6px;border-radius:var(--r-sm);
+  border:1px solid var(--gl-b);background:var(--gl);
+  color:var(--sub);font-size:12.5px;font-weight:700;
+  text-align:center;cursor:pointer;
+  transition:all .2s;user-select:none;
+}
+.res-btn.active{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--bg2),var(--bg2)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box;
+  color:var(--text);
+  box-shadow:0 2px 14px rgba(168,85,247,.2);
+}
+.res-btn:active{transform:scale(.94)}
+.res-btn.dim{opacity:.28;pointer-events:none}
 
-  /* SUMMARY CARD */
-  .summary-card {
-    background:var(--card2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:12px 14px; display:flex; justify-content:space-between; align-items:center;
-    flex-wrap:wrap; gap:8px;
-  }
-  .summary-item { display:flex; flex-direction:column; }
-  .summary-item .s-label { font-size:11px; color:var(--muted); }
-  .summary-item .s-value { font-size:14px; font-weight:600; color:var(--text); }
+/* ═══════════════════ DURATION ═══════════════════ */
+.dur-glass{
+  padding:16px 14px;border-radius:var(--r);
+  background:var(--gl);border:1px solid var(--gl-b);
+  display:flex;flex-direction:column;gap:12px;
+}
+.dur-controls{display:flex;align-items:center}
+.dur-btn{
+  width:46px;height:46px;border-radius:var(--r-sm);
+  border:1px solid var(--gl-b);background:var(--gl-hi);
+  color:var(--text);font-size:23px;font-weight:300;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:all .15s;user-select:none;
+}
+.dur-btn:active{
+  background:rgba(168,85,247,.22);
+  border-color:var(--p);
+  transform:scale(.92);
+}
+.dur-display{flex:1;text-align:center}
+.dur-value{font-size:34px;font-weight:800;letter-spacing:-1.5px;color:var(--text)}
+.dur-unit{font-size:12px;color:var(--muted);margin-top:-2px}
+.dur-price{text-align:center}
+.dur-price .stars{font-size:24px;font-weight:800;color:var(--gold)}
+.dur-price .stars-label{font-size:12px;color:var(--muted);margin-left:3px}
+.dur-presets{display:flex;gap:6px;flex-wrap:wrap}
+.dur-preset{
+  flex:1;min-width:46px;padding:7px 4px;border-radius:var(--r-sm);
+  background:var(--gl);border:1px solid var(--gl-b);
+  color:var(--sub);font-size:12px;font-weight:700;
+  text-align:center;cursor:pointer;
+  transition:all .15s;user-select:none;
+}
+.dur-preset.active{
+  background:rgba(168,85,247,.14);
+  border-color:rgba(168,85,247,.32);
+  color:#c084fc;
+}
+.dur-preset:active{opacity:.7;transform:scale(.94)}
 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width:4px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+/* ═══════════════════ ASPECT RATIO ═══════════════════ */
+.ar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.ar-btn{
+  padding:10px 4px 8px;border-radius:var(--r-sm);
+  border:1px solid var(--gl-b);background:var(--gl);
+  cursor:pointer;text-align:center;
+  transition:all .2s;user-select:none;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.ar-btn.active{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--bg2),var(--bg2)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box;
+  box-shadow:0 2px 12px rgba(168,85,247,.18);
+}
+.ar-btn:active{transform:scale(.93)}
+.ar-box{background:rgba(255,255,255,.14);border-radius:2px;transition:background .2s}
+.ar-btn.active .ar-box{background:linear-gradient(135deg,rgba(168,85,247,.75),rgba(236,72,153,.75))}
+.ar-label{font-size:10.5px;font-weight:700;color:var(--sub);transition:color .2s}
+.ar-btn.active .ar-label{color:var(--text)}
+
+/* ═══════════════════ IMAGE TYPE ═══════════════════ */
+.img-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.img-type-btn{
+  padding:13px 8px;border-radius:var(--r);
+  border:1px solid var(--gl-b);background:var(--gl);
+  cursor:pointer;text-align:center;
+  transition:all .2s;user-select:none;
+}
+.img-type-btn.active{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--bg2),var(--bg2)) padding-box,
+    linear-gradient(135deg,#a855f7,#ec4899) border-box;
+}
+.img-type-btn:active{transform:scale(.96)}
+.itype-icon{font-size:26px;margin-bottom:5px}
+.itype-name{font-size:12.5px;font-weight:700;color:var(--text)}
+.itype-desc{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+/* ═══════════════════ PROMPT ═══════════════════ */
+.prompt-glass{
+  border-radius:var(--r);
+  background:var(--gl);border:1px solid var(--gl-b);
+  position:relative;
+  transition:border-color .2s,box-shadow .2s;
+}
+.prompt-glass:focus-within{
+  border-color:rgba(168,85,247,.38);
+  box-shadow:0 0 0 3px rgba(168,85,247,.07),0 4px 22px rgba(168,85,247,.1);
+}
+textarea{
+  width:100%;background:transparent;border:none;
+  color:var(--text);font-size:15px;
+  padding:14px;border-radius:var(--r);
+  resize:none;outline:none;height:110px;
+  font-family:inherit;line-height:1.55;
+}
+textarea::placeholder{color:var(--muted)}
+.char-count{position:absolute;bottom:10px;right:12px;font-size:11px;color:var(--muted)}
+
+/* ═══════════════════ SUMMARY ═══════════════════ */
+.summary-glass{
+  padding:14px;border-radius:var(--r);
+  background:var(--gl);border:1px solid var(--gl-b);
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;
+}
+.s-item{display:flex;flex-direction:column;gap:2px}
+.s-label{font-size:9.5px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.s-value{font-size:13px;font-weight:700;color:var(--text)}
+.s-value.gold{color:var(--gold)}
+
+/* ═══════════════════ DIVIDER ═══════════════════ */
+.divider{height:1px;background:var(--gl-b);margin:14px 16px 0;position:relative;z-index:1}
+
+/* ═══════════════════ GENERATE BUTTON ═══════════════════ */
+.gen-wrap{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:10px 16px 22px;
+  background:linear-gradient(to top,rgba(7,9,14,.98) 55%,transparent);
+  z-index:200;
+}
+
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 8px 32px rgba(168,85,247,.48),0 2px 8px rgba(236,72,153,.2)}
+  50%{box-shadow:0 12px 52px rgba(168,85,247,.7),0 4px 24px rgba(236,72,153,.35)}
+}
+
+.gen-btn{
+  width:100%;padding:17px 20px;border-radius:18px;border:none;
+  background:linear-gradient(135deg,#a855f7 0%,#d946a8 50%,#ec4899 100%);
+  color:#fff;font-size:16px;font-weight:800;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  letter-spacing:-.2px;
+  animation:pulse-glow 2.6s ease-in-out infinite;
+  transition:transform .12s,opacity .15s;
+  position:relative;overflow:hidden;
+}
+.gen-btn::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  animation:shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%{left:-100%}
+  60%,100%{left:150%}
+}
+.gen-btn:active{transform:scale(.975);opacity:.9}
+.gen-btn.disabled{
+  background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(236,72,153,.2));
+  animation:none;box-shadow:none;opacity:.5;pointer-events:none;
+}
+.gen-btn.disabled::before{display:none}
+.gen-left{display:flex;align-items:center;gap:9px}
+.gen-icon{font-size:20px}
+.gen-text{font-size:16px;font-weight:800}
+.gen-cost{
+  background:rgba(255,255,255,.18);
+  padding:5px 13px;border-radius:20px;
+  font-size:14px;font-weight:800;
+  backdrop-filter:blur(4px);
+}
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:2px}
 </style>
 </head>
 <body>
@@ -200,69 +371,54 @@
 <div class="header">
   <div class="header-logo">✨</div>
   <div class="header-info">
-    <h1>Voro Creator</h1>
-    <p>AI Video & Rasm Generatsiya</p>
+    <h1>Voro Studio</h1>
+    <p>AI Video &amp; Rasm Generatsiya</p>
   </div>
   <div class="balance-chip" id="balanceChip">⭐ 0</div>
 </div>
 
 <!-- TYPE SELECTOR -->
 <div class="section" style="padding-top:16px">
-  <div class="section-label">Kontent turi</div>
-  <div class="opts-grid cols2" id="typeGrid">
-    <div class="opt-btn active" data-type="video" onclick="setType('video')">
-      <span class="opt-icon">🎬</span>
-      <span class="opt-label">Video</span>
+  <div class="sec-label">Kontent turi</div>
+  <div class="type-row">
+    <div class="type-btn active" data-type="video" onclick="setType('video')">
+      <span class="t-icon">🎬</span>
+      <span class="t-name">Video</span>
     </div>
-    <div class="opt-btn" data-type="image" onclick="setType('image')">
-      <span class="opt-icon">🖼</span>
-      <span class="opt-label">Rasm</span>
+    <div class="type-btn" data-type="image" onclick="setType('image')">
+      <span class="t-icon">🖼</span>
+      <span class="t-name">Rasm</span>
     </div>
   </div>
 </div>
 
-<!-- MODEL -->
+<!-- MODEL GRID -->
 <div class="section" style="padding-top:14px">
-  <div class="section-label">Model</div>
-  <div class="select-wrap">
-    <select id="modelSel" onchange="onModelChange()">
-      <option value="">Model tanlang...</option>
-    </select>
-    <span class="select-arrow">▾</span>
-  </div>
-  <div class="model-card" id="modelCard" style="display:none">
-    <div>
-      <span class="model-badge" id="modelBadge"></span>
-    </div>
-    <p class="model-hook" id="modelHook"></p>
+  <div class="sec-label">Model tanlang</div>
+  <div class="model-grid" id="modelGrid"></div>
+  <div class="model-detail" id="modelDetail">
+    <p class="md-hook" id="mdHook"></p>
   </div>
 </div>
 
 <!-- VIDEO OPTIONS -->
 <div id="videoOpts">
+
   <!-- RESOLUTION -->
   <div class="section" style="padding-top:14px">
-    <div class="section-label">Sifat (Resolution)</div>
-    <div class="opts-grid cols4" id="resGrid">
-      <div class="opt-btn" data-res="480p" onclick="setRes('480p')">
-        <span class="opt-icon">📱</span><span class="opt-label">480p</span>
-      </div>
-      <div class="opt-btn active" data-res="720p" onclick="setRes('720p')">
-        <span class="opt-icon">🖥</span><span class="opt-label">720p</span>
-      </div>
-      <div class="opt-btn" data-res="1080p" onclick="setRes('1080p')">
-        <span class="opt-icon">📺</span><span class="opt-label">1080p</span>
-      </div>
-      <div class="opt-btn" data-res="1440p" onclick="setRes('1440p')">
-        <span class="opt-icon">✨</span><span class="opt-label">2K</span>
-      </div>
+    <div class="sec-label">Sifat</div>
+    <div class="res-grid" id="resGrid">
+      <div class="res-btn" data-res="480p" onclick="setRes('480p')">480p</div>
+      <div class="res-btn active" data-res="720p" onclick="setRes('720p')">720p</div>
+      <div class="res-btn" data-res="1080p" onclick="setRes('1080p')">1080p</div>
+      <div class="res-btn" data-res="1440p" onclick="setRes('1440p')">2K</div>
     </div>
   </div>
 
   <!-- DURATION -->
   <div class="section" style="padding-top:14px">
-    <div class="section-label">Davomiylik</div>
-    <div class="dur-row">
+    <div class="sec-label">Davomiylik</div>
+    <div class="dur-glass">
       <div class="dur-controls">
         <div class="dur-btn" onclick="changeDur(-1)">−</div>
         <div class="dur-display">
@@ -278,19 +434,19 @@
       <div class="dur-presets" id="durPresets"></div>
     </div>
   </div>
-</div>
+
+</div><!-- /videoOpts -->
 
 <!-- ASPECT RATIO -->
 <div class="section" style="padding-top:14px">
-  <div class="section-label">Tomonlar nisbati</div>
-  <div class="opts-grid cols5" style="grid-template-columns:repeat(5,1fr)" id="arGrid">
-  </div>
+  <div class="sec-label">Tomonlar nisbati</div>
+  <div class="ar-grid" id="arGrid"></div>
 </div>
 
 <!-- IMAGE TYPE (only image) -->
-<div class="section" id="imgTypeSection" style="padding-top:14px; display:none">
-  <div class="section-label">Rasm turi</div>
-  <div class="img-type-row" id="imgTypeRow">
+<div class="section" id="imgTypeSection" style="padding-top:14px;display:none">
+  <div class="sec-label">Rasm turi</div>
+  <div class="img-type-grid">
     <div class="img-type-btn active" data-itype="standard" onclick="setImgType('standard')">
       <div class="itype-icon">🖼</div>
       <div class="itype-name">Standart</div>
@@ -312,39 +468,56 @@
 <!-- PROMPT -->
 <div class="divider"></div>
 <div class="section" style="padding-top:16px">
-  <div class="section-label">Tavsif (ixtiyoriy)</div>
-  <div class="prompt-wrap">
-    <textarea id="promptTA" placeholder="G'oyangizni istalgan tilda yozing...&#10;Masalan: toshkentda kechqurun neon chiroqlar ostida ketayotgan ayol" maxlength="500" oninput="onPromptInput()"></textarea>
+  <div class="sec-label">Tavsif (ixtiyoriy)</div>
+  <div class="prompt-glass">
+    <textarea id="promptTA"
+      placeholder="G'oyangizni istalgan tilda yozing...&#10;Masalan: toshkentda kechqurun neon chiroqlar ostida ketayotgan ayol"
+      maxlength="500" oninput="onPromptInput()"></textarea>
     <span class="char-count" id="charCount">0/500</span>
   </div>
 </div>
 
 <!-- SUMMARY -->
-<div class="section" style="padding-top:14px">
-  <div class="summary-card" id="summaryCard">
-    <div class="summary-item"><span class="s-label">Model</span><span class="s-value" id="sumModel">—</span></div>
-    <div class="summary-item"><span class="s-label">Sifat</span><span class="s-value" id="sumRes">720p</span></div>
-    <div class="summary-item"><span class="s-label">Davomiylik</span><span class="s-value" id="sumDur">5s</span></div>
-    <div class="summary-item"><span class="s-label">Narx</span><span class="s-value" id="sumCost" style="color:var(--gold)">—</span></div>
+<div class="section" style="padding-top:12px">
+  <div class="summary-glass" id="summaryCard">
+    <div class="s-item">
+      <span class="s-label">Model</span>
+      <span class="s-value" id="sumModel">—</span>
+    </div>
+    <div class="s-item">
+      <span class="s-label">Sifat</span>
+      <span class="s-value" id="sumRes">720p</span>
+    </div>
+    <div class="s-item">
+      <span class="s-label">Vaqt</span>
+      <span class="s-value" id="sumDur">5s</span>
+    </div>
+    <div class="s-item">
+      <span class="s-label">Narx</span>
+      <span class="s-value gold" id="sumCost">—</span>
+    </div>
   </div>
 </div>
 
-<!-- GENERATE BTN -->
+<!-- GENERATE BUTTON -->
 <div class="gen-wrap">
   <button class="gen-btn disabled" id="genBtn" onclick="generate()">
-    <span>✨ Yaratish</span>
-    <span class="cost-chip" id="genCostChip">0 ⭐</span>
+    <div class="gen-left">
+      <span class="gen-icon">✨</span>
+      <span class="gen-text">Yaratish</span>
+    </div>
+    <span class="gen-cost" id="genCostChip">0 ⭐</span>
   </button>
 </div>
 
 <script>
 /* ══════════════════════════════════════════
-   DATA
+   DATA  (funksionallikka tegmang)
 ══════════════════════════════════════════ */
 const STAR_VALUE = 0.0091;
 const MARGIN     = 1.20;
 
-const RES_MULT = { "480p": 0.465, "720p": 1.0, "1080p": 1.80, "1440p": 2.25 };
+const RES_MULT = { "480p":0.465, "720p":1.0, "1080p":1.80, "1440p":2.25 };
 
 const BASE_RATE = {
   "google/veo3.1/text-to-video":                0.408,
@@ -375,64 +548,64 @@ const IMAGE_COST = {
 };
 
 const MODEL_META = {
-  "google/veo3.1/text-to-video":               { badge:"💎 Premium",    min:2, max:8,  res:["480p","720p","1080p"],        hook:"Dunyo #1 AI video modeli. Har bir kadr — jonli kino sifati." },
-  "google/veo3.1-fast/text-to-video":          { badge:"⚡ Tez",        min:1, max:8,  res:["480p","720p","1080p"],        hook:"Veo 3.1 ning 3x tezroq versiyasi. Audio sinxronizatsiya." },
-  "google/veo3.1-lite/text-to-video":          { badge:"💰 Arzon",      min:1, max:8,  res:["480p","720p"],                hook:"Eng arzon Veo seriyasi. Oz byudjet bilan kuchli natija." },
-  "bytedance/seedance-2.0/text-to-video":      { badge:"🔥 Mashhur",    min:1, max:8,  res:["480p","720p","1080p","1440p"],hook:"4K video + audio + reference rasm. Mahsulotingizni jonlantiring!" },
-  "bytedance/seedance-v1.5-pro/text-to-video": { badge:"💰 Arzon",      min:1, max:8,  res:["480p","720p","1080p"],        hook:"Seedance 2.0 imkoniyatlari — 3x arzon narxda." },
-  "kling/kling-v3.0/text-to-video":            { badge:"💎 Premium",    min:2, max:10, res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, kino fizikasi. To'liq nazorat." },
-  "kling/kling-v2.6/text-to-video":            { badge:"🔥 Trend",      min:2, max:10, res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, audio. Professional format." },
-  "alibaba/wan-2.7/text-to-video":             { badge:"⚡ Tez",        min:1, max:8,  res:["480p","720p","1080p"],        hook:"Alibaba'ning eng kuchli video modeli. Audio + reference." },
-  "minimax/hailuo-2.3/text-to-video":          { badge:"🆕 Yangi",      min:1, max:8,  res:["480p","720p","1080p"],        hook:"Ultra-real yuz ifodasi. Portret video uchun #1 model." },
-  "xai/grok-imagine-video-v1.5/image-to-video":{ badge:"🔥 Trend",      min:2, max:8,  res:["480p","720p","1080p"],        hook:"Rasmingizni jonlantiring! Rasm yuboring → video tayyor." },
-  "alibaba/happyhorse-1.0/text-to-video":      { badge:"🆕 Yangi",      min:1, max:8,  res:["480p","720p","1080p"],        hook:"Eksperimental model. G'ayrioddiy rakurs va effektlar." },
-  "vidu/q3/reference-to-video":               { badge:"🎯 Maxsus",     min:1, max:8,  res:["480p","720p","1080p"],        hook:"4 ta reference — to'liq nazorat! Ko'p ob'ektli video." },
-  "google/nano-banana-2/text-to-image":        { badge:"⚡ Tez",        hook:"Google'ning tez modeli. 3 ta reference + 4K." },
-  "openai/gpt-image-2/text-to-image":          { badge:"💎 Premium",    hook:"Matnni AYNAN chizadi. ChatGPT'ning rasm modeli." },
-  "bytedance/seedream-v5.0-lite":              { badge:"🆕 Yangi",      hook:"Seedream 5.0 — batch yaratish va tahrirlash." },
-  "alibaba/wan-2.7/text-to-image":             { badge:"💰 Arzon",      hook:"Illustratsiya va reklama uchun optimal. Arzon." },
-  "alibaba/wan-2.7-pro/text-to-image":         { badge:"🔥 Trend",      hook:"Wan 2.7 Pro — yuqori aniqlik, 1 reference, 4K." },
-  "xai/grok-imagine-image-quality/text-to-image":{ badge:"🔥 Trend",   hook:"Estetik va ifodali. 2K, portret uchun mukammal." },
-  "qwen/qwen-image-2.0/text-to-image":         { badge:"🆕 Yangi",      hook:"O'zbek tilida ham ishlaydi! Ko'p tilli, 2K." },
-  "flux/flux-pro-2.0/text-to-image":           { badge:"💎 Premium",    hook:"Eng aniq prompt bajarilishi. Detalni his qiling." },
-  "flux/flux-kontext-max/text-to-image":       { badge:"💎 Premium",    hook:"Mavjud rasmingizni TAHRIRLANG! Reference + prompt." },
-  "bytedance/seedream-v4.5/text-to-image":     { badge:"💰 Arzon",      hook:"4K aniqlik, tez va arzon. Content creator standarti." },
+  "google/veo3.1/text-to-video":               {badge:"💎 Premium",  min:2,max:8, res:["480p","720p","1080p"],        hook:"Dunyo #1 AI video modeli. Har bir kadr — jonli kino sifati."},
+  "google/veo3.1-fast/text-to-video":          {badge:"⚡ Tez",       min:1,max:8, res:["480p","720p","1080p"],        hook:"Veo 3.1 ning 3x tezroq versiyasi. Audio sinxronizatsiya."},
+  "google/veo3.1-lite/text-to-video":          {badge:"💰 Arzon",     min:1,max:8, res:["480p","720p"],                hook:"Eng arzon Veo seriyasi. Oz byudjet bilan kuchli natija."},
+  "bytedance/seedance-2.0/text-to-video":      {badge:"🔥 Mashhur",   min:1,max:8, res:["480p","720p","1080p","1440p"],hook:"4K video + audio + reference rasm. Mahsulotingizni jonlantiring!"},
+  "bytedance/seedance-v1.5-pro/text-to-video": {badge:"💰 Arzon",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Seedance 2.0 imkoniyatlari — 3x arzon narxda."},
+  "kling/kling-v3.0/text-to-video":            {badge:"💎 Premium",   min:2,max:10,res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, kino fizikasi. To'liq nazorat."},
+  "kling/kling-v2.6/text-to-video":            {badge:"🔥 Trend",     min:2,max:10,res:["480p","720p","1080p"],        hook:"10 sekund, 2 reference, audio. Professional format."},
+  "alibaba/wan-2.7/text-to-video":             {badge:"⚡ Tez",       min:1,max:8, res:["480p","720p","1080p"],        hook:"Alibaba'ning eng kuchli video modeli. Audio + reference."},
+  "minimax/hailuo-2.3/text-to-video":          {badge:"🆕 Yangi",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Ultra-real yuz ifodasi. Portret video uchun #1 model."},
+  "xai/grok-imagine-video-v1.5/image-to-video":{badge:"🔥 Trend",    min:2,max:8, res:["480p","720p","1080p"],        hook:"Rasmingizni jonlantiring! Rasm yuboring → video tayyor."},
+  "alibaba/happyhorse-1.0/text-to-video":      {badge:"🆕 Yangi",     min:1,max:8, res:["480p","720p","1080p"],        hook:"Eksperimental model. G'ayrioddiy rakurs va effektlar."},
+  "vidu/q3/reference-to-video":               {badge:"🎯 Maxsus",    min:1,max:8, res:["480p","720p","1080p"],        hook:"4 ta reference — to'liq nazorat! Ko'p ob'ektli video."},
+  "google/nano-banana-2/text-to-image":        {badge:"⚡ Tez",       hook:"Google'ning tez modeli. 3 ta reference + 4K."},
+  "openai/gpt-image-2/text-to-image":          {badge:"💎 Premium",   hook:"Matnni AYNAN chizadi. ChatGPT'ning rasm modeli."},
+  "bytedance/seedream-v5.0-lite":              {badge:"🆕 Yangi",     hook:"Seedream 5.0 — batch yaratish va tahrirlash."},
+  "alibaba/wan-2.7/text-to-image":             {badge:"💰 Arzon",     hook:"Illustratsiya va reklama uchun optimal. Arzon."},
+  "alibaba/wan-2.7-pro/text-to-image":         {badge:"🔥 Trend",     hook:"Wan 2.7 Pro — yuqori aniqlik, 1 reference, 4K."},
+  "xai/grok-imagine-image-quality/text-to-image":{badge:"🔥 Trend",  hook:"Estetik va ifodali. 2K, portret uchun mukammal."},
+  "qwen/qwen-image-2.0/text-to-image":         {badge:"🆕 Yangi",     hook:"O'zbek tilida ham ishlaydi! Ko'p tilli, 2K."},
+  "flux/flux-pro-2.0/text-to-image":           {badge:"💎 Premium",   hook:"Eng aniq prompt bajarilishi. Detalni his qiling."},
+  "flux/flux-kontext-max/text-to-image":       {badge:"💎 Premium",   hook:"Mavjud rasmingizni TAHRIRLANG! Reference + prompt."},
+  "bytedance/seedream-v4.5/text-to-image":     {badge:"💰 Arzon",     hook:"4K aniqlik, tez va arzon. Content creator standarti."},
 };
 
 const VIDEO_MODELS = [
-  { id:"google/veo3.1/text-to-video",                name:"🎥 Veo 3.1" },
-  { id:"google/veo3.1-fast/text-to-video",           name:"🎥 Veo 3.1 Fast" },
-  { id:"google/veo3.1-lite/text-to-video",           name:"🎥 Veo 3.1 Lite" },
-  { id:"bytedance/seedance-2.0/text-to-video",       name:"🌱 Seedance 2.0" },
-  { id:"bytedance/seedance-v1.5-pro/text-to-video",  name:"🌱 Seedance 1.5 Pro" },
-  { id:"kling/kling-v3.0/text-to-video",             name:"⚡ Kling 3.0" },
-  { id:"kling/kling-v2.6/text-to-video",             name:"⚡ Kling 2.6" },
-  { id:"alibaba/wan-2.7/text-to-video",              name:"🌀 Wan 2.7" },
-  { id:"minimax/hailuo-2.3/text-to-video",           name:"🌊 Hailuo 2.3" },
-  { id:"xai/grok-imagine-video-v1.5/image-to-video", name:"🤖 Grok Video 1.5" },
-  { id:"alibaba/happyhorse-1.0/text-to-video",       name:"🐴 HappyHorse 1.0" },
-  { id:"vidu/q3/reference-to-video",                 name:"🎬 Vidu Q3" },
+  {id:"google/veo3.1/text-to-video",                name:"🎥 Veo 3.1"},
+  {id:"google/veo3.1-fast/text-to-video",           name:"🎥 Veo 3.1 Fast"},
+  {id:"google/veo3.1-lite/text-to-video",           name:"🎥 Veo 3.1 Lite"},
+  {id:"bytedance/seedance-2.0/text-to-video",       name:"🌱 Seedance 2.0"},
+  {id:"bytedance/seedance-v1.5-pro/text-to-video",  name:"🌱 Seedance 1.5 Pro"},
+  {id:"kling/kling-v3.0/text-to-video",             name:"⚡ Kling 3.0"},
+  {id:"kling/kling-v2.6/text-to-video",             name:"⚡ Kling 2.6"},
+  {id:"alibaba/wan-2.7/text-to-video",              name:"🌀 Wan 2.7"},
+  {id:"minimax/hailuo-2.3/text-to-video",           name:"🌊 Hailuo 2.3"},
+  {id:"xai/grok-imagine-video-v1.5/image-to-video", name:"🤖 Grok Video 1.5"},
+  {id:"alibaba/happyhorse-1.0/text-to-video",       name:"🐴 HappyHorse 1.0"},
+  {id:"vidu/q3/reference-to-video",                 name:"🎬 Vidu Q3"},
 ];
 
 const IMAGE_MODELS = [
-  { id:"google/nano-banana-2/text-to-image",             name:"🍌 Nano Banana 2" },
-  { id:"openai/gpt-image-2/text-to-image",               name:"🤖 GPT Image 2" },
-  { id:"bytedance/seedream-v5.0-lite",                   name:"🌸 Seedream 5.0" },
-  { id:"alibaba/wan-2.7/text-to-image",                  name:"🌀 Wan 2.7 Image" },
-  { id:"alibaba/wan-2.7-pro/text-to-image",              name:"🌀 Wan 2.7 Pro" },
-  { id:"xai/grok-imagine-image-quality/text-to-image",   name:"🤖 Grok Image" },
-  { id:"qwen/qwen-image-2.0/text-to-image",              name:"🔮 Qwen Image 2.0" },
-  { id:"flux/flux-pro-2.0/text-to-image",                name:"⚡ Flux Pro 2.0" },
-  { id:"flux/flux-kontext-max/text-to-image",            name:"⚡ Flux Kontext" },
-  { id:"bytedance/seedream-v4.5/text-to-image",          name:"🌸 Seedream 4.5" },
+  {id:"google/nano-banana-2/text-to-image",             name:"🍌 Nano Banana 2"},
+  {id:"openai/gpt-image-2/text-to-image",               name:"🤖 GPT Image 2"},
+  {id:"bytedance/seedream-v5.0-lite",                   name:"🌸 Seedream 5.0"},
+  {id:"alibaba/wan-2.7/text-to-image",                  name:"🌀 Wan 2.7 Image"},
+  {id:"alibaba/wan-2.7-pro/text-to-image",              name:"🌀 Wan 2.7 Pro"},
+  {id:"xai/grok-imagine-image-quality/text-to-image",   name:"🤖 Grok Image"},
+  {id:"qwen/qwen-image-2.0/text-to-image",              name:"🔮 Qwen Image 2.0"},
+  {id:"flux/flux-pro-2.0/text-to-image",                name:"⚡ Flux Pro 2.0"},
+  {id:"flux/flux-kontext-max/text-to-image",            name:"⚡ Flux Kontext"},
+  {id:"bytedance/seedream-v4.5/text-to-image",          name:"🌸 Seedream 4.5"},
 ];
 
 const ASPECT_RATIOS = [
-  { ar:"16:9",  w:16, h:9,  label:"16:9" },
-  { ar:"9:16",  w:9,  h:16, label:"9:16" },
-  { ar:"1:1",   w:1,  h:1,  label:"1:1" },
-  { ar:"4:3",   w:4,  h:3,  label:"4:3" },
-  { ar:"3:4",   w:3,  h:4,  label:"3:4" },
+  {ar:"16:9", w:16,h:9,  label:"16:9"},
+  {ar:"9:16", w:9, h:16, label:"9:16"},
+  {ar:"1:1",  w:1, h:1,  label:"1:1"},
+  {ar:"4:3",  w:4, h:3,  label:"4:3"},
+  {ar:"3:4",  w:3, h:4,  label:"3:4"},
 ];
 
 /* ══════════════════════════════════════════
@@ -455,9 +628,8 @@ const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
   tg.ready();
   tg.expand();
-  tg.setHeaderColor("#0d0f14");
-  tg.setBackgroundColor("#0d0f14");
-  // Show balance from initData if available
+  tg.setHeaderColor("#07090e");
+  tg.setBackgroundColor("#07090e");
   try {
     const ud = tg.initDataUnsafe;
     if (ud && ud.user) {
@@ -467,7 +639,7 @@ if (tg) {
 }
 
 /* ══════════════════════════════════════════
-   CALC
+   CALC  (funksionallikka tegmang)
 ══════════════════════════════════════════ */
 function calcStars(modelId, res, dur) {
   if (VIDEO_MODELS.find(m => m.id === modelId)) {
@@ -481,43 +653,106 @@ function calcStars(modelId, res, dur) {
 }
 
 /* ══════════════════════════════════════════
-   RENDER
+   MODEL GRID
 ══════════════════════════════════════════ */
 function buildModels() {
-  const sel = document.getElementById("modelSel");
+  const grid   = document.getElementById("modelGrid");
   const models = state.type === "video" ? VIDEO_MODELS : IMAGE_MODELS;
-  sel.innerHTML = '<option value="">Model tanlang...</option>';
-  models.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m.id; opt.textContent = m.name;
-    if (m.id === state.model) opt.selected = true;
-    sel.appendChild(opt);
-  });
+  grid.innerHTML = "";
   if (!models.find(m => m.id === state.model)) state.model = "";
+
+  models.forEach(m => {
+    const meta = MODEL_META[m.id] || {};
+    // Split emoji from name
+    const parts = m.name.split(" ");
+    const emoji = parts[0];
+    const shortName = parts.slice(1).join(" ");
+
+    // Price label
+    let priceLabel;
+    if (state.type === "video") {
+      const minDur  = meta.min || 1;
+      const cheapRes = (meta.res || ["720p"])[0];
+      const p = calcStars(m.id, cheapRes, minDur);
+      priceLabel = `${minDur}s → ${p}⭐`;
+    } else {
+      const p = calcStars(m.id, null, 0);
+      priceLabel = `${p}⭐`;
+    }
+
+    // Reference talab qiluvchi modellar
+    const isRef = m.id.includes("image-to-video") ||
+                  m.id.includes("reference-to-video") ||
+                  m.id.includes("start-end-frame");
+    const refTag = isRef ? `<div class="m-ref-tag">📎 Reference botda so'raladi</div>` : "";
+
+    const card = document.createElement("div");
+    card.className = "m-card" + (m.id === state.model ? " active" : "");
+    card.setAttribute("data-id", m.id);
+    card.innerHTML =
+      `<div class="m-badge-pill">${meta.badge || "AI"}</div>` +
+      `<div class="m-emoji">${emoji}</div>` +
+      `<div class="m-name">${shortName}</div>` +
+      `<div class="m-price">${priceLabel}</div>` +
+      refTag;
+    card.onclick = () => selectModel(m.id);
+    grid.appendChild(card);
+  });
+  updateModelDetail();
 }
 
+function selectModel(id) {
+  state.model = id;
+  document.querySelectorAll(".m-card").forEach(c => {
+    c.classList.toggle("active", c.getAttribute("data-id") === id);
+  });
+  updateModelDetail();
+  buildResGrid();
+  updateDur();
+  updateSummary();
+}
+
+function updateModelDetail() {
+  const detail = document.getElementById("modelDetail");
+  const hook   = document.getElementById("mdHook");
+  if (!state.model) { detail.classList.remove("show"); return; }
+  const meta = MODEL_META[state.model];
+  if (!meta) { detail.classList.remove("show"); return; }
+  hook.textContent = meta.hook || "";
+  detail.classList.add("show");
+}
+
+/* ══════════════════════════════════════════
+   ASPECT RATIOS
+══════════════════════════════════════════ */
 function buildAspectRatios() {
-  const grid = document.getElementById("arGrid"); grid.innerHTML = "";
+  const grid = document.getElementById("arGrid");
+  grid.innerHTML = "";
   ASPECT_RATIOS.forEach(a => {
     const d = document.createElement("div");
-    d.className = "opt-btn ar-btn" + (a.ar === state.aspect ? " active" : "");
-    // Draw aspect ratio box visually
-    const maxW = 24, maxH = 24;
+    d.className = "ar-btn" + (a.ar === state.aspect ? " active" : "");
+    const maxW = 22, maxH = 22;
     let bw, bh;
     if (a.w >= a.h) { bw = maxW; bh = Math.round(maxW * a.h / a.w); }
-    else            { bh = maxH; bw = Math.round(maxH * a.w / a.h); }
-    d.innerHTML = `<div class="ar-box" style="width:${bw}px;height:${bh}px"></div><span class="opt-label">${a.label}</span>`;
+    else             { bh = maxH; bw = Math.round(maxH * a.w / a.h); }
+    d.innerHTML =
+      `<div class="ar-box" style="width:${bw}px;height:${bh}px"></div>` +
+      `<span class="ar-label">${a.label}</span>`;
     d.setAttribute("data-ar", a.ar);
     d.onclick = () => setAspect(a.ar);
     grid.appendChild(d);
   });
 }
 
+/* ══════════════════════════════════════════
+   DURATION PRESETS
+══════════════════════════════════════════ */
 function buildDurPresets() {
-  const meta = MODEL_META[state.model] || { min:1, max:8 };
-  const all = [2, 3, 4, 5, 6, 7, 8, 10];
+  const meta  = MODEL_META[state.model] || {min:1, max:8};
+  const all   = [2,3,4,5,6,7,8,10];
   const valid = all.filter(s => s >= meta.min && s <= meta.max);
-  const wrap = document.getElementById("durPresets"); wrap.innerHTML = "";
+  const wrap  = document.getElementById("durPresets");
+  wrap.innerHTML = "";
   valid.forEach(s => {
     const d = document.createElement("div");
     d.className = "dur-preset" + (s === state.dur ? " active" : "");
@@ -527,21 +762,26 @@ function buildDurPresets() {
   });
 }
 
+/* ══════════════════════════════════════════
+   RESOLUTION GRID
+══════════════════════════════════════════ */
 function buildResGrid() {
-  const meta = MODEL_META[state.model];
+  const meta    = MODEL_META[state.model];
   const allowed = meta ? meta.res : ["480p","720p","1080p","1440p"];
-  document.querySelectorAll("#resGrid .opt-btn").forEach(btn => {
+  document.querySelectorAll("#resGrid .res-btn").forEach(btn => {
     const r = btn.getAttribute("data-res");
     btn.classList.toggle("active", r === state.res);
-    btn.style.opacity = allowed && !allowed.includes(r) ? "0.3" : "1";
-    btn.style.pointerEvents = allowed && !allowed.includes(r) ? "none" : "";
+    btn.classList.toggle("dim", !!(allowed && !allowed.includes(r)));
   });
 }
 
+/* ══════════════════════════════════════════
+   SUMMARY & DURATION UPDATE
+══════════════════════════════════════════ */
 function updateDur() {
-  const meta = MODEL_META[state.model] || { min:1, max:8 };
-  state.dur = Math.max(meta.min, Math.min(meta.max, state.dur));
-  document.getElementById("durVal").textContent = state.dur;
+  const meta = MODEL_META[state.model] || {min:1, max:8};
+  state.dur  = Math.max(meta.min, Math.min(meta.max, state.dur));
+  document.getElementById("durVal").textContent   = state.dur;
   const cost = calcStars(state.model, state.res, state.dur);
   document.getElementById("durStars").textContent = cost;
   updateSummary();
@@ -550,25 +790,16 @@ function updateDur() {
 
 function updateSummary() {
   const models = state.type === "video" ? VIDEO_MODELS : IMAGE_MODELS;
-  const m = models.find(x => x.id === state.model);
-  document.getElementById("sumModel").textContent = m ? m.name : "—";
+  const m      = models.find(x => x.id === state.model);
+  const parts  = m ? m.name.split(" ") : [];
+  const shortN = parts.length > 1 ? parts.slice(1).join(" ") : "—";
+  document.getElementById("sumModel").textContent = m ? shortN : "—";
   document.getElementById("sumRes").textContent   = state.type === "video" ? state.res : "Auto";
   document.getElementById("sumDur").textContent   = state.type === "video" ? `${state.dur}s` : "—";
   const cost = state.model ? calcStars(state.model, state.res, state.dur) : 0;
-  document.getElementById("sumCost").textContent  = cost ? `${cost} ⭐` : "—";
+  document.getElementById("sumCost").textContent     = cost ? `${cost} ⭐` : "—";
   document.getElementById("genCostChip").textContent = `${cost || 0} ⭐`;
-  const btn = document.getElementById("genBtn");
-  btn.classList.toggle("disabled", !state.model);
-}
-
-function updateModelCard() {
-  const card = document.getElementById("modelCard");
-  if (!state.model) { card.style.display = "none"; return; }
-  const meta = MODEL_META[state.model];
-  if (!meta) { card.style.display = "none"; return; }
-  document.getElementById("modelBadge").textContent = meta.badge || "";
-  document.getElementById("modelHook").textContent  = meta.hook || "";
-  card.style.display = "flex";
+  document.getElementById("genBtn").classList.toggle("disabled", !state.model);
 }
 
 /* ══════════════════════════════════════════
@@ -576,22 +807,14 @@ function updateModelCard() {
 ══════════════════════════════════════════ */
 function setType(t) {
   state.type = t;
-  document.querySelectorAll("#typeGrid .opt-btn").forEach(b => {
+  document.querySelectorAll(".type-btn").forEach(b => {
     b.classList.toggle("active", b.getAttribute("data-type") === t);
   });
-  document.getElementById("videoOpts").style.display    = t === "video" ? "" : "none";
+  document.getElementById("videoOpts").style.display     = t === "video" ? "" : "none";
   document.getElementById("imgTypeSection").style.display = t === "image" ? "" : "none";
-  buildModels();
   state.model = "";
-  updateModelCard();
-  updateSummary();
-}
-
-function onModelChange() {
-  state.model = document.getElementById("modelSel").value;
-  updateModelCard();
-  buildResGrid();
-  updateDur();
+  buildModels();
+  updateModelDetail();
   updateSummary();
 }
 
@@ -603,14 +826,14 @@ function setRes(r) {
 }
 
 function changeDur(delta) {
-  const meta = MODEL_META[state.model] || { min:1, max:8 };
-  state.dur = Math.max(meta.min, Math.min(meta.max, state.dur + delta));
+  const meta = MODEL_META[state.model] || {min:1, max:8};
+  state.dur  = Math.max(meta.min, Math.min(meta.max, state.dur + delta));
   updateDur();
 }
 
 function setAspect(ar) {
   state.aspect = ar;
-  document.querySelectorAll("#arGrid .opt-btn").forEach(b => {
+  document.querySelectorAll("#arGrid .ar-btn").forEach(b => {
     b.classList.toggle("active", b.getAttribute("data-ar") === ar);
   });
 }
@@ -627,17 +850,20 @@ function onPromptInput() {
   document.getElementById("charCount").textContent = `${state.prompt.length}/500`;
 }
 
+/* ══════════════════════════════════════════
+   GENERATE  (payload formatiga tegmang)
+══════════════════════════════════════════ */
 function generate() {
   if (!state.model) return;
   const payload = {
-    model:    state.model,
-    type:     state.type,
-    res:      state.type === "video" ? state.res : null,
-    dur:      state.type === "video" ? state.dur : null,
-    aspect:   state.aspect,
-    imgType:  state.imgType,
-    prompt:   state.prompt,
-    cost:     calcStars(state.model, state.res, state.dur),
+    model:   state.model,
+    type:    state.type,
+    res:     state.type === "video" ? state.res : null,
+    dur:     state.type === "video" ? state.dur : null,
+    aspect:  state.aspect,
+    imgType: state.imgType,
+    prompt:  state.prompt,
+    cost:    calcStars(state.model, state.res, state.dur),
   };
   if (tg) {
     tg.sendData(JSON.stringify(payload));
@@ -654,19 +880,15 @@ buildAspectRatios();
 updateSummary();
 document.getElementById("videoOpts").style.display = "";
 
-// Handle initData params (model passed from bot, etc.)
+// initData params (model passed from bot)
 try {
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
-    const sp = atob(tg.initDataUnsafe.start_param);
+    const sp   = atob(tg.initDataUnsafe.start_param);
     const init = JSON.parse(sp);
     if (init.model) {
       const isVid = VIDEO_MODELS.find(m => m.id === init.model);
       setType(isVid ? "video" : "image");
-      state.model = init.model;
-      document.getElementById("modelSel").value = init.model;
-      updateModelCard();
-      buildResGrid();
-      updateDur();
+      selectModel(init.model);
     }
     if (init.balance) {
       document.getElementById("balanceChip").textContent = `⭐ ${init.balance}`;
