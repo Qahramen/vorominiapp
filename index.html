@@ -1,927 +1,831 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Voro Studio</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-/* ═══════════════════════ TOKENS ═══════════════════════ */
-:root {
-  --bg:        #07090e;
-  --bg2:       #0c0e18;
-  --gl:        rgba(255,255,255,0.042);
-  --gl-b:      rgba(255,255,255,0.07);
-  --gl-hi:     rgba(255,255,255,0.08);
-  --p:         #a855f7;
-  --pk:        #ec4899;
-  --gold:      #f5c84a;
-  --green:     #22d3a5;
-  --text:      #eef2ff;
-  --sub:       #94a3c8;
-  --muted:     #4a5175;
-  --r:         15px;
-  --r-sm:      10px;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
-  font-size:15px;line-height:1.5;
-  min-height:100vh;padding-bottom:116px;
-  overflow-x:hidden;
-}
-
-/* ═══════════════════ AMBIENT GLOWS ═══════════════════ */
-body::before{
-  content:'';position:fixed;top:-180px;left:-140px;
-  width:420px;height:420px;
-  background:radial-gradient(circle,rgba(168,85,247,.11) 0%,transparent 68%);
-  pointer-events:none;z-index:0;
-}
-body::after{
-  content:'';position:fixed;bottom:-160px;right:-100px;
-  width:380px;height:380px;
-  background:radial-gradient(circle,rgba(236,72,153,.08) 0%,transparent 68%);
-  pointer-events:none;z-index:0;
-}
-
-/* ═══════════════════ HEADER ═══════════════════ */
-.header{
-  position:sticky;top:0;z-index:100;
-  background:rgba(7,9,14,.85);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--gl-b);
-  padding:16px 18px 13px;
-  display:flex;align-items:center;gap:11px;
-}
-.header-logo{
-  width:40px;height:40px;border-radius:13px;flex-shrink:0;
-  background:linear-gradient(135deg,#a855f7,#ec4899);
-  display:flex;align-items:center;justify-content:center;
-  font-size:21px;
-  box-shadow:0 4px 18px rgba(168,85,247,.45);
-}
-.header-info h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.header-info p{font-size:11px;color:var(--muted);margin-top:1px}
-.balance-chip{
-  margin-left:auto;
-  background:rgba(245,200,74,.09);
-  border:1px solid rgba(245,200,74,.2);
-  color:var(--gold);font-size:13px;font-weight:700;
-  padding:5px 12px;border-radius:20px;
-  display:flex;align-items:center;gap:4px;white-space:nowrap;
-}
-
-/* ═══════════════════ SECTIONS ═══════════════════ */
-.section{padding:14px 16px 0;position:relative;z-index:1}
-.sec-label{
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  text-transform:uppercase;color:var(--muted);margin-bottom:9px;
-}
-
-/* ═══════════════ GRADIENT BORDER MIXIN ═══════════════
-   Usage: .active class adds gradient border via background trick  */
-.gb-active{
-  border:1px solid transparent !important;
-  background:
-    linear-gradient(var(--bg2),var(--bg2)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box !important;
-  box-shadow:0 0 22px rgba(168,85,247,.18),0 4px 16px rgba(168,85,247,.12) !important;
-}
-
-/* ═══════════════════ TYPE SELECTOR ═══════════════════ */
-.type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.type-btn{
-  padding:14px 10px;border-radius:var(--r);
-  border:1px solid var(--gl-b);background:var(--gl);
-  cursor:pointer;text-align:center;
-  transition:all .2s;user-select:none;
-}
-.type-btn .t-icon{font-size:26px;display:block;margin-bottom:4px}
-.type-btn .t-name{font-size:13px;font-weight:600;color:var(--sub);transition:color .2s}
-.type-btn.active{
-  border:1px solid transparent;
-  background:
-    linear-gradient(var(--bg2),var(--bg2)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box;
-  box-shadow:0 0 28px rgba(168,85,247,.2),inset 0 0 24px rgba(168,85,247,.04);
-}
-.type-btn.active .t-name{color:var(--text)}
-.type-btn:active{transform:scale(.96)}
-
-/* ═══════════════════ MODEL GRID ═══════════════════ */
-.model-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.m-card{
-  padding:12px 10px 10px;border-radius:var(--r);
-  border:1px solid var(--gl-b);background:var(--gl);
-  cursor:pointer;transition:all .2s;user-select:none;
-  position:relative;overflow:hidden;
-}
-.m-card::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 0% 0%,rgba(168,85,247,.1) 0%,transparent 65%);
-  opacity:0;transition:opacity .2s;pointer-events:none;
-}
-.m-card.active::before{opacity:1}
-.m-card.active{
-  border:1px solid transparent;
-  background:
-    linear-gradient(rgba(12,14,24,.88),rgba(12,14,24,.88)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box;
-  box-shadow:0 4px 28px rgba(168,85,247,.22);
-}
-.m-card:active{transform:scale(.96)}
-.m-badge-pill{
-  display:inline-block;font-size:9.5px;font-weight:700;
-  padding:2px 7px;border-radius:6px;letter-spacing:.2px;
-  background:rgba(168,85,247,.13);
-  border:1px solid rgba(168,85,247,.18);
-  color:#c084fc;margin-bottom:7px;
-}
-.m-card.active .m-badge-pill{
-  background:rgba(168,85,247,.22);
-  border-color:rgba(168,85,247,.35);
-}
-.m-emoji{font-size:23px;display:block;margin-bottom:4px}
-.m-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px}
-.m-price{font-size:11px;color:var(--gold);font-weight:700}
-.m-ref-tag{
-  display:inline-block;font-size:9px;font-weight:700;
-  padding:1px 6px;border-radius:5px;margin-top:5px;
-  background:rgba(236,72,153,.1);
-  border:1px solid rgba(236,72,153,.2);
-  color:#f472b6;letter-spacing:.2px;
-}
-
-/* MODEL DETAIL */
-.model-detail{
-  margin-top:10px;padding:12px 14px;
-  border-radius:var(--r);
-  background:rgba(168,85,247,.06);
-  border:1px solid rgba(168,85,247,.14);
-  display:none;
-}
-.model-detail.show{display:block;animation:fadeUp .2s ease}
-.md-hook{font-size:13px;color:var(--sub);line-height:1.55}
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(-5px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-/* ═══════════════════ RESOLUTION ═══════════════════ */
-.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.res-btn{
-  padding:10px 6px;border-radius:var(--r-sm);
-  border:1px solid var(--gl-b);background:var(--gl);
-  color:var(--sub);font-size:12.5px;font-weight:700;
-  text-align:center;cursor:pointer;
-  transition:all .2s;user-select:none;
-}
-.res-btn.active{
-  border:1px solid transparent;
-  background:
-    linear-gradient(var(--bg2),var(--bg2)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box;
-  color:var(--text);
-  box-shadow:0 2px 14px rgba(168,85,247,.2);
-}
-.res-btn:active{transform:scale(.94)}
-.res-btn.dim{opacity:.28;pointer-events:none}
-
-/* ═══════════════════ DURATION ═══════════════════ */
-.dur-glass{
-  padding:16px 14px;border-radius:var(--r);
-  background:var(--gl);border:1px solid var(--gl-b);
-  display:flex;flex-direction:column;gap:12px;
-}
-.dur-controls{display:flex;align-items:center}
-.dur-btn{
-  width:46px;height:46px;border-radius:var(--r-sm);
-  border:1px solid var(--gl-b);background:var(--gl-hi);
-  color:var(--text);font-size:23px;font-weight:300;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;
-  transition:all .15s;user-select:none;
-}
-.dur-btn:active{
-  background:rgba(168,85,247,.22);
-  border-color:var(--p);
-  transform:scale(.92);
-}
-.dur-display{flex:1;text-align:center}
-.dur-value{font-size:34px;font-weight:800;letter-spacing:-1.5px;color:var(--text)}
-.dur-unit{font-size:12px;color:var(--muted);margin-top:-2px}
-.dur-price{text-align:center}
-.dur-price .stars{font-size:24px;font-weight:800;color:var(--gold)}
-.dur-price .stars-label{font-size:12px;color:var(--muted);margin-left:3px}
-.dur-presets{display:flex;gap:6px;flex-wrap:wrap}
-.dur-preset{
-  flex:1;min-width:46px;padding:7px 4px;border-radius:var(--r-sm);
-  background:var(--gl);border:1px solid var(--gl-b);
-  color:var(--sub);font-size:12px;font-weight:700;
-  text-align:center;cursor:pointer;
-  transition:all .15s;user-select:none;
-}
-.dur-preset.active{
-  background:rgba(168,85,247,.14);
-  border-color:rgba(168,85,247,.32);
-  color:#c084fc;
-}
-.dur-preset:active{opacity:.7;transform:scale(.94)}
-
-/* ═══════════════════ ASPECT RATIO ═══════════════════ */
-.ar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.ar-btn{
-  padding:10px 4px 8px;border-radius:var(--r-sm);
-  border:1px solid var(--gl-b);background:var(--gl);
-  cursor:pointer;text-align:center;
-  transition:all .2s;user-select:none;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-}
-.ar-btn.active{
-  border:1px solid transparent;
-  background:
-    linear-gradient(var(--bg2),var(--bg2)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box;
-  box-shadow:0 2px 12px rgba(168,85,247,.18);
-}
-.ar-btn:active{transform:scale(.93)}
-.ar-box{background:rgba(255,255,255,.14);border-radius:2px;transition:background .2s}
-.ar-btn.active .ar-box{background:linear-gradient(135deg,rgba(168,85,247,.75),rgba(236,72,153,.75))}
-.ar-label{font-size:10.5px;font-weight:700;color:var(--sub);transition:color .2s}
-.ar-btn.active .ar-label{color:var(--text)}
-
-/* ═══════════════════ IMAGE TYPE ═══════════════════ */
-.img-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.img-type-btn{
-  padding:13px 8px;border-radius:var(--r);
-  border:1px solid var(--gl-b);background:var(--gl);
-  cursor:pointer;text-align:center;
-  transition:all .2s;user-select:none;
-}
-.img-type-btn.active{
-  border:1px solid transparent;
-  background:
-    linear-gradient(var(--bg2),var(--bg2)) padding-box,
-    linear-gradient(135deg,#a855f7,#ec4899) border-box;
-}
-.img-type-btn:active{transform:scale(.96)}
-.itype-icon{font-size:26px;margin-bottom:5px}
-.itype-name{font-size:12.5px;font-weight:700;color:var(--text)}
-.itype-desc{font-size:10.5px;color:var(--muted);margin-top:2px}
-
-/* ═══════════════════ PROMPT ═══════════════════ */
-.prompt-glass{
-  border-radius:var(--r);
-  background:var(--gl);border:1px solid var(--gl-b);
-  position:relative;
-  transition:border-color .2s,box-shadow .2s;
-}
-.prompt-glass:focus-within{
-  border-color:rgba(168,85,247,.38);
-  box-shadow:0 0 0 3px rgba(168,85,247,.07),0 4px 22px rgba(168,85,247,.1);
-}
-textarea{
-  width:100%;background:transparent;border:none;
-  color:var(--text);font-size:15px;
-  padding:14px;border-radius:var(--r);
-  resize:none;outline:none;height:110px;
-  font-family:inherit;line-height:1.55;
-}
-textarea::placeholder{color:var(--muted)}
-.char-count{position:absolute;bottom:10px;right:12px;font-size:11px;color:var(--muted)}
-
-/* ═══════════════════ SUMMARY ═══════════════════ */
-.summary-glass{
-  padding:14px;border-radius:var(--r);
-  background:var(--gl);border:1px solid var(--gl-b);
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;
-}
-.s-item{display:flex;flex-direction:column;gap:2px}
-.s-label{font-size:9.5px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
-.s-value{font-size:13px;font-weight:700;color:var(--text)}
-.s-value.gold{color:var(--gold)}
-
-/* ═══════════════════ DIVIDER ═══════════════════ */
-.divider{height:1px;background:var(--gl-b);margin:14px 16px 0;position:relative;z-index:1}
-
-/* ═══════════════════ GENERATE BUTTON ═══════════════════ */
-.gen-wrap{
-  position:fixed;bottom:0;left:0;right:0;
-  padding:10px 16px 22px;
-  background:linear-gradient(to top,rgba(7,9,14,.98) 55%,transparent);
-  z-index:200;
-}
-
-@keyframes pulse-glow{
-  0%,100%{box-shadow:0 8px 32px rgba(168,85,247,.48),0 2px 8px rgba(236,72,153,.2)}
-  50%{box-shadow:0 12px 52px rgba(168,85,247,.7),0 4px 24px rgba(236,72,153,.35)}
-}
-
-.gen-btn{
-  width:100%;padding:17px 20px;border-radius:18px;border:none;
-  background:linear-gradient(135deg,#a855f7 0%,#d946a8 50%,#ec4899 100%);
-  color:#fff;font-size:16px;font-weight:800;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:space-between;
-  letter-spacing:-.2px;
-  animation:pulse-glow 2.6s ease-in-out infinite;
-  transition:transform .12s,opacity .15s;
-  position:relative;overflow:hidden;
-}
-.gen-btn::before{
-  content:'';position:absolute;top:0;left:-100%;
-  width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
-  animation:shimmer 3s ease-in-out infinite;
-}
-@keyframes shimmer{
-  0%{left:-100%}
-  60%,100%{left:150%}
-}
-.gen-btn:active{transform:scale(.975);opacity:.9}
-.gen-btn.disabled{
-  background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(236,72,153,.2));
-  animation:none;box-shadow:none;opacity:.5;pointer-events:none;
-}
-.gen-btn.disabled::before{display:none}
-.gen-left{display:flex;align-items:center;gap:9px}
-.gen-icon{font-size:20px}
-.gen-text{font-size:16px;font-weight:800}
-.gen-cost{
-  background:rgba(255,255,255,.18);
-  padding:5px 13px;border-radius:20px;
-  font-size:14px;font-weight:800;
-  backdrop-filter:blur(4px);
-}
-
-/* ═══════════════ SCROLLBAR ═══════════════ */
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:2px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>VoroCreator Studio</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #070809; }
+    #root { height: 100%; }
+  </style>
 </head>
-<body>
+<body style="background:#070809">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-logo">✨</div>
-  <div class="header-info">
-    <h1>Voro Studio</h1>
-    <p>AI Video &amp; Rasm Generatsiya</p>
-  </div>
-  <div class="balance-chip" id="balanceChip">⚡️ 0</div>
-</div>
+// ── Inline Lucide icons ──────────────────────────────────────────────────────
+const _ic = (paths) => ({ size=24, color='currentColor', fill='none', strokeWidth=2, strokeLinecap='round', strokeLinejoin='round', style, className, ...rest }) =>
+  React.createElement('svg', { width:size, height:size, viewBox:'0 0 24 24', fill, stroke:color, strokeWidth, strokeLinecap, strokeLinejoin, style, className, ...rest },
+    ...paths.map(([tag, attrs]) => React.createElement(tag, attrs))
+  );
 
-<!-- TYPE SELECTOR -->
-<div class="section" style="padding-top:16px">
-  <div class="sec-label">Kontent turi</div>
-  <div class="type-row">
-    <div class="type-btn active" data-type="video" onclick="setType('video')">
-      <span class="t-icon">🎬</span>
-      <span class="t-name">Video</span>
-    </div>
-    <div class="type-btn" data-type="image" onclick="setType('image')">
-      <span class="t-icon">🖼</span>
-      <span class="t-name">Rasm</span>
-    </div>
-  </div>
-</div>
+const Home        = _ic([['path',{d:'m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'}],['polyline',{points:'9 22 9 12 15 12 15 22'}]]);
+const Sparkles    = _ic([['path',{d:'m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'}],['path',{d:'M5 3v4'}],['path',{d:'M19 17v4'}],['path',{d:'M3 5h4'}],['path',{d:'M17 19h4'}]]);
+const Images      = _ic([['path',{d:'M18 22H4a2 2 0 0 1-2-2V6'}],['rect',{x:'6',y:'2',width:'16',height:'16',rx:'2'}],['circle',{cx:'11',cy:'8',r:'2'}],['path',{d:'m22 13-2.121-2.121a2 2 0 0 0-2.828 0L10 18'}]]);
+const User        = _ic([['path',{d:'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'}],['circle',{cx:'12',cy:'7',r:'4'}]]);
+const Star        = _ic([['polygon',{points:'12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'}]]);
+const ChevronRight= _ic([['path',{d:'m9 18 6-6-6-6'}]]);
+const ChevronLeft = _ic([['path',{d:'m15 18-6-6 6-6'}]]);
+const Clock       = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['polyline',{points:'12 6 12 12 16 14'}]]);
+const Wallet      = _ic([['path',{d:'M21 12V7H5a2 2 0 0 1 0-4h14v4'}],['path',{d:'M3 5v14a2 2 0 0 0 2 2h16v-5'}],['path',{d:'M18 12a2 2 0 0 0 0 4h4v-4Z'}]]);
+const Globe       = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['line',{x1:'2',x2:'22',y1:'12',y2:'12'}],['path',{d:'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'}]]);
+const HelpCircle  = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['path',{d:'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'}],['path',{d:'M12 17h.01'}]]);
+const Crown       = _ic([['path',{d:'m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'}]]);
+const Video       = _ic([['path',{d:'m22 8-6 4 6 4V8z'}],['rect',{x:'2',y:'6',width:'14',height:'12',rx:'2'}]]);
+const ImageIcon   = _ic([['rect',{x:'3',y:'3',width:'18',height:'18',rx:'2'}],['circle',{cx:'8.5',cy:'8.5',r:'1.5'}],['polyline',{points:'21 15 16 10 5 21'}]]);
+const Bell        = _ic([['path',{d:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'}],['path',{d:'M10.3 21a1.94 1.94 0 0 0 3.4 0'}]]);
+const Info        = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['path',{d:'M12 16v-4'}],['path',{d:'M12 8h.01'}]]);
+const Search      = _ic([['circle',{cx:'11',cy:'11',r:'8'}],['path',{d:'m21 21-4.35-4.35'}]]);
+const Paperclip   = _ic([['path',{d:'m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48'}]]);
+const X           = _ic([['path',{d:'M18 6 6 18'}],['path',{d:'m6 6 12 12'}]]);
+const Check       = _ic([['path',{d:'M20 6 9 17l-5-5'}]]);
+// ─────────────────────────────────────────────────────────────────────────────
 
-<!-- MODEL GRID -->
-<div class="section" style="padding-top:14px">
-  <div class="sec-label">Model tanlang</div>
-  <div class="model-grid" id="modelGrid"></div>
-  <div class="model-detail" id="modelDetail">
-    <p class="md-hook" id="mdHook"></p>
-  </div>
-</div>
+/* ════════════════════════════════════════════════════════════
+   VoroCreator Studio v2 — flagman frontend
+   Bot bilan aloqa: Telegram.WebApp.sendData(JSON)
+   • Yaratish: { mid, res, asp, dur? }   — narx serverda
+   • Xarid:    { action:"buy", pkg }
+   Modellar botdagiga aynan mos. Bot yangilansa — shuni ham yangila.
+   ════════════════════════════════════════════════════════════ */
 
-<!-- VIDEO OPTIONS -->
-<div id="videoOpts">
-
-  <!-- RESOLUTION -->
-  <div class="section" style="padding-top:14px">
-    <div class="sec-label">Sifat</div>
-    <div class="res-grid" id="resGrid">
-      <div class="res-btn" data-res="480p" onclick="setRes('480p')">480p</div>
-      <div class="res-btn active" data-res="720p" onclick="setRes('720p')">720p</div>
-      <div class="res-btn" data-res="1080p" onclick="setRes('1080p')">1080p</div>
-      <div class="res-btn" data-res="1440p" onclick="setRes('1440p')">2K</div>
-    </div>
-  </div>
-
-  <!-- DURATION -->
-  <div class="section" style="padding-top:14px">
-    <div class="sec-label">Davomiylik</div>
-    <div class="dur-glass">
-      <div class="dur-controls">
-        <div class="dur-btn" onclick="changeDur(-1)">−</div>
-        <div class="dur-display">
-          <div class="dur-value" id="durVal">5</div>
-          <div class="dur-unit">sekund</div>
-        </div>
-        <div class="dur-btn" onclick="changeDur(+1)">+</div>
-      </div>
-      <div class="dur-price">
-        <span class="stars" id="durStars">0</span>
-        <span class="stars-label">⚡️ to'lanadi</span>
-      </div>
-      <div class="dur-presets" id="durPresets"></div>
-    </div>
-  </div>
-
-</div><!-- /videoOpts -->
-
-<!-- ASPECT RATIO -->
-<div class="section" style="padding-top:14px">
-  <div class="sec-label">Tomonlar nisbati</div>
-  <div class="ar-grid" id="arGrid"></div>
-</div>
-
-<!-- IMAGE TYPE (only image) -->
-<div class="section" id="imgTypeSection" style="padding-top:14px;display:none">
-  <div class="sec-label">Rasm turi</div>
-  <div class="img-type-grid">
-    <div class="img-type-btn active" data-itype="standard" onclick="setImgType('standard')">
-      <div class="itype-icon">🖼</div>
-      <div class="itype-name">Standart</div>
-      <div class="itype-desc">Oddiy rasm</div>
-    </div>
-    <div class="img-type-btn" data-itype="hd" onclick="setImgType('hd')">
-      <div class="itype-icon">✨</div>
-      <div class="itype-name">HD Sifat</div>
-      <div class="itype-desc">Yuqori aniqlik</div>
-    </div>
-    <div class="img-type-btn" data-itype="portrait" onclick="setImgType('portrait')">
-      <div class="itype-icon">👤</div>
-      <div class="itype-name">Portret</div>
-      <div class="itype-desc">Yuz uchun</div>
-    </div>
-  </div>
-</div>
-
-<!-- PROMPT -->
-<div class="divider"></div>
-<div class="section" style="padding-top:16px">
-  <div class="sec-label">Tavsif (ixtiyoriy)</div>
-  <div class="prompt-glass">
-    <textarea id="promptTA"
-      placeholder="G'oyangizni istalgan tilda yozing...&#10;Masalan: toshkentda kechqurun neon chiroqlar ostida ketayotgan ayol"
-      maxlength="500" oninput="onPromptInput()"></textarea>
-    <span class="char-count" id="charCount">0/500</span>
-  </div>
-</div>
-
-<!-- SUMMARY -->
-<div class="section" style="padding-top:12px">
-  <div class="summary-glass" id="summaryCard">
-    <div class="s-item">
-      <span class="s-label">Model</span>
-      <span class="s-value" id="sumModel">—</span>
-    </div>
-    <div class="s-item">
-      <span class="s-label">Sifat</span>
-      <span class="s-value" id="sumRes">720p</span>
-    </div>
-    <div class="s-item">
-      <span class="s-label">Vaqt</span>
-      <span class="s-value" id="sumDur">5s</span>
-    </div>
-    <div class="s-item">
-      <span class="s-label">Narx</span>
-      <span class="s-value gold" id="sumCost">—</span>
-    </div>
-  </div>
-</div>
-
-<!-- GENERATE BUTTON -->
-<div class="gen-wrap">
-  <button class="gen-btn disabled" id="genBtn" onclick="generate()">
-    <div class="gen-left">
-      <span class="gen-icon">✨</span>
-      <span class="gen-text">Yaratish</span>
-    </div>
-    <span class="gen-cost" id="genCostChip">0 ⚡️</span>
-  </button>
-</div>
-
-<script>
-/* ══════════════════════════════════════════
-   DATA  (funksionallikka tegmang)
-══════════════════════════════════════════ */
-const STAR_VALUE = 0.0091;
-const MARGIN     = 1.20;
-
-const RES_MULT = { "480p":0.465, "720p":1.0, "1080p":1.80, "1440p":2.25 };
-
-const BASE_RATE = {
-  // ── Video — bot BASE_RATE_PER_SEC bilan aynan mos ──
-  "google/veo3.1/reference-to-video":                0.40,
-  "google/veo3.1-fast/text-to-video":                0.10,
-  "google/veo3.1-lite/text-to-video":                0.05,
-  "google/veo3.1-lite/start-end-frame-to-video":     0.05,
-  "bytedance/seedance-2.0/text-to-video":            0.242,
-  "bytedance/seedance-2.0-fast/text-to-video":       0.163,
-  "bytedance/seedance-v1.5-pro/text-to-video":       0.047,
-  "kwaivgi/kling-v3.0-pro/text-to-video":            0.095,
-  "kwaivgi/kling-video-o3-pro/video-edit":           0.150,
-  "kwaivgi/kling-v2.6-pro/text-to-video":            0.14,
-  "alibaba/wan-2.7/text-to-video":                   0.10,
-  "alibaba/wan-2.7/image-to-video":                  0.10,
-  "minimax/hailuo-2.3/t2v-standard":                 0.08,
-  "minimax/hailuo-2.3/i2v-standard":                 0.08,
-  "xai/grok-imagine-video-v1.5/image-to-video":      0.096,
-  "alibaba/happyhorse-1.0/text-to-video":            0.14,
-  "vidu/q3/reference-to-video":                      0.042,
-};
-
-const IMAGE_COST = {
-  // Eng arzon resolution narxi (bot IMAGE_COST_USD.first_value bilan mos)
-  "google/nano-banana-2/reference-to-image":          0.048,
-  "openai/gpt-image-2/text-to-image":                 0.011,
-  "bytedance/seedream-v5.0-lite":                     0.040,
-  "alibaba/wan-2.7/text-to-image":                    0.013,
-  "alibaba/wan-2.7-pro/text-to-image":                0.038,
-  "xai/grok-imagine-image-quality/text-to-image":     0.060,
-  "qwen/qwen-image-2.0/text-to-image":                0.028,
-  "black-forest-labs/flux-1.1-pro":                   0.050,
-  "black-forest-labs/flux-kontext-max":               0.080,
-  "bytedance/seedream-v4.5/text-to-image":            0.040,
-};
-
-const MODEL_META = {
-  // ── VIDEO ──
-  "google/veo3.1/reference-to-video":             {badge:"🎬 Reference",        min:8, max:8,  res:["720p","1080p","4k"],         ref:true,  hook:"Rasmlarni reference sifatida bering — belgi va uslub saqlanib qoladi."},
-  "google/veo3.1-fast/text-to-video":             {badge:"⚡ Tez",               min:4, max:8,  res:["720p","1080p"],                         hook:"Veo 3.1 ning 3x tezroq versiyasi. Audio sinxronizatsiya."},
-  "google/veo3.1-lite/text-to-video":             {badge:"💰 Tejamkor",          min:4, max:8,  res:["720p","1080p"],                         hook:"Eng arzon Veo seriyasi. Oz byudjet bilan kuchli natija."},
-  "google/veo3.1-lite/start-end-frame-to-video":  {badge:"🎬 Start+End",         min:4, max:8,  res:["720p","1080p"],              ref:true,  hook:"Birinchi va oxirgi kadr berasiz — Veo o'rtasini yaratadi."},
-  "bytedance/seedance-2.0/text-to-video":         {badge:"🔥 Mashhur",           min:1, max:15, res:["480p","720p","1080p","1440p"],            hook:"4K video + audio + reference. Yuz nazorati kuchli."},
-  "bytedance/seedance-2.0-fast/text-to-video":    {badge:"⚡ Yangi · Tez",       min:1, max:15, res:["480p","720p","1080p"],                   hook:"Seedance 2.0 ning 3x tezroq versiyasi. Lipsync + reference."},
-  "bytedance/seedance-v1.5-pro/text-to-video":    {badge:"💰 Tejamkor",          min:1, max:5,  res:["480p","720p"],                           hook:"Seedance 2.0 imkoniyatlari — 3x arzon narxda. Audio + reference."},
-  "kwaivgi/kling-v3.0-pro/text-to-video":         {badge:"💎 Premium",           min:5, max:10, res:["480p","720p","1080p"],                   hook:"Kling'ning eng yangi avlodi. 10 sekund, audio, 2 reference."},
-  "kwaivgi/kling-video-o3-pro/video-edit":        {badge:"🎬 Video→Video",       min:5, max:10, res:["480p","720p","1080p"],      ref:true,  hook:"Mavjud videongizni transformatsiya qiling! Video → yangi video."},
-  "kwaivgi/kling-v2.6-pro/text-to-video":         {badge:"🔥 Trend",             min:5, max:10, res:["480p","720p","1080p"],                   hook:"10 sekund, 2 reference, kino fizikasi. Audio sinxron."},
-  "alibaba/wan-2.7/text-to-video":                {badge:"⚡ Tez",               min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Alibaba'ning kuchli video modeli. Audio + reference + karakter."},
-  "alibaba/wan-2.7/image-to-video":               {badge:"🖼→🎬 Rasm→Video",     min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"Rasmingizni to'liq jonlantiring! Wan 2.7 rasm→video rejimi."},
-  "minimax/hailuo-2.3/t2v-standard":              {badge:"🆕 Yangi",             min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Ultra-real yuz ifodasi. Portret video uchun #1 model."},
-  "minimax/hailuo-2.3/i2v-standard":              {badge:"😊 Yuz→Video",         min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"Portret rasmingizni jonlantiring! Ultra-real yuz emotsiyalari."},
-  "xai/grok-imagine-video-v1.5/image-to-video":   {badge:"🔥 Trend",             min:2, max:8,  res:["480p","720p"],              ref:true,  hook:"Rasmingizni jonlantiring! Bitta rasm yuborasiz → video tayyor."},
-  "alibaba/happyhorse-1.0/text-to-video":         {badge:"🆕 Yangi",             min:1, max:8,  res:["480p","720p","1080p"],                   hook:"Eksperimental model. G'ayrioddiy rakurs va effektlar."},
-  "vidu/q3/reference-to-video":                   {badge:"🎯 Maxsus",            min:1, max:8,  res:["480p","720p","1080p"],      ref:true,  hook:"4 ta reference — to'liq nazorat! Ko'p ob'ektli video."},
-  // ── IMAGE ──
-  "google/nano-banana-2/reference-to-image":      {badge:"🎬→🖼 Video→Rasm",     ref:true,  hook:"Videoni reference sifatida bering — model key kadrni yaratadi."},
-  "openai/gpt-image-2/text-to-image":             {badge:"💎 Premium",                       hook:"Matnni AYNAN chizadi. ChatGPT'ning rasm modeli."},
-  "bytedance/seedream-v5.0-lite":                 {badge:"🆕 Yangi",                         hook:"Seedream 5.0 — batch yaratish va aqlli tahrirlash."},
-  "alibaba/wan-2.7/text-to-image":                {badge:"💰 Tejamkor",                      hook:"Illustratsiya va reklama uchun optimal. Arzon va sifatli."},
-  "alibaba/wan-2.7-pro/text-to-image":            {badge:"🔥 Trend",                         hook:"Wan 2.7 Pro — yuqori aniqlik, 1 reference, 4K."},
-  "xai/grok-imagine-image-quality/text-to-image": {badge:"🔥 Trend",                         hook:"Estetik va ifodali. 2K, portret uchun mukammal."},
-  "qwen/qwen-image-2.0/text-to-image":            {badge:"🆕 Yangi",                         hook:"O'zbek tilida ham ishlaydi! Ko'p tilli, 2K."},
-  "black-forest-labs/flux-1.1-pro":               {badge:"💎 Premium",                       hook:"Eng aniq prompt bajarilishi. Detalni his qiling."},
-  "black-forest-labs/flux-kontext-max":           {badge:"✏️ Tahrirlash",        ref:true,  hook:"Mavjud rasmingizni TAHRIRLANG! Reference + prompt = yangi rasm."},
-  "bytedance/seedream-v4.5/text-to-image":        {badge:"💰 Tejamkor",                      hook:"4K aniqlik, tez va arzon. Content creator standarti."},
-};
+const DEFAULT_META = { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5], refs: 0, refs_req: false };
 
 const VIDEO_MODELS = [
-  {id:"google/veo3.1/reference-to-video",             name:"🎬 Veo 3.1"},
-  {id:"google/veo3.1-fast/text-to-video",             name:"🎥 Veo 3.1 Fast"},
-  {id:"google/veo3.1-lite/text-to-video",             name:"🎥 Veo 3.1 Lite"},
-  {id:"google/veo3.1-lite/start-end-frame-to-video",  name:"🎬 Veo 3.1 Start/End"},
-  {id:"bytedance/seedance-2.0/text-to-video",         name:"🌱 Seedance 2.0"},
-  {id:"bytedance/seedance-2.0-fast/text-to-video",    name:"🌱 Seedance 2.0 Fast"},
-  {id:"bytedance/seedance-v1.5-pro/text-to-video",    name:"🌱 Seedance 1.5 Pro"},
-  {id:"kwaivgi/kling-v3.0-pro/text-to-video",         name:"⚡ Kling 3.0"},
-  {id:"kwaivgi/kling-video-o3-pro/video-edit",        name:"🎬 Kling O3 V2V"},
-  {id:"kwaivgi/kling-v2.6-pro/text-to-video",         name:"⚡ Kling 2.6"},
-  {id:"alibaba/wan-2.7/text-to-video",                name:"🌀 Wan 2.7"},
-  {id:"alibaba/wan-2.7/image-to-video",               name:"🌀 Wan 2.7 I2V"},
-  {id:"minimax/hailuo-2.3/t2v-standard",              name:"🌊 Hailuo 2.3"},
-  {id:"minimax/hailuo-2.3/i2v-standard",              name:"🌊 Hailuo 2.3 I2V"},
-  {id:"xai/grok-imagine-video-v1.5/image-to-video",   name:"🤖 Grok Video 1.5"},
-  {id:"alibaba/happyhorse-1.0/text-to-video",         name:"🐴 HappyHorse 1.0"},
-  {id:"vidu/q3/reference-to-video",                   name:"🎬 Vidu Q3"},
+  { id: 'google/veo3.1/reference-to-video', name: 'Veo 3.1', emoji: '🎥', badge: '💎 Premium', meta: { resolutions: ['720p', '1080p', '4k'], aspects: [], dur_steps: [8], refs: 3, refs_req: true, hook: "Dunyo #1 AI video modeli. Rasmlarni reference bering — belgi va uslub saqlanadi." } },
+  { id: 'google/veo3.1-fast/image-to-video', name: 'Veo 3.1 Fast', emoji: '🎥', badge: '🖼→🎬 Rasm→Video', meta: { resolutions: ['720p', '1080p', '4k'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 2, refs_req: false, hook: "Rasmdan video. 1-rasm boshlang'ich, 2-rasm (ixtiyoriy) yakuniy kadr." } },
+  { id: 'google/veo3.1-lite/image-to-video', name: 'Veo 3.1 Lite', emoji: '🎥', badge: '💰 Tejamkor', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 1, refs_req: true, hook: "Eng arzon Veo. 1 rasm → video. Audio yo'q." } },
+  { id: 'google/veo3.1-lite/start-end-frame-to-video', name: 'Veo 3.1 Start/End', emoji: '🎥', badge: '🎬 Boshi+Oxiri', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [8], refs: 2, refs_req: true, hook: "Birinchi va oxirgi kadr berasiz — Veo o'rtasini yaratadi." } },
+  { id: 'bytedance/seedance-2.0/text-to-video', name: 'Seedance 2.0', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p', '1440p', '4k'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 7, refs_req: false, hook: "4K video + audio. Rasm/Audio/Video biriktirishingiz mumkin. Yuz nazorati kuchli." } },
+  { id: 'bytedance/seedance-2.0-fast/reference-to-video', name: 'Seedance 2.0 Fast', emoji: '⚡', badge: '⚡ Tez', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 9, refs_req: false, hook: "Seedance 2.0 ning 3x tezroq versiyasi. Lipsync + reference. ~20% arzon." } },
+  { id: 'bytedance/seedance-v1.5-pro/image-to-video-fast', name: 'Seedance 1.5 Pro', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1'], dur_steps: [4, 5, 6, 8, 10, 12], refs: 1, refs_req: true, hook: "Pro sifatli rasm→video, tezkor." } },
+  { id: 'kwaivgi/kling-v3.0-std/image-to-video', name: 'Kling 3.0', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Kling 3.0 — silliq harakat, yuqori sifat." } },
+  { id: 'kwaivgi/kling-video-o3-pro/video-edit', name: 'Kling O3 Video', emoji: '🖥️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [], refs: 1, refs_req: true, hook: "Video tahrirlash — narx yuborilgan video uzunligiga qarab (maks 10s)." } },
+  { id: 'kwaivgi/kling-v2.6-std/motion-control', name: 'Kling Motion Control', emoji: '🤿', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [], refs: 2, refs_req: true, hook: "Harakatni boshqarish — narx reference video uzunligiga qarab (maks 60s)." } },
+  { id: 'kwaivgi/kling-v2.5-turbo-pro/image-to-video', name: 'Kling 2.5 Turbo', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Tezkor Pro model, rasm→video." } },
+  { id: 'atlascloud/infinitetalk', name: 'InfiniteTalk', emoji: '🗣', badge: 'Lipsync', meta: { resolutions: ['480p', '720p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [], refs: 1, refs_req: true, hook: "Lipsync — narx yuborilgan audio uzunligiga qarab (maks 120s)." } },
+  { id: 'kwaivgi/kling-v2.6-pro/image-to-video', name: 'Kling 2.6', emoji: '⚡', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Kling 2.6 Pro — yuqori sifatli animatsiya." } },
+  { id: 'alibaba/wan-2.7/text-to-video', name: 'Wan 2.7', emoji: '🌀', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan video." } },
+  { id: 'alibaba/wan-2.7/image-to-video', name: 'Wan 2.7 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Wan 2.7 — rasmdan video." } },
+  { id: 'minimax/hailuo-2.3/t2v-standard', name: 'Hailuo 2.3', emoji: '🌊', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 0, refs_req: false, hook: "Hailuo 2.3 — sifatli matndan video." } },
+  { id: 'minimax/hailuo-2.3/fast', name: 'Hailuo 2.3 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 1, refs_req: true, hook: "Hailuo 2.3 — tezkor rasmdan video." } },
+  { id: 'xai/grok-imagine-video-v1.5/image-to-video', name: 'Grok Video 1.5', emoji: '🤖', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8], refs: 1, refs_req: true, hook: "xAI Grok — rasmdan video." } },
+  { id: 'alibaba/happyhorse-1.0/text-to-video', name: 'HappyHorse 1.0', emoji: '🐴', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 0, refs_req: false, hook: "HappyHorse — matndan video." } },
+  { id: 'vidu/q3/reference-to-video', name: 'Vidu Q3', emoji: '🎬', badge: 'Reference', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 3, refs_req: true, hook: "Vidu Q3 — reference rasmlardan video." } },
 ];
 
 const IMAGE_MODELS = [
-  {id:"google/nano-banana-2/reference-to-image",       name:"🍌 Nano Banana 2"},
-  {id:"openai/gpt-image-2/text-to-image",              name:"🤖 GPT Image 2"},
-  {id:"bytedance/seedream-v5.0-lite",                  name:"🌸 Seedream 5.0"},
-  {id:"alibaba/wan-2.7/text-to-image",                 name:"🌀 Wan 2.7 Image"},
-  {id:"alibaba/wan-2.7-pro/text-to-image",             name:"🌀 Wan 2.7 Pro"},
-  {id:"xai/grok-imagine-image-quality/text-to-image",  name:"🤖 Grok Image"},
-  {id:"qwen/qwen-image-2.0/text-to-image",             name:"🔮 Qwen Image 2.0"},
-  {id:"black-forest-labs/flux-1.1-pro",                name:"⚡ Flux Pro"},
-  {id:"black-forest-labs/flux-kontext-max",            name:"✏️ Flux Kontext"},
-  {id:"bytedance/seedream-v4.5/text-to-image",         name:"🌸 Seedream 4.5"},
+  { id: 'google/nano-banana-2/edit', name: 'Nano Banana 2', emoji: '🍌', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 3, refs_req: false, hook: "Nano Banana 2 — rasm tahrirlash va yaratish. Reference qo'llab-quvvatlaydi." } },
+  { id: 'google/nano-banana-pro/edit', name: 'Nano Banana Pro', emoji: '🍌', badge: 'Pro', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 4, refs_req: false, hook: "Nano Banana Pro — yuqori sifat, 4K, ko'p reference." } },
+  { id: 'openai/gpt-image-2/text-to-image', name: 'GPT Image 2', emoji: '🤖', badge: '', meta: { resolutions: ['low', 'medium', 'high'], aspects: ['1:1', '3:2', '2:3'], refs: 0, refs_req: false, hook: "OpenAI GPT Image 2 — matndan rasm." } },
+  { id: 'bytedance/seedream-v5.0-lite', name: 'Seedream 5.0', emoji: '🌸', badge: 'Yangi', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 5.0 Lite — chiroyli, tezkor rasm." } },
+  { id: 'alibaba/wan-2.7/text-to-image', name: 'Wan 2.7 Image', emoji: '🌀', badge: '', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan rasm." } },
+  { id: 'alibaba/wan-2.7-pro/text-to-image', name: 'Wan 2.7 Pro', emoji: '🌀', badge: 'Pro', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16', '4:3'], refs: 0, refs_req: false, hook: "Wan 2.7 Pro — yuqori sifatli rasm." } },
+  { id: 'xai/grok-imagine-image-quality/text-to-image', name: 'Grok Image', emoji: '🤖', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "xAI Grok — matndan rasm." } },
+  { id: 'qwen/qwen-image-2.0/text-to-image', name: 'Qwen Image 2.0', emoji: '🔮', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Qwen Image 2.0 — matndan rasm." } },
+  { id: 'black-forest-labs/flux-1.1-pro', name: 'Flux Pro 2.0', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3'], refs: 0, refs_req: false, hook: "Flux 1.1 Pro — yuqori sifatli rasm." } },
+  { id: 'black-forest-labs/flux-kontext-max', name: 'Flux Kontext', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16'], refs: 1, refs_req: false, hook: "Flux Kontext — rasm konteksti bilan ishlash." } },
+  { id: 'bytedance/seedream-v4.5/text-to-image', name: 'Seedream 4.5', emoji: '🌸', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 4.5 — chiroyli rasm." } },
 ];
 
-const ASPECT_RATIOS = [
-  {ar:"16:9", w:16,h:9,  label:"16:9"},
-  {ar:"9:16", w:9, h:16, label:"9:16"},
-  {ar:"1:1",  w:1, h:1,  label:"1:1"},
-  {ar:"4:3",  w:4, h:3,  label:"4:3"},
-  {ar:"3:4",  w:3, h:4,  label:"3:4"},
+const STAR_PACKAGES = [
+  { tangacha: 20, bonus: 0, stars: 99, emoji: '🌱', label: 'Start', desc: "Sinab ko'rish uchun", badge: '' },
+  { tangacha: 60, bonus: 10, stars: 249, emoji: '🔥', label: 'Popular', desc: 'Eng mashhur paket', badge: '🔥' },
+  { tangacha: 150, bonus: 30, stars: 549, emoji: '⚡', label: 'Pro', desc: 'Jiddiy ijodkorlar', badge: '' },
+  { tangacha: 400, bonus: 120, stars: 1299, emoji: '💎', label: 'Biznes', desc: 'Katta hajmli loyihalar', badge: '' },
 ];
 
-/* ══════════════════════════════════════════
-   STATE
-══════════════════════════════════════════ */
-const state = {
-  type:    "video",
-  model:   "",
-  res:     "720p",
-  dur:     5,
-  aspect:  "16:9",
-  imgType: "standard",
-  prompt:  "",
+const FEATURED_IDS = [
+  'bytedance/seedance-2.0/text-to-video',
+  'google/veo3.1/reference-to-video',
+  'google/nano-banana-pro/edit',
+  'kwaivgi/kling-v3.0-std/image-to-video',
+];
+
+const getMeta = (m) => Object.assign({}, DEFAULT_META, m.meta || {});
+const isVideoModel = (m) => VIDEO_MODELS.some((v) => v.id === m.id);
+const fmt = (n) => { try { return n.toLocaleString('ru-RU'); } catch (e) { return String(n); } };
+const clampBytes = (s, max) => { try { const enc = new TextEncoder(); if (enc.encode(s).length <= max) return s; let out = '', bytes = 0; for (const ch of s) { const b = enc.encode(ch).length; if (bytes + b > max) break; out += ch; bytes += b; } return out; } catch (e) { return s.slice(0, 1500); } };
+
+/* ── NARXLAR — botdagi calc_video_tangacha / calc_image_tangacha bilan mos (2026-07-02) ── */
+const PRICING = {
+  'google/veo3.1/reference-to-video': { dur: { 8: 191 } },
+  'google/veo3.1-fast/image-to-video': { dur: { 4: 22, 6: 33, 8: 43 } },
+  'google/veo3.1-lite/image-to-video': { dur: { 4: 12, 6: 18, 8: 24 } },
+  'google/veo3.1-lite/start-end-frame-to-video': { dur: { 8: 24 } },
+  'bytedance/seedance-2.0/text-to-video': { res_dur: {
+    '480p':  { 4: 27, 5: 34, 6: 41, 7: 48, 8: 54, 9: 61, 10: 68, 12: 81, 15: 101 },
+    '720p':  { 4: 58, 5: 72, 6: 87, 7: 102, 8: 116, 9: 131, 10: 144, 12: 173, 15: 216 },
+    '1080p': { 4: 78, 5: 98, 6: 117, 7: 137, 8: 156, 9: 176, 10: 195, 12: 234, 15: 292 },
+    '1440p': { 4: 111, 5: 139, 6: 166, 7: 194, 8: 222, 9: 249, 10: 277, 12: 333, 15: 415 },
+    '4k':    { 4: 178, 5: 222, 6: 266, 7: 311, 8: 355, 9: 399, 10: 444, 12: 532, 15: 665 },
+  } },
+  'bytedance/seedance-2.0-fast/reference-to-video': { dur: { 1: 5, 2: 10, 3: 15, 4: 20, 5: 25, 6: 29, 7: 34, 8: 39, 9: 44, 10: 49, 12: 58, 15: 73 } },
+  'bytedance/seedance-v1.5-pro/image-to-video-fast': { dur: { 4: 12, 5: 14, 6: 17, 8: 23, 10: 28, 12: 34 } },
+  'kwaivgi/kling-v3.0-std/image-to-video': { dur: { 3: 13, 4: 17, 5: 22, 6: 26, 8: 34, 10: 43, 12: 51, 15: 64 } },
+  'kwaivgi/kling-video-o3-pro/video-edit': { perSec: 9, unit: 'video', max: 10 },
+  'kwaivgi/kling-v2.6-std/motion-control': { perSec: 6, unit: 'video', max: 60 },
+  'kwaivgi/kling-v2.5-turbo-pro/image-to-video': { dur: { 5: 21, 10: 42 } },
+  'atlascloud/infinitetalk': { perSec: 3, unit: 'audio', max: 120 },
+  'kwaivgi/kling-v2.6-pro/image-to-video': { dur: { 5: 24, 10: 48 } },
+  'alibaba/wan-2.7/text-to-video': { dur: { 2: 9, 3: 13, 4: 17, 5: 21, 6: 25, 8: 34, 10: 42, 12: 50, 15: 63 } },
+  'alibaba/wan-2.7/image-to-video': { dur: { 2: 9, 3: 13, 4: 17, 5: 21, 6: 25, 8: 34, 10: 42, 12: 50, 15: 63 } },
+  'minimax/hailuo-2.3/t2v-standard': { dur: { 6: 25, 10: 42 } },
+  'minimax/hailuo-2.3/fast': { dur: { 6: 25, 10: 42 } },
+  'xai/grok-imagine-video-v1.5/image-to-video': { dur: { 2: 12, 3: 18, 4: 23, 5: 29, 6: 35, 8: 46 } },
+  'alibaba/happyhorse-1.0/text-to-video': { dur: { 1: 9, 2: 17, 3: 25, 4: 34, 5: 42, 6: 50, 8: 67 } },
+  'vidu/q3/reference-to-video': { dur: { 1: 3, 2: 5, 3: 8, 4: 10, 5: 13, 6: 15, 8: 20 } },
+  'google/nano-banana-2/edit': { res: { '1k': 3, '2k': 4, '4k': 5 } },
+  'google/nano-banana-pro/edit': { res: { '1k': 4, '2k': 6, '4k': 8 } },
+  'openai/gpt-image-2/text-to-image': { res: { low: 1, medium: 3, high: 10 } },
+  'bytedance/seedream-v5.0-lite': { res: { '1k': 3, '2k': 4, '4k': 6 } },
+  'alibaba/wan-2.7/text-to-image': { res: { '512': 1, '1024': 2, '2048': 4 } },
+  'alibaba/wan-2.7-pro/text-to-image': { res: { '512': 3, '1024': 5, '2048': 9 } },
+  'xai/grok-imagine-image-quality/text-to-image': { res: { '1k': 4, '2k': 8 } },
+  'qwen/qwen-image-2.0/text-to-image': { res: { '1k': 2, '2k': 3 } },
+  'black-forest-labs/flux-1.1-pro': { res: { '1k': 3, '2k': 5, '4k': 8 } },
+  'black-forest-labs/flux-kontext-max': { res: { '1k': 5, '2k': 8, '4k': 11 } },
+  'bytedance/seedream-v4.5/text-to-image': { res: { '1k': 3, '2k': 4, '4k': 6 } },
+};
+const getPrice = (m, sel) => { const p = PRICING[m.id]; if (!p || p.perSec) return null; if (p.res_dur) return (sel.res != null && sel.dur != null) ? ((p.res_dur[sel.res] != null && p.res_dur[sel.res][sel.dur] != null) ? p.res_dur[sel.res][sel.dur] : null) : null; if (p.dur) return sel.dur != null ? (p.dur[sel.dur] != null ? p.dur[sel.dur] : null) : null; if (p.res) return sel.res != null ? (p.res[sel.res] != null ? p.res[sel.res] : null) : null; return null; };
+const perSecInfo = (m) => { const p = PRICING[m.id]; return p && p.perSec ? p : null; };
+const minPriceText = (m) => { const p = PRICING[m.id]; if (!p) return null; if (p.perSec) return '~' + p.perSec + '⚡/s'; if (p.res_dur) { const all = [].concat(...Object.values(p.res_dur).map(Object.values)); if (!all.length) return null; const mn = Math.min.apply(null, all); return mn + '⚡ dan'; } const vals = Object.values(p.dur || p.res || {}); if (!vals.length) return null; const mn = Math.min.apply(null, vals); return vals.length > 1 ? mn + '⚡ dan' : mn + '⚡'; };
+
+/* ── Telegram ── */
+const TG = () => (typeof window !== 'undefined' && window.Telegram ? window.Telegram.WebApp : null);
+const send = (obj) => { const raw = JSON.stringify(obj); const tg = TG(); if (tg && tg.sendData) tg.sendData(raw); else alert('Sinov (Telegram tashqarisida):\n' + raw); };
+const haptic = (t = 'light') => { try { const tg = TG(); tg && tg.HapticFeedback.impactOccurred(t); } catch (e) { /* noop */ } };
+const hapticOk = () => { try { const tg = TG(); tg && tg.HapticFeedback.notificationOccurred('success'); } catch (e) { /* noop */ } };
+
+/* ── design tokens ── */
+const c = { bg: '#070809', text: '#F5F7FA', sub: 'rgba(236,241,248,0.56)', faint: 'rgba(236,241,248,0.4)', hair: 'rgba(255,255,255,0.08)', blue: '#2BD4FF', ink: '#0A0A0B' };
+const font = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif';
+const num = { fontVariantNumeric: 'tabular-nums' };
+const glass = { background: 'rgba(255,255,255,0.055)', backdropFilter: 'blur(26px) saturate(160%)', WebkitBackdropFilter: 'blur(26px) saturate(160%)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 14px 40px rgba(0,0,0,0.5)' };
+const glossy = { background: 'linear-gradient(180deg,#6FE4FF 0%,#21C7FF 46%,#06A6E6 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65), 0 10px 30px rgba(43,212,255,0.5)', border: '1px solid rgba(255,255,255,0.32)', color: '#00161F' };
+const noise = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+
+const TONES = {
+  cyan: { from: '#5FE6FF', to: '#0A84FF', glow: 'rgba(43,212,255,0.45)' },
+  azure: { from: '#5AA8FF', to: '#0A3FD0', glow: 'rgba(40,110,255,0.45)' },
+  gold: { from: '#FFDE82', to: '#E0930A', glow: 'rgba(255,185,45,0.5)' },
+  graphite: { from: '#3D3D45', to: '#0B0B0D', glow: 'rgba(0,0,0,0.45)' },
 };
 
-/* ══════════════════════════════════════════
-   TELEGRAM INIT
-══════════════════════════════════════════ */
-const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor("#07090e");
-  tg.setBackgroundColor("#07090e");
-  try {
-    const ud = tg.initDataUnsafe;
-    if (ud && ud.user) {
-      document.getElementById("balanceChip").textContent = "⚡️ ...";
-    }
-  } catch(e) {}
+/* ── atoms ── */
+function IconTile({ icon: Icon, size = 46, tone = 'cyan' }) {
+  const t = TONES[tone] || TONES.cyan; const r = size * 0.28;
+  return (
+    <div style={{ width: size, height: size, borderRadius: r, position: 'relative', overflow: 'hidden', flex: '0 0 auto', background: `linear-gradient(150deg, ${t.from} 0%, ${t.to} 100%)`, boxShadow: `0 8px 18px ${t.glow}, inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -${size * 0.22}px ${size * 0.34}px rgba(0,0,0,0.3)` }}>
+      <div style={{ position: 'absolute', top: -size * 0.5, left: -size * 0.1, width: size * 1.2, height: size * 0.85, borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.08) 58%, transparent 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, borderRadius: r, border: '1px solid rgba(255,255,255,0.28)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon size={size * 0.46} color="#fff" strokeWidth={2.2} style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.38))' }} />
+      </div>
+    </div>
+  );
+}
+function EmojiTile({ emoji, size = 46 }) {
+  const r = size * 0.28;
+  return (
+    <div style={{ width: size, height: size, borderRadius: r, position: 'relative', overflow: 'hidden', flex: '0 0 auto', display: 'grid', placeItems: 'center', fontSize: size * 0.5, background: 'linear-gradient(160deg,#23242B,#0A0B0E)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: `0 8px 18px rgba(43,212,255,0.18), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -${size * 0.22}px ${size * 0.34}px rgba(43,212,255,0.28)` }}>
+      <div style={{ position: 'absolute', top: -size * 0.5, left: -size * 0.1, width: size * 1.2, height: size * 0.85, borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 72%)', pointerEvents: 'none' }} />
+      <span style={{ position: 'relative', lineHeight: 1 }}>{emoji}</span>
+    </div>
+  );
+}
+/* Haqiqiy VoroCreator logosi — piksel-aniq, shaffof fonda */
+const LOGO_B64 = 'data:image/png;base64,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';
+function VLogo({ size = 28, opacity = 1, glow }) {
+  return (
+    <img
+      src={LOGO_B64}
+      alt=""
+      draggable={false}
+      style={{ width: size, height: size, objectFit: 'contain', opacity, display: 'block', pointerEvents: 'none', filter: glow ? 'drop-shadow(0 0 10px rgba(43,212,255,0.7))' : 'none' }}
+    />
+  );
+}
+function Avatar({ s = 44 }) {
+  return (
+    <div style={{ width: s, height: s, borderRadius: '50%', background: 'linear-gradient(160deg,#26262C,#060608)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 14px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -9px 16px rgba(43,212,255,0.35)' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '46%', background: 'linear-gradient(180deg,rgba(255,255,255,0.2),transparent)' }} />
+      <VLogo size={s * 0.5} color="#fff" stroke={11} glow />
+    </div>
+  );
+}
+function Header({ title, onBack }) {
+  return (
+    <div style={{ padding: '14px 16px 4px', display: 'flex', alignItems: 'center', gap: 10 }}>
+      {onBack && (
+        <button className="tap" onClick={() => { haptic('light'); onBack(); }} style={{ width: 38, height: 38, borderRadius: 12, display: 'grid', placeItems: 'center', flex: 'none', ...glass }}>
+          <ChevronLeft size={22} color={c.text} />
+        </button>
+      )}
+      <div style={{ fontSize: 27, fontWeight: 800, color: c.text, letterSpacing: -0.6, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</div>
+    </div>
+  );
+}
+function Label({ children }) {
+  return <div style={{ padding: '14px 16px 0', fontSize: 12.5, fontWeight: 600, color: c.faint, letterSpacing: 0.5 }}>{children}</div>;
+}
+function Chips({ values, value, onPick, scroll }) {
+  return (
+    <div className={scroll ? 'noscroll' : ''} style={{ display: 'flex', flexWrap: scroll ? 'nowrap' : 'wrap', overflowX: scroll ? 'auto' : 'visible', gap: 9, padding: '8px 16px 0' }}>
+      {values.map((v) => {
+        const active = String(v) === String(value);
+        return (
+          <button key={v} className="tap" onClick={() => { haptic('light'); onPick(v); }} style={{ flex: '0 0 auto', borderRadius: 12, padding: '9px 15px', fontSize: 14, fontWeight: 600, ...num, ...(active ? glossy : { ...glass, color: c.sub }) }}>{v}</button>
+        );
+      })}
+    </div>
+  );
+}
+/* siljuvchi segment */
+function Segmented({ options, value, onChange }) {
+  const idx = Math.max(0, options.findIndex((o) => o[0] === value));
+  const n = options.length;
+  return (
+    <div style={{ position: 'relative', display: 'flex', borderRadius: 14, padding: 3, ...glass }}>
+      <div style={{ position: 'absolute', top: 3, bottom: 3, left: `calc(3px + ${idx} * ((100% - 6px) / ${n}))`, width: `calc((100% - 6px) / ${n})`, borderRadius: 11, transition: 'left .28s cubic-bezier(.4,0,.2,1)', ...glossy }} />
+      {options.map(([k, lbl]) => (
+        <button key={k} className="tap" onClick={() => { haptic('light'); onChange(k); }} style={{ flex: 1, border: 'none', background: 'transparent', position: 'relative', zIndex: 1, borderRadius: 11, padding: '9px 0', fontSize: 15, fontWeight: 700, color: value === k ? '#00161F' : c.sub, transition: 'color .2s' }}>{lbl}</button>
+      ))}
+    </div>
+  );
 }
 
-/* ══════════════════════════════════════════
-   CALC  (funksionallikka tegmang)
-══════════════════════════════════════════ */
-function calcStars(modelId, res, dur) {
-  if (VIDEO_MODELS.find(m => m.id === modelId)) {
-    const base = BASE_RATE[modelId] || 0.15;
-    const mult = RES_MULT[res] || 1.0;
-    return Math.max(1, Math.ceil(base * mult * dur * MARGIN / STAR_VALUE));
-  } else {
-    const cost = IMAGE_COST[modelId] || 0.05;
-    return Math.max(1, Math.ceil(cost * MARGIN / STAR_VALUE));
+/* ── qo'lda suriladigan davomiylik slayderi ── */
+function DurationSlider({ steps, value, onChange }) {
+  const trackRef = useRef(null);
+  const draggingRef = useRef(false);
+  const n = steps.length;
+  const idx = Math.max(0, steps.indexOf(value));
+  const pct = n > 1 ? (idx / (n - 1)) * 100 : 100;
+
+  if (n < 2) {
+    return (
+      <div style={{ margin: '8px 16px 0', borderRadius: 16, padding: '13px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', ...glass }}>
+        <span style={{ fontSize: 16, fontWeight: 800, color: c.text, ...num }}>{steps[0]} soniya</span>
+        <span style={{ fontSize: 12, color: c.faint, fontWeight: 600 }}>Bu model uchun belgilangan</span>
+      </div>
+    );
   }
-}
 
-/* ══════════════════════════════════════════
-   MODEL GRID
-══════════════════════════════════════════ */
-function buildModels() {
-  const grid   = document.getElementById("modelGrid");
-  const models = state.type === "video" ? VIDEO_MODELS : IMAGE_MODELS;
-  grid.innerHTML = "";
-  if (!models.find(m => m.id === state.model)) state.model = "";
-
-  models.forEach(m => {
-    const meta = MODEL_META[m.id] || {};
-    // Split emoji from name
-    const parts = m.name.split(" ");
-    const emoji = parts[0];
-    const shortName = parts.slice(1).join(" ");
-
-    // Price label
-    let priceLabel;
-    if (state.type === "video") {
-      const minDur  = meta.min || 1;
-      const cheapRes = (meta.res || ["720p"])[0];
-      const p = calcStars(m.id, cheapRes, minDur);
-      priceLabel = `${minDur}s → ${p}⚡️`;
-    } else {
-      const p = calcStars(m.id, null, 0);
-      priceLabel = `${p}⚡️`;
-    }
-
-    // Reference talab qiluvchi modellar (MODEL_META.ref flag — bot bilan sinxron)
-    const isRef = (MODEL_META[m.id] || {}).ref === true;
-    const refTag = isRef ? `<div class="m-ref-tag">📎 Reference botda so'raladi</div>` : "";
-
-    const card = document.createElement("div");
-    card.className = "m-card" + (m.id === state.model ? " active" : "");
-    card.setAttribute("data-id", m.id);
-    card.innerHTML =
-      `<div class="m-badge-pill">${meta.badge || "AI"}</div>` +
-      `<div class="m-emoji">${emoji}</div>` +
-      `<div class="m-name">${shortName}</div>` +
-      `<div class="m-price">${priceLabel}</div>` +
-      refTag;
-    card.onclick = () => selectModel(m.id);
-    grid.appendChild(card);
-  });
-  updateModelDetail();
-}
-
-function selectModel(id) {
-  state.model = id;
-  document.querySelectorAll(".m-card").forEach(c => {
-    c.classList.toggle("active", c.getAttribute("data-id") === id);
-  });
-  updateModelDetail();
-  buildResGrid();
-  updateDur();
-  updateSummary();
-}
-
-function updateModelDetail() {
-  const detail = document.getElementById("modelDetail");
-  const hook   = document.getElementById("mdHook");
-  if (!state.model) { detail.classList.remove("show"); return; }
-  const meta = MODEL_META[state.model];
-  if (!meta) { detail.classList.remove("show"); return; }
-  hook.textContent = meta.hook || "";
-  detail.classList.add("show");
-}
-
-/* ══════════════════════════════════════════
-   ASPECT RATIOS
-══════════════════════════════════════════ */
-function buildAspectRatios() {
-  const grid = document.getElementById("arGrid");
-  grid.innerHTML = "";
-  ASPECT_RATIOS.forEach(a => {
-    const d = document.createElement("div");
-    d.className = "ar-btn" + (a.ar === state.aspect ? " active" : "");
-    const maxW = 22, maxH = 22;
-    let bw, bh;
-    if (a.w >= a.h) { bw = maxW; bh = Math.round(maxW * a.h / a.w); }
-    else             { bh = maxH; bw = Math.round(maxH * a.w / a.h); }
-    d.innerHTML =
-      `<div class="ar-box" style="width:${bw}px;height:${bh}px"></div>` +
-      `<span class="ar-label">${a.label}</span>`;
-    d.setAttribute("data-ar", a.ar);
-    d.onclick = () => setAspect(a.ar);
-    grid.appendChild(d);
-  });
-}
-
-/* ══════════════════════════════════════════
-   DURATION PRESETS
-══════════════════════════════════════════ */
-function buildDurPresets() {
-  const meta  = MODEL_META[state.model] || {min:1, max:8};
-  const all   = [2,3,4,5,6,7,8,10];
-  const valid = all.filter(s => s >= meta.min && s <= meta.max);
-  const wrap  = document.getElementById("durPresets");
-  wrap.innerHTML = "";
-  valid.forEach(s => {
-    const d = document.createElement("div");
-    d.className = "dur-preset" + (s === state.dur ? " active" : "");
-    d.textContent = `${s}s`;
-    d.onclick = () => { state.dur = s; updateDur(); buildDurPresets(); };
-    wrap.appendChild(d);
-  });
-}
-
-/* ══════════════════════════════════════════
-   RESOLUTION GRID
-══════════════════════════════════════════ */
-function buildResGrid() {
-  const meta    = MODEL_META[state.model];
-  const allowed = meta ? meta.res : ["480p","720p","1080p","1440p"];
-  document.querySelectorAll("#resGrid .res-btn").forEach(btn => {
-    const r = btn.getAttribute("data-res");
-    btn.classList.toggle("active", r === state.res);
-    btn.classList.toggle("dim", !!(allowed && !allowed.includes(r)));
-  });
-}
-
-/* ══════════════════════════════════════════
-   SUMMARY & DURATION UPDATE
-══════════════════════════════════════════ */
-function updateDur() {
-  const meta = MODEL_META[state.model] || {min:1, max:8};
-  state.dur  = Math.max(meta.min, Math.min(meta.max, state.dur));
-  document.getElementById("durVal").textContent   = state.dur;
-  const cost = calcStars(state.model, state.res, state.dur);
-  document.getElementById("durStars").textContent = cost;
-  updateSummary();
-  buildDurPresets();
-}
-
-function updateSummary() {
-  const models = state.type === "video" ? VIDEO_MODELS : IMAGE_MODELS;
-  const m      = models.find(x => x.id === state.model);
-  const parts  = m ? m.name.split(" ") : [];
-  const shortN = parts.length > 1 ? parts.slice(1).join(" ") : "—";
-  document.getElementById("sumModel").textContent = m ? shortN : "—";
-  document.getElementById("sumRes").textContent   = state.type === "video" ? state.res : "Auto";
-  document.getElementById("sumDur").textContent   = state.type === "video" ? `${state.dur}s` : "—";
-  const cost = state.model ? calcStars(state.model, state.res, state.dur) : 0;
-  document.getElementById("sumCost").textContent     = cost ? `${cost} ⚡️` : "—";
-  document.getElementById("genCostChip").textContent = `${cost || 0} ⚡️`;
-  document.getElementById("genBtn").classList.toggle("disabled", !state.model);
-}
-
-/* ══════════════════════════════════════════
-   EVENT HANDLERS
-══════════════════════════════════════════ */
-function setType(t) {
-  state.type = t;
-  document.querySelectorAll(".type-btn").forEach(b => {
-    b.classList.toggle("active", b.getAttribute("data-type") === t);
-  });
-  document.getElementById("videoOpts").style.display     = t === "video" ? "" : "none";
-  document.getElementById("imgTypeSection").style.display = t === "image" ? "" : "none";
-  state.model = "";
-  buildModels();
-  updateModelDetail();
-  updateSummary();
-}
-
-function setRes(r) {
-  state.res = r;
-  buildResGrid();
-  updateDur();
-  updateSummary();
-}
-
-function changeDur(delta) {
-  const meta = MODEL_META[state.model] || {min:1, max:8};
-  state.dur  = Math.max(meta.min, Math.min(meta.max, state.dur + delta));
-  updateDur();
-}
-
-function setAspect(ar) {
-  state.aspect = ar;
-  document.querySelectorAll("#arGrid .ar-btn").forEach(b => {
-    b.classList.toggle("active", b.getAttribute("data-ar") === ar);
-  });
-}
-
-function setImgType(t) {
-  state.imgType = t;
-  document.querySelectorAll(".img-type-btn").forEach(b => {
-    b.classList.toggle("active", b.getAttribute("data-itype") === t);
-  });
-}
-
-function onPromptInput() {
-  state.prompt = document.getElementById("promptTA").value;
-  document.getElementById("charCount").textContent = `${state.prompt.length}/500`;
-}
-
-/* ══════════════════════════════════════════
-   GENERATE  (payload formatiga tegmang)
-══════════════════════════════════════════ */
-function generate() {
-  if (!state.model) return;
-  const payload = {
-    model:   state.model,
-    type:    state.type,
-    res:     state.type === "video" ? state.res : null,
-    dur:     state.type === "video" ? state.dur : null,
-    aspect:  state.aspect,
-    imgType: state.imgType,
-    prompt:  state.prompt,
-    cost:    calcStars(state.model, state.res, state.dur),
+  const pick = (clientX) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const rel = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const ni = Math.round(rel * (n - 1));
+    const nv = steps[ni];
+    if (nv !== value) { haptic('light'); onChange(nv); }
   };
-  if (tg) {
-    tg.sendData(JSON.stringify(payload));
-  } else {
-    alert("Payload:\n" + JSON.stringify(payload, null, 2));
-  }
+  const down = (e) => { draggingRef.current = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* noop */ } pick(e.clientX); };
+  const move = (e) => { if (draggingRef.current) pick(e.clientX); };
+  const up = () => { draggingRef.current = false; };
+
+  return (
+    <div style={{ margin: '8px 16px 0', borderRadius: 18, padding: '14px 18px 12px', userSelect: 'none', WebkitUserSelect: 'none', ...glass }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 12 }}>
+        <span style={{ fontSize: 34, fontWeight: 800, color: c.text, letterSpacing: -1.2, lineHeight: 1, ...num }}>{value}</span>
+        <span style={{ fontSize: 14, color: c.sub, fontWeight: 600 }}>soniya</span>
+      </div>
+      <div
+        ref={trackRef}
+        onPointerDown={down}
+        onPointerMove={move}
+        onPointerUp={up}
+        onPointerCancel={up}
+        onLostPointerCapture={up}
+        style={{ position: 'relative', height: 38, touchAction: 'none', cursor: 'pointer' }}
+      >
+        <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 12, transform: 'translateY(-50%)', borderRadius: 999, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.5)' }} />
+        <div style={{ position: 'absolute', top: '50%', left: 0, width: pct + '%', height: 12, transform: 'translateY(-50%)', borderRadius: 999, background: 'linear-gradient(180deg,#6FE4FF 0%,#21C7FF 50%,#06A6E6 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55), 0 0 20px rgba(43,212,255,0.55)', transition: 'width .16s cubic-bezier(.25,.8,.25,1)' }} />
+        {steps.map((s, i) => {
+          const p = (i / (n - 1)) * 100;
+          return <div key={s} style={{ position: 'absolute', top: '50%', left: p + '%', width: 4, height: 4, borderRadius: '50%', transform: 'translate(-50%,-50%)', background: i <= idx ? 'rgba(0,22,31,0.4)' : 'rgba(255,255,255,0.3)', pointerEvents: 'none' }} />;
+        })}
+        <div style={{ position: 'absolute', top: '50%', left: pct + '%', transform: 'translate(-50%,-50%)', width: 27, height: 27, borderRadius: '50%', background: 'linear-gradient(180deg,#FFFFFF 0%,#DDEAF3 100%)', border: '1px solid rgba(255,255,255,0.95)', boxShadow: '0 3px 10px rgba(0,0,0,0.5), 0 0 18px rgba(43,212,255,0.7), inset 0 -3px 6px rgba(0,70,100,0.2)', transition: 'left .16s cubic-bezier(.25,.8,.25,1)', pointerEvents: 'none' }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+        <span style={{ fontSize: 12, color: c.faint, fontWeight: 600, ...num }}>{steps[0]}s</span>
+        <span style={{ fontSize: 12, color: c.faint, fontWeight: 600, ...num }}>{steps[n - 1]}s</span>
+      </div>
+    </div>
+  );
 }
 
-/* ══════════════════════════════════════════
-   INIT
-══════════════════════════════════════════ */
-buildModels();
-buildAspectRatios();
-updateSummary();
-document.getElementById("videoOpts").style.display = "";
+/* ── HOME ── */
+function HomeScreen({ balance, userName, goCat, openModel, openBuy }) {
+  const featured = FEATURED_IDS.map((id) => [...VIDEO_MODELS, ...IMAGE_MODELS].find((m) => m.id === id)).filter(Boolean);
+  return (
+    <div>
+      <div className="rise" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 6px' }}>
+        <div>
+          <div style={{ fontSize: 15, color: c.sub, fontWeight: 500 }}>Xush kelibsiz</div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: c.text, letterSpacing: -0.4 }}>{userName}</div>
+        </div>
+        <Avatar s={44} />
+      </div>
 
-// initData params (model passed from bot)
-try {
-  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
-    const sp   = atob(tg.initDataUnsafe.start_param);
-    const init = JSON.parse(sp);
-    if (init.model) {
-      const isVid = VIDEO_MODELS.find(m => m.id === init.model);
-      setType(isVid ? "video" : "image");
-      selectModel(init.model);
-    }
-    if (init.balance) {
-      document.getElementById("balanceChip").textContent = `⚡️ ${init.balance}`;
-    }
-  }
-} catch(e) {}
+      <div className="rise" style={{ margin: '12px 16px 4px', borderRadius: 26, padding: 20, color: '#fff', position: 'relative', overflow: 'hidden', animationDelay: '60ms', background: 'linear-gradient(165deg, rgba(43,212,255,0.14) 0%, rgba(255,255,255,0.04) 38%, rgba(8,9,12,0.4) 100%), linear-gradient(165deg,#1A1B20 0%,#0B0C0F 60%,#070809 100%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 50px rgba(0,0,0,0.6), 0 0 60px rgba(43,212,255,0.08)' }}>
+        <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 70, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)' }} />
+        <div style={{ position: 'absolute', bottom: -60, right: -40, width: 190, height: 190, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.45) 0%, transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: 4, right: 6 }}><VLogo size={130} color="#fff" stroke={9} opacity={0.1} /></div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.72)', fontWeight: 600 }}>Balans</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+          <Star size={26} fill={c.blue} color={c.blue} style={{ filter: 'drop-shadow(0 0 10px rgba(43,212,255,0.9))' }} />
+          <span style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1.5, ...num }}>{balance == null ? '—' : fmt(balance)}</span>
+          <span style={{ fontSize: 16, opacity: 0.7, marginTop: 12 }}>tangacha</span>
+        </div>
+        <button className="tap" onClick={() => { haptic('medium'); openBuy(); }} style={{ marginTop: 16, padding: '12px 18px', borderRadius: 15, fontWeight: 700, fontSize: 15, width: '100%', ...glossy }}>To'ldirish</button>
+      </div>
 
-// Balance from URL ?bal= param (set by bot's persistent_kb)
-(function() {
-  try {
-    const urlBal = new URLSearchParams(window.location.search).get("bal");
-    if (urlBal !== null) {
-      document.getElementById("balanceChip").textContent = "⚡️ " + parseInt(urlBal, 10);
-    }
-  } catch(e) {}
-})();
-</script>
+      <div style={{ padding: '20px 16px 8px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Yaratish</div>
+      </div>
+      <div className="rise" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: '0 16px', animationDelay: '120ms' }}>
+        <button className="tap" onClick={() => goCat('video')} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
+          <IconTile icon={Video} size={48} tone="azure" />
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Video</div>
+            <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{VIDEO_MODELS.length} model</div>
+          </div>
+        </button>
+        <button className="tap" onClick={() => goCat('image')} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
+          <IconTile icon={ImageIcon} size={48} tone="cyan" />
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Rasm</div>
+            <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{IMAGE_MODELS.length} model</div>
+          </div>
+        </button>
+      </div>
+
+      <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Mashhur modellar</div>
+      <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '180ms' }}>
+        {featured.map((m) => (
+          <button key={m.id} className="tap" onClick={() => openModel(m)} style={{ flex: '0 0 auto', width: 150, borderRadius: 20, padding: 14, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(43,212,255,0.22)' }}>
+            <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
+            <EmojiTile emoji={m.emoji} size={44} />
+            <div style={{ position: 'relative' }}>
+              <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
+              <div style={{ fontSize: 11.5, color: isVideoModel(m) ? c.blue : c.sub, fontWeight: 600, marginTop: 2 }}>{isVideoModel(m) ? 'Video' : 'Rasm'}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <button className="rise tap" onClick={() => { haptic('light'); openBuy(); }} style={{ margin: '18px 16px 0', width: 'calc(100% - 32px)', borderRadius: 20, padding: '13px 14px', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', animationDelay: '220ms', background: 'rgba(43,212,255,0.1)', backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)', border: '1px solid rgba(43,212,255,0.3)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 0 40px rgba(43,212,255,0.12)' }}>
+        <IconTile icon={Crown} size={42} tone="gold" />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: c.text }}>Katta paketlar — bonus bilan</div>
+          <div style={{ fontSize: 12.5, color: c.sub, marginTop: 1 }}>150 ⚡ dan boshlab qo'shimcha tangacha sovg'a</div>
+        </div>
+        <ChevronRight size={18} color={c.faint} />
+      </button>
+    </div>
+  );
+}
+
+/* ── MODEL LIST ── */
+const V_FILTERS = [['all', 'Hammasi'], ['fast', '⚡ Tez'], ['i2v', '🖼 Rasmdan'], ['t2v', '✍️ Matndan'], ['premium', '💎 Premium']];
+const I_FILTERS = [['all', 'Hammasi'], ['pro', 'Pro'], ['ref', '📎 Reference']];
+const matchFilter = (m, f) => {
+  const meta = getMeta(m);
+  if (f === 'all') return true;
+  if (f === 'fast') return /fast|turbo|tez/i.test(m.name + ' ' + m.badge);
+  if (f === 'i2v') return meta.refs_req;
+  if (f === 't2v') return meta.refs === 0;
+  if (f === 'premium') return /premium|pro/i.test(m.name + ' ' + m.badge);
+  if (f === 'pro') return /pro/i.test(m.name + ' ' + m.badge);
+  if (f === 'ref') return meta.refs > 0;
+  return true;
+};
+
+function ModelListScreen({ cat, setCat, openModel }) {
+  const [q, setQ] = useState('');
+  const [f, setF] = useState('all');
+  const list = cat === 'video' ? VIDEO_MODELS : IMAGE_MODELS;
+  const filters = cat === 'video' ? V_FILTERS : I_FILTERS;
+  const shown = list.filter((m) => matchFilter(m, f)).filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()));
+
+  return (
+    <div>
+      <Header title="Yaratish" />
+      <div className="rise" style={{ margin: '8px 16px 0' }}>
+        <Segmented options={[['video', 'Video'], ['image', 'Rasm']]} value={cat} onChange={(k) => { setCat(k); setF('all'); setQ(''); }} />
+      </div>
+
+      <div className="rise" style={{ margin: '12px 16px 0', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 14, padding: '11px 14px', animationDelay: '40ms', ...glass }}>
+        <Search size={18} color={c.faint} style={{ flex: 'none' }} />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Model qidirish..." style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: c.text, fontSize: 15, fontFamily: font, caretColor: c.blue }} />
+        {q && (
+          <button className="tap" onClick={() => { setQ(''); haptic('light'); }} style={{ border: 'none', background: 'rgba(255,255,255,0.1)', width: 22, height: 22, borderRadius: '50%', display: 'grid', placeItems: 'center', flex: 'none' }}>
+            <X size={13} color={c.text} />
+          </button>
+        )}
+      </div>
+
+      <div className="rise noscroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 0', animationDelay: '70ms' }}>
+        {filters.map(([k, lbl]) => (
+          <button key={k} className="tap" onClick={() => { setF(k); haptic('light'); }} style={{ flex: '0 0 auto', borderRadius: 999, padding: '8px 14px', fontSize: 13.5, fontWeight: 600, ...(f === k ? { background: c.text, color: c.ink, border: '1px solid #fff' } : { ...glass, color: c.sub }) }}>{lbl}</button>
+        ))}
+      </div>
+
+      <Label>{shown.length} TA MODEL</Label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, padding: '8px 16px' }}>
+        {shown.map((m, i) => {
+          const meta = getMeta(m);
+          const pTxt = minPriceText(m);
+          return (
+            <button key={m.id} className="tap rise" onClick={() => openModel(m)} style={{ borderRadius: 14, padding: '12px 13px', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', animationDelay: Math.min(i * 35, 350) + 'ms', ...glass }}>
+              <EmojiTile emoji={m.emoji} size={44} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
+                <div style={{ fontSize: 11.5, color: m.badge ? c.blue : c.faint, fontWeight: 600, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.badge || meta.hook}</div>
+              </div>
+              {pTxt && <span style={{ flex: 'none', fontSize: 11.5, fontWeight: 800, color: c.blue, padding: '5px 9px', borderRadius: 9, background: 'rgba(43,212,255,0.1)', border: '1px solid rgba(43,212,255,0.25)', whiteSpace: 'nowrap', ...num }}>{pTxt}</span>}
+              <ChevronRight size={19} color={c.faint} style={{ flex: 'none' }} />
+            </button>
+          );
+        })}
+        {shown.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: c.sub, fontSize: 14 }}>Hech narsa topilmadi. Qidiruv yoki filtrni o'zgartirib ko'ring.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── PARAMS ── */
+function ParamsScreen({ model, onBack, onSubmit }) {
+  const meta = getMeta(model);
+  const video = isVideoModel(model);
+  const [res, setRes] = useState(meta.resolutions.length ? meta.resolutions[0] : null);
+  const [asp, setAsp] = useState(meta.aspects.length ? meta.aspects[0] : null);
+  const [dur, setDur] = useState(video && meta.dur_steps.length ? meta.dur_steps[0] : null);
+  const [prompt, setPrompt] = useState('');
+  const summary = [res, asp, dur ? dur + 's' : null, prompt.trim() ? '\u270D\uFE0F' : null].filter(Boolean).join(' · ');
+  const price = getPrice(model, { res, dur });
+  const psec = perSecInfo(model);
+
+  return (
+    <div style={{ paddingBottom: 130 }}>
+      <Header title={model.name} onBack={onBack} />
+
+      <div className="rise" style={{ margin: '8px 16px', borderRadius: 20, padding: 16, position: 'relative', overflow: 'hidden', border: '1px solid rgba(43,212,255,0.28)', background: 'linear-gradient(160deg, rgba(43,212,255,0.14), rgba(255,255,255,0.04) 60%, rgba(10,12,16,0.3))', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 14px 36px rgba(0,0,0,0.45)' }}>
+        <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 60, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 10, position: 'relative' }}>
+          <EmojiTile emoji={model.emoji} size={50} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: c.text, letterSpacing: -0.3 }}>{model.name}</div>
+            {model.badge ? <div style={{ fontSize: 12, color: c.blue, fontWeight: 600, marginTop: 1 }}>{model.badge}</div> : null}
+          </div>
+        </div>
+        <div style={{ fontSize: 13.5, color: c.sub, lineHeight: 1.5, position: 'relative' }}>{meta.hook}</div>
+      </div>
+
+      {meta.resolutions.length > 0 && (
+        <div className="rise" style={{ animationDelay: '60ms' }}>
+          <Label>SIFAT</Label>
+          <Chips values={meta.resolutions} value={res} onPick={setRes} />
+        </div>
+      )}
+      {meta.aspects.length > 0 && (
+        <div className="rise" style={{ animationDelay: '100ms' }}>
+          <Label>NISBAT</Label>
+          <Chips values={meta.aspects} value={asp} onPick={setAsp} />
+        </div>
+      )}
+      {video && meta.dur_steps.length > 0 && (
+        <div className="rise" style={{ animationDelay: '140ms' }}>
+          <Label>DAVOMIYLIK</Label>
+          <DurationSlider steps={meta.dur_steps} value={dur} onChange={setDur} />
+        </div>
+      )}
+
+      {psec && (
+        <div className="rise" style={{ margin: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, ...glass, fontSize: 13, color: c.text, lineHeight: 1.45, animationDelay: '150ms' }}>
+          <Star size={16} fill={c.blue} color={c.blue} style={{ flex: 'none' }} />
+          <span>Narx: har soniyasiga ~{psec.perSec} ⚡ — {psec.unit === 'audio' ? 'yuborilgan audio' : 'yuborilgan video'} uzunligiga qarab (maks {psec.max}s). Aniq narx botda ko'rsatiladi.</span>
+        </div>
+      )}
+
+      <div className="rise" style={{ animationDelay: '160ms' }}>
+        <Label>{'PROMPT \u00B7 TAVSIF' + (prompt.length ? ' \u00B7 ' + prompt.length : ' \u00B7 IXTIYORIY')}</Label>
+        <div style={{ margin: '8px 16px 0' }}>
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(clampBytes(e.target.value, 3400))}
+            rows={4}
+            placeholder={video ? "G'oyangizni yozing \u2014 o'zbekcha yoki inglizcha. Masalan: yomg'ir ostida yurgan superqahramon, kinematik kadr, dramatik yorug'lik..." : "G'oyangizni yozing. Masalan: futuristik robot portreti, elektr-ko'k yog'du, studiya yorug'ligi..."}
+            style={{ width: '100%', boxSizing: 'border-box', minHeight: 106, resize: 'none', borderRadius: 16, padding: 14, fontSize: 15, lineHeight: 1.45, color: c.text, outline: 'none', caretColor: c.blue, fontFamily: font, ...glass }}
+          />
+        </div>
+        <div style={{ padding: '6px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>Bo'sh qoldirsangiz \u2014 bot chatda so'raydi. Yozib yuborsangiz \u2014 bevosita ishga tushadi.</div>
+      </div>
+
+      {meta.refs > 0 && (
+        <div className="rise" style={{ margin: '16px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, background: 'rgba(43,212,255,0.1)', border: '1px solid rgba(43,212,255,0.28)', fontSize: 13, color: c.blue, lineHeight: 1.4, animationDelay: '200ms' }}>
+          <Paperclip size={16} style={{ flex: 'none' }} />
+          <span>{meta.refs_req ? "Bu model rasm talab qiladi — yuborgach, bot rasmni so'raydi." : "Ixtiyoriy: reference rasm qo'shsangiz bo'ladi (bot so'raydi)."}</span>
+        </div>
+      )}
+
+      {/* sticky CTA */}
+      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+        <div style={{ width: '100%', maxWidth: 430, display: 'flex', alignItems: 'center', gap: 13, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ flex: 1, minWidth: 0, lineHeight: 1.25 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{model.name}</div>
+            <div style={{ fontSize: 12, color: c.sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...num }}>{summary || '—'}</div>
+          </div>
+          <button className="tap" onClick={() => { haptic('medium'); onSubmit({ res, asp, dur, prompt: prompt.trim() }); }} style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 15, fontSize: 15, fontWeight: 700, ...glossy }}>
+            {(price != null ? price + ' ⚡ · ' : '') + 'Davom etish →'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── CONFIRM SHEET ── */
+function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
+  const meta = getMeta(model);
+  const price = getPrice(model, params);
+  const psec = perSecInfo(model);
+  const notEnough = balance != null && price != null && price > balance;
+  const rows = [
+    ['Sifat', params.res],
+    ['Nisbat', params.asp],
+    params.dur ? ['Davomiylik', params.dur + ' soniya'] : null,
+    ['Narx', psec ? '~' + psec.perSec + ' ⚡/soniya' : (price != null ? price + ' ⚡' : "Botda ko'rsatiladi")],
+  ].filter(Boolean);
+  return (
+    <div onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end' }}>
+      <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ width: '100%', borderRadius: '28px 28px 0 0', padding: '10px 16px calc(20px + env(safe-area-inset-bottom))', background: 'linear-gradient(180deg,#15161B,#0B0C0F)', border: '1px solid rgba(255,255,255,0.1)', borderBottom: 'none', boxShadow: '0 -20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
+        <div style={{ width: 40, height: 4.5, borderRadius: 3, background: 'rgba(255,255,255,0.2)', margin: '6px auto 16px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 14 }}>
+          <EmojiTile emoji={model.emoji} size={48} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3 }}>{model.name}</div>
+            <div style={{ fontSize: 12.5, color: c.sub, marginTop: 1 }}>Buyurtmani tasdiqlang</div>
+          </div>
+        </div>
+        <div style={{ borderRadius: 16, overflow: 'hidden', ...glass, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+          {rows.map(([k, v], i) => (
+            <div key={k} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: i === rows.length - 1 ? 'none' : `1px solid ${c.hair}` }}>
+              <span style={{ fontSize: 14.5, color: c.sub }}>{k}</span>
+              <span style={{ fontSize: k === 'Narx' ? 15.5 : 14.5, fontWeight: k === 'Narx' ? 800 : 700, color: k === 'Narx' ? c.blue : c.text, ...num }}>{v || '—'}</span>
+            </div>
+          ))}
+        </div>
+        {params.prompt ? (
+          <div style={{ marginTop: 10, padding: '11px 13px', borderRadius: 14, ...glass, fontSize: 13, color: c.sub, lineHeight: 1.5 }}>
+            <span style={{ color: c.faint, fontWeight: 700, fontSize: 11, letterSpacing: 0.4 }}>PROMPT \u00B7 </span>
+            {params.prompt.length > 180 ? params.prompt.slice(0, 180) + '\u2026' : params.prompt}
+          </div>
+        ) : null}
+        {meta.refs > 0 && (
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 9, fontSize: 12.5, color: c.blue, lineHeight: 1.4 }}>
+            <Paperclip size={14} style={{ flex: 'none' }} />
+            <span>{meta.refs_req ? 'Keyingi qadamda bot rasm so\u02bbraydi (majburiy).' : 'Keyingi qadamda reference qo\u02bbshish mumkin (ixtiyoriy).'}</span>
+          </div>
+        )}
+        {notEnough ? (
+          <div style={{ marginTop: 12, padding: '11px 13px', borderRadius: 12, background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,90,90,0.35)', fontSize: 12.5, color: '#FF7A7A', textAlign: 'center', lineHeight: 1.4 }}>
+            Balansingizda {fmt(balance)} ⚡ bor — bu ish uchun {price} ⚡ kerak
+          </div>
+        ) : (
+          <div style={{ marginTop: 12, fontSize: 12, color: c.faint, textAlign: 'center' }}>{price != null ? 'Tasdiqlasangiz balansdan ' + price + ' ⚡ yechiladi' : "Aniq narx botda ko'rsatiladi va balansdan yechiladi"}</div>
+        )}
+        {notEnough ? (
+          <button className="tap" onClick={() => { haptic('medium'); openBuy && openBuy(); }} style={{ marginTop: 12, width: '100%', borderRadius: 16, padding: '15px 0', fontSize: 16.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...glossy }}>
+            ⚡ Tanga to'ldirish
+          </button>
+        ) : (
+          <button className="tap" onClick={onConfirm} style={{ marginTop: 12, width: '100%', borderRadius: 16, padding: '15px 0', fontSize: 16.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...glossy }}>
+            <Check size={19} strokeWidth={3} /> Tasdiqlash va yuborish{price != null ? ' · ' + price + ' ⚡' : ''}
+          </button>
+        )}
+        <button className="tap" onClick={onClose} style={{ marginTop: 9, width: '100%', borderRadius: 16, padding: '13px 0', fontSize: 15, fontWeight: 600, color: c.sub, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)' }}>
+          Bekor qilish
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── GALLERY ── */
+function GalleryScreen({ goCreate }) {
+  return (
+    <div>
+      <Header title="Galereya" />
+      <div className="rise" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '70px 32px' }}>
+        <IconTile icon={Images} size={64} tone="cyan" />
+        <div style={{ fontSize: 18, fontWeight: 700, color: c.text, marginTop: 18 }}>Ijodlaringiz shu yerda</div>
+        <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>Yaratgan rasm va videolaringiz tez orada shu galereyada saqlanadi.</div>
+        <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>Yaratishni boshlash</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── PROFILE ── */
+function Group({ children }) { return <div className="rise" style={{ margin: '8px 16px', borderRadius: 16, overflow: 'hidden', ...glass }}>{children}</div>; }
+function Row({ icon, tone, label, value, onClick, last }) {
+  return (
+    <button className="tap" onClick={() => { haptic('light'); onClick && onClick(); }} style={{ width: '100%', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', padding: '11px 14px', borderBottom: last ? 'none' : `1px solid ${c.hair}`, textAlign: 'left' }}>
+      <div style={{ marginRight: 12 }}><IconTile icon={icon} size={30} tone={tone} /></div>
+      <div style={{ flex: 1, fontSize: 16, color: c.text, fontWeight: 500 }}>{label}</div>
+      {value && <div style={{ fontSize: 15, color: c.sub, marginRight: 6, ...num }}>{value}</div>}
+      <ChevronRight size={18} color={c.faint} />
+    </button>
+  );
+}
+function ProfileScreen({ balance, userName, userHandle, openBuy }) {
+  return (
+    <div>
+      <Header title="Profil" />
+      <div className="rise" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '8px 16px 4px' }}>
+        <Avatar s={60} />
+        <div>
+          <div style={{ fontSize: 19, fontWeight: 700, color: c.text }}>{userName}</div>
+          {userHandle ? <div style={{ fontSize: 14, color: c.sub }}>{userHandle}</div> : null}
+        </div>
+      </div>
+      <Group>
+        <Row icon={Wallet} tone="cyan" label="Balans" value={(balance == null ? '—' : fmt(balance)) + ' ⚡'} onClick={openBuy} />
+        <Row icon={Star} tone="gold" label="Tangacha to'ldirish" onClick={openBuy} last />
+      </Group>
+      <Group>
+        <Row icon={Globe} tone="graphite" label="Til" value="O'zbekcha" />
+        <Row icon={Bell} tone="azure" label="Bildirishnomalar" last />
+      </Group>
+      <Group>
+        <Row icon={HelpCircle} tone="cyan" label="Yordam" />
+        <Row icon={Info} tone="graphite" label="Biz haqimizda" last />
+      </Group>
+      <div style={{ textAlign: 'center', fontSize: 12, color: c.faint, margin: '18px 0 8px' }}>VoroCreator Studio · v2.0</div>
+    </div>
+  );
+}
+
+/* ── BUY ── */
+function BuyScreen({ onClose }) {
+  const buy = (p) => { hapticOk(); send({ action: 'buy', pkg: p.tangacha }); };
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 40, background: c.bg, display: 'flex', flexDirection: 'column' }}>
+      <div className="noscroll" style={{ flex: 1, overflowY: 'auto', paddingBottom: 30 }}>
+        <Header title="Tanga to'ldirish" onBack={onClose} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '10px 16px' }}>
+          {STAR_PACKAGES.map((p, i) => (
+            <button key={p.tangacha} className="tap rise" onClick={() => buy(p)} style={{ position: 'relative', borderRadius: 20, padding: 16, display: 'flex', alignItems: 'center', gap: 15, textAlign: 'left', animationDelay: i * 55 + 'ms', ...glass, ...(p.badge ? { border: '1px solid rgba(43,212,255,0.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 0 44px rgba(43,212,255,0.18), 0 12px 30px rgba(0,0,0,0.35)' } : {}) }}>
+              {p.badge ? <span style={{ position: 'absolute', top: -8, right: 14, padding: '3px 10px', borderRadius: 20, fontSize: 10.5, fontWeight: 700, ...glossy }}>{p.badge} {p.label}</span> : null}
+              <EmojiTile emoji={p.emoji} size={50} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3, ...num }}>
+                  {p.tangacha}{p.bonus > 0 ? <span style={{ color: c.blue, fontSize: 14 }}> +{p.bonus}</span> : null} ⚡
+                </div>
+                <div style={{ fontSize: 12.5, color: c.sub, marginTop: 2 }}>{p.desc}</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 'none', padding: '9px 14px', borderRadius: 30, fontSize: 15, fontWeight: 800, ...num, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>{p.stars} ⭐</div>
+            </button>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', fontSize: 12, color: c.sub, margin: '16px 0 8px' }}>To'lov Telegram Stars orqali ⭐ · xavfsiz</div>
+      </div>
+    </div>
+  );
+}
+
+/* ── TAB BAR ── */
+function TabBar({ tab, setTab }) {
+  const items = [
+    { k: 'home', icon: Home, label: 'Bosh sahifa' },
+    { k: 'create', icon: Sparkles, label: 'Yaratish' },
+    { k: 'gallery', icon: Images, label: 'Galereya' },
+    { k: 'profile', icon: User, label: 'Profil' },
+  ];
+  return (
+    <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14, borderRadius: 30, display: 'flex', padding: '8px 6px 10px', zIndex: 10, background: 'rgba(18,19,23,0.55)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), 0 14px 36px rgba(0,0,0,0.55)' }}>
+      {items.map((it) => {
+        const Icon = it.icon; const active = tab === it.k;
+        return (
+          <button key={it.k} className="tap" onClick={() => { setTab(it.k); haptic('light'); }} style={{ flex: 1, border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '6px 0', borderRadius: 18, color: active ? c.blue : c.sub, background: active ? 'rgba(43,212,255,0.12)' : 'transparent', boxShadow: active ? 'inset 0 0 0 1px rgba(43,212,255,0.22)' : 'none' }}>
+            <Icon size={23} color={active ? c.blue : c.sub} fill={active ? c.blue : 'none'} strokeWidth={active ? 1.8 : 2} style={active ? { filter: 'drop-shadow(0 0 6px rgba(43,212,255,0.9))' } : {}} />
+            <span style={{ fontSize: 10.5, fontWeight: 600 }}>{it.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── APP ── */
+function App() {
+  const [tab, setTab] = useState('home');
+  const [cat, setCat] = useState('video');
+  const [model, setModel] = useState(null);
+  const [confirmData, setConfirmData] = useState(null); // {res, asp, dur}
+  const [showBuy, setShowBuy] = useState(false);
+  const [balance, setBalance] = useState(null);
+  const [userName, setUserName] = useState('Ijodkor');
+  const [userHandle, setUserHandle] = useState('');
+
+  useEffect(() => {
+    const tg = TG();
+    if (!tg) return;
+    try { tg.ready(); tg.expand(); } catch (e) { /* noop */ }
+    try { tg.setHeaderColor('#070809'); tg.setBackgroundColor('#070809'); } catch (e) { /* noop */ }
+    try {
+      const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+      if (u) { setUserName(u.first_name || 'Ijodkor'); setUserHandle(u.username ? '@' + u.username : ''); }
+      const p = tg.initDataUnsafe && tg.initDataUnsafe.start_param;
+      if (p && /^bal\d+$/.test(p)) setBalance(parseInt(p.slice(3), 10));
+    } catch (e) { /* noop */ }
+  }, []);
+
+  /* Telegram BackButton — har qadamda to'g'ri "orqaga" */
+  useEffect(() => {
+    const tg = TG();
+    if (!tg || !tg.BackButton) return;
+    const handler = () => {
+      haptic('light');
+      if (confirmData) setConfirmData(null);
+      else if (showBuy) setShowBuy(false);
+      else if (model) setModel(null);
+      else if (tab !== 'home') setTab('home');
+    };
+    try { tg.BackButton.onClick(handler); } catch (e) { /* noop */ }
+    const needBack = confirmData || showBuy || model || tab !== 'home';
+    try { needBack ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) { /* noop */ }
+    return () => { try { tg.BackButton.offClick(handler); } catch (e) { /* noop */ } };
+  }, [confirmData, showBuy, model, tab]);
+
+  const openModel = (m) => { setCat(isVideoModel(m) ? 'video' : 'image'); setModel(m); setTab('create'); haptic('medium'); };
+  const goCat = (k) => { setCat(k); setModel(null); setTab('create'); haptic('medium'); };
+  const submitParams = (params) => setConfirmData(params);
+  const confirmSend = () => {
+    if (!model || !confirmData) return;
+    hapticOk();
+    const payload = { mid: model.id, res: confirmData.res, asp: confirmData.asp };
+    if (confirmData.dur) payload.dur = confirmData.dur;
+    if (confirmData.prompt) payload.prompt = confirmData.prompt;
+    send(payload);
+    setConfirmData(null);
+  };
+
+  const inParams = tab === 'create' && !!model;
+
+  return (
+    <div style={{ background: '#000', minHeight: '100vh', display: 'flex', justifyContent: 'center', fontFamily: font }}>
+      <style>{`
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @keyframes sheen { 0% { transform: translateX(-140%) rotate(8deg); } 100% { transform: translateX(560%) rotate(8deg); } }
+        @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(34px,46px); } }
+        @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-44px,26px); } }
+        @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+        .rise { animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }
+        .sheen { animation: sheen 7s ease-in-out infinite; }
+        .sheet { animation: sheetUp .32s cubic-bezier(.2,.8,.2,1) both; }
+        .tap { transition: transform .12s ease, opacity .12s ease; cursor: pointer; }
+        .tap:active { transform: scale(0.97); opacity: 0.9; }
+        input::placeholder, textarea::placeholder { color: rgba(236,241,248,0.34); }
+        .noscroll::-webkit-scrollbar { display: none; }
+        .noscroll { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (prefers-reduced-motion: reduce) { .rise,.sheen,.sheet { animation: none !important; } }
+      `}</style>
+      <div style={{ width: '100%', maxWidth: 430, minHeight: '100vh', position: 'relative', overflow: 'hidden', background: c.bg }}>
+        <div style={{ position: 'absolute', top: -90, left: -60, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.3), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 18s ease-in-out infinite', zIndex: 0 }} />
+        <div style={{ position: 'absolute', top: '40%', right: -80, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(10,132,255,0.26), transparent 70%)', filter: 'blur(22px)', animation: 'drift2 22s ease-in-out infinite', zIndex: 0 }} />
+        <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.18), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 26s ease-in-out infinite', zIndex: 0 }} />
+
+        <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: inParams ? 0 : 112 }}>
+          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} />}
+          {tab === 'create' && !model && <ModelListScreen cat={cat} setCat={setCat} openModel={openModel} />}
+          {tab === 'create' && model && <ParamsScreen key={model.id} model={model} onBack={() => setModel(null)} onSubmit={submitParams} />}
+          {tab === 'gallery' && <GalleryScreen goCreate={() => goCat('video')} />}
+          {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} />}
+        </div>
+
+        {!inParams && <TabBar tab={tab} setTab={(k) => { setModel(null); setTab(k); }} />}
+        {showBuy && <BuyScreen onClose={() => setShowBuy(false)} />}
+        {confirmData && model && <ConfirmSheet model={model} params={confirmData} balance={balance} onClose={() => setConfirmData(null)} onConfirm={confirmSend} openBuy={() => { setConfirmData(null); setShowBuy(true); }} />}
+
+        <div style={{ position: 'absolute', inset: 0, zIndex: 70, pointerEvents: 'none', opacity: 0.08, mixBlendMode: 'overlay', backgroundImage: noise, backgroundSize: '150px 150px' }} />
+      </div>
+    </div>
+  );
+}
+
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
 </body>
 </html>
