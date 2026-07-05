@@ -159,6 +159,15 @@ const minPriceText = (m) => { const p = PRICING[m.id]; if (!p) return null; if (
 
 /* ── Telegram ── */
 const TG = () => (typeof window !== 'undefined' && window.Telegram ? window.Telegram.WebApp : null);
+/* ── BACKEND API (voro.uz) ── */
+const API_BASE = 'https://voroapi.duckdns.org';
+const apiFetch = async (path) => {
+  const tg = TG();
+  const initData = tg && tg.initData ? tg.initData : '';
+  const r = await fetch(API_BASE + path, { headers: { 'X-Tg-Init-Data': initData } });
+  if (!r.ok) throw new Error('api ' + r.status);
+  return r.json();
+};
 const send = (obj) => { const raw = JSON.stringify(obj); const tg = TG(); if (tg && tg.sendData) tg.sendData(raw); else alert('Sinov (Telegram tashqarisida):\n' + raw); };
 const haptic = (t = 'light') => { try { const tg = TG(); tg && tg.HapticFeedback.impactOccurred(t); } catch (e) { /* noop */ } };
 const hapticOk = () => { try { const tg = TG(); tg && tg.HapticFeedback.notificationOccurred('success'); } catch (e) { /* noop */ } };
@@ -624,14 +633,51 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
 
 /* ── GALLERY ── */
 function GalleryScreen({ goCreate }) {
+  const [items, setItems] = useState(null);   /* null=yuklanmoqda, []=bo'sh */
+  useEffect(() => {
+    apiFetch('/tg/history')
+      .then((rows) => setItems(Array.isArray(rows) ? rows : []))
+      .catch(() => setItems([]));
+  }, []);
+
+  if (items === null) {
+    return (
+      <div>
+        <Header title="Galereya" />
+        <div className="rise" style={{ textAlign: 'center', padding: '70px 32px', color: c.sub, fontSize: 14 }}>Yuklanmoqda…</div>
+      </div>
+    );
+  }
+
+  if (!items.length) {
+    return (
+      <div>
+        <Header title="Galereya" />
+        <div className="rise" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '70px 32px' }}>
+          <IconTile icon={Images} size={64} tone="cyan" />
+          <div style={{ fontSize: 18, fontWeight: 700, color: c.text, marginTop: 18 }}>Ijodlaringiz shu yerda</div>
+          <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.</div>
+          <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>Yaratishni boshlash</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Header title="Galereya" />
-      <div className="rise" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '70px 32px' }}>
-        <IconTile icon={Images} size={64} tone="cyan" />
-        <div style={{ fontSize: 18, fontWeight: 700, color: c.text, marginTop: 18 }}>Ijodlaringiz shu yerda</div>
-        <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>Yaratgan rasm va videolaringiz tez orada shu galereyada saqlanadi.</div>
-        <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>Yaratishni boshlash</button>
+      <div className="rise" style={{ padding: '4px 16px 24px' }}>
+        {items.map((it) => (
+          <div key={it.id} style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 14, ...glass }}>
+            {it.type === 'video'
+              ? <video src={API_BASE + it.url} controls playsInline style={{ width: '100%', display: 'block', background: '#000' }} />
+              : <img src={API_BASE + it.url} alt={it.name} style={{ width: '100%', display: 'block' }} />}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
+              <span style={{ fontSize: 14, fontWeight: 600 }}>{it.emoji} {it.name}</span>
+              <span style={{ fontSize: 13, color: c.sub, ...num }}>{it.price}⚡</span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -649,7 +695,30 @@ function Row({ icon, tone, label, value, onClick, last }) {
     </button>
   );
 }
+function InfoSheet({ title, onClose, children }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
+      <div className="rise" onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxHeight: '82vh', overflowY: 'auto', borderRadius: '22px 22px 0 0', padding: '18px 20px 30px', background: '#101214', ...glass }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ fontSize: 18, fontWeight: 800 }}>{title}</div>
+          <button className="tap" onClick={onClose} style={{ border: 'none', background: 'rgba(255,255,255,0.09)', color: c.text, borderRadius: 10, width: 32, height: 32, fontSize: 16 }}>✕</button>
+        </div>
+        <div style={{ fontSize: 14.5, lineHeight: 1.65, color: c.text }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+const HELP_QA = [
+  ["Qanday ishlaydi?", "G'oyangizni o'zbekcha yozing — model tanlang — VoroCreator video yoki rasm yaratadi."],
+  ["Tangacha nima?", "Tangacha (⚡) — generatsiya uchun ishlatiladigan ichki valyuta. \"To'ldirish\" orqali Telegram Stars bilan sotib olasiz."],
+  ["Reference nima?", "O'z rasmingizni yuklab, uni video yoki rasmga asos qilishingiz mumkin — masalan yuzingizni saqlab."],
+  ["Sifat past chiqsa?", "Yuqoriroq resolution (1080p, 4K) tanlang yoki g'oyangizni batafsilroq yozing."],
+  ["Muammo bo'lsa?", "@Vorouz ga yozing — tez javob beramiz."],
+];
+
 function ProfileScreen({ balance, userName, userHandle, openBuy }) {
+  const [sheet, setSheet] = useState(null); /* 'help' | 'about' | null */
   return (
     <div>
       <Header title="Profil" />
@@ -666,13 +735,32 @@ function ProfileScreen({ balance, userName, userHandle, openBuy }) {
       </Group>
       <Group>
         <Row icon={Globe} tone="graphite" label="Til" value="O'zbekcha" />
-        <Row icon={Bell} tone="azure" label="Bildirishnomalar" last />
+        <Row icon={Bell} tone="azure" label="Bildirishnomalar" value="Tez orada" last />
       </Group>
       <Group>
-        <Row icon={HelpCircle} tone="cyan" label="Yordam" />
-        <Row icon={Info} tone="graphite" label="Biz haqimizda" last />
+        <Row icon={HelpCircle} tone="cyan" label="Yordam" onClick={() => setSheet('help')} />
+        <Row icon={Info} tone="graphite" label="Biz haqimizda" onClick={() => setSheet('about')} last />
       </Group>
       <div style={{ textAlign: 'center', fontSize: 12, color: c.faint, margin: '18px 0 8px' }}>VoroCreator Studio · v2.0</div>
+
+      {sheet === 'help' && (
+        <InfoSheet title="Yordam markazi" onClose={() => setSheet(null)}>
+          {HELP_QA.map((qa, i) => (
+            <div key={i} style={{ marginBottom: 14 }}>
+              <div style={{ fontWeight: 700, marginBottom: 3 }}>{qa[0]}</div>
+              <div style={{ color: c.sub }}>{qa[1]}</div>
+            </div>
+          ))}
+        </InfoSheet>
+      )}
+      {sheet === 'about' && (
+        <InfoSheet title="VoroCreator haqida" onClose={() => setSheet(null)}>
+          <p style={{ marginTop: 0 }}>VoroCreator — O'zbekistonda yaratilgan, sun'iy intellekt asosidagi ijod platformasi. Bizning maqsadimiz — professional darajadagi video va rasm yaratishni har kimga ochiq qilish.</p>
+          <p>Ingliz tilini yoki murakkab dasturlarni bilish shart emas. G'oyangizni o'zbekcha yozing — VoroCreator uni professional promptga aylantirib, dunyoning eng kuchli AI modellari orqali yuqori sifatli natija yaratadi.</p>
+          <p>30+ model, 4K sifat, yuz saqlash texnologiyasi va Telegram Stars bilan qulay to'lov — barchasi bitta joyda.</p>
+          <p style={{ marginBottom: 0, fontWeight: 700 }}>🎬 Ijodni oddiy qilamiz.</p>
+        </InfoSheet>
+      )}
     </div>
   );
 }
@@ -750,6 +838,13 @@ function App() {
       const p = tg.initDataUnsafe && tg.initDataUnsafe.start_param;
       if (p && /^bal\d+$/.test(p)) setBalance(parseInt(p.slice(3), 10));
     } catch (e) { /* noop */ }
+    /* Backend'dan jonli ism + balans (lazy migration shu yerda ishga tushadi) */
+    apiFetch('/tg/me')
+      .then((me) => {
+        if (me && me.name) setUserName(me.name);
+        if (me && typeof me.balance === 'number') setBalance(me.balance);
+      })
+      .catch(() => { /* backend yetmasa start_param balansi qoladi */ });
   }, []);
 
   /* Telegram BackButton — har qadamda to'g'ri "orqaga" */
