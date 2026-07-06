@@ -378,7 +378,7 @@ function DurationSlider({ steps, value, onChange }) {
 }
 
 /* ── HOME ── */
-function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate, tools, openTool }) {
+function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate, tools, openTool, openToolList }) {
   const featured = FEATURED_IDS.map((id) => [...VIDEO_MODELS, ...IMAGE_MODELS].find((m) => m.id === id)).filter(Boolean);
   return (
     <div>
@@ -421,6 +421,15 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
             <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{IMAGE_MODELS.length} model</div>
           </div>
         </button>
+        {tools && tools.length > 0 && (
+          <button className="tap" onClick={() => { haptic('medium'); openToolList(); }} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
+            <IconTile icon={Wand} size={48} tone="gold" />
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Vositalar</div>
+              <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{tools.length} ta vosita</div>
+            </div>
+          </button>
+        )}
       </div>
 
       {templates && templates.length > 0 && (
@@ -434,24 +443,6 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
                 <div style={{ position: 'relative' }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(t.name || '').replace(/^(\p{Emoji}\uFE0F?\s*)/u, '')}</div>
                   <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + ' uslub' : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </React.Fragment>
-      )}
-
-      {tools && tools.length > 0 && (
-        <React.Fragment>
-          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Vositalar</div>
-          <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '170ms' }}>
-            {tools.map((t) => (
-              <button key={t.id} className="tap" onClick={() => openTool(t)} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(95,230,255,0.22)' }}>
-                <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
-                <IconTile icon={TOOL_ICON(t.id)} size={48} tone="cyan" />
-                <div style={{ position: 'relative' }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.cost ? t.cost + '⚡' : ''}</div>
                 </div>
               </button>
             ))}
@@ -1086,6 +1077,30 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
   );
 }
 
+function ToolListScreen({ tools, onBack, openTool }) {
+  return (
+    <div>
+      <Header title="Vositalar" onBack={onBack} />
+      <div style={{ padding: '4px 18px 14px', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>Fotorasmlar bilan ishlash uchun vositalar</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '0 16px' }}>
+        {tools.map((t, i) => (
+          <button key={t.id} className="tap rise" onClick={() => openTool(t)} style={{ borderRadius: 16, padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left', animationDelay: Math.min(i * 45, 300) + 'ms', ...glass }}>
+            <IconTile icon={TOOL_ICON(t.id)} size={46} tone="cyan" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15.5, fontWeight: 700, color: c.text }}>{t.name}</div>
+              <div style={{ fontSize: 12.5, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.desc}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 'none' }}>
+              {t.cost ? <span style={{ fontSize: 13, fontWeight: 700, color: c.blue }}>{t.cost} ⚡</span> : null}
+              <ChevronRight size={17} color={c.faint} />
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ToolScreen({ tool, balance, onBack, onGenerate }) {
   const [refs, setRefs] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -1546,6 +1561,7 @@ function App() {
   const openModel = (m) => { setCat(isVideoModel(m) ? 'video' : 'image'); setModel(m); setTab('create'); haptic('medium'); };
   const openTemplate = (t) => { setActiveTemplate(t); setTab('template'); haptic('medium'); };
   const openTool = (t) => { setActiveTool(t); setTab('tool'); haptic('medium'); };
+  const openToolList = () => { setTab('toollist'); haptic('medium'); };
   const goCat = (k) => { setCat(k); setModel(null); setTab('create'); haptic('medium'); };
   const submitParams = (params) => setConfirmData(params);
   const apiPost = async (path, body) => {
@@ -1689,11 +1705,12 @@ function App() {
         <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.18), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 26s ease-in-out infinite', zIndex: 0 }} />
 
         <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: hideNav ? 0 : 112 }}>
-          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} tools={tools} openTool={openTool} />}
+          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} tools={tools} openTool={openTool} openToolList={openToolList} />}
           {tab === 'create' && !model && <ModelListScreen cat={cat} setCat={setCat} openModel={openModel} />}
           {tab === 'create' && model && <ParamsScreen key={model.id} model={model} onBack={() => setModel(null)} onSubmit={submitParams} />}
           {tab === 'template' && activeTemplate && <TemplateScreen key={activeTemplate.id} template={activeTemplate} balance={balance} onBack={() => { setActiveTemplate(null); setTab('home'); }} onGenerate={templateGenerate} />}
-          {tab === 'tool' && activeTool && <ToolScreen key={activeTool.id} tool={activeTool} balance={balance} onBack={() => { setActiveTool(null); setTab('home'); }} onGenerate={toolGenerate} />}
+          {tab === 'toollist' && <ToolListScreen tools={tools} onBack={() => setTab('home')} openTool={openTool} />}
+          {tab === 'tool' && activeTool && <ToolScreen key={activeTool.id} tool={activeTool} balance={balance} onBack={() => { setActiveTool(activeTool); setActiveTool(null); setTab('toollist'); }} onGenerate={toolGenerate} />}
           {tab === 'gallery' && <GalleryScreen goCreate={() => goCat('video')} />}
           {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} />}
         </div>
