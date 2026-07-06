@@ -1509,6 +1509,8 @@ function App() {
   };
 
   const inParams = tab === 'create' && !!model;
+  const inTemplate = tab === 'template' && !!activeTemplate;
+  const hideNav = inParams || inTemplate;
 
   return (
     <div style={{ background: '#000', minHeight: '100vh', display: 'flex', justifyContent: 'center', fontFamily: font }}>
@@ -1534,7 +1536,7 @@ function App() {
         <div style={{ position: 'absolute', top: '40%', right: -80, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(10,132,255,0.26), transparent 70%)', filter: 'blur(22px)', animation: 'drift2 22s ease-in-out infinite', zIndex: 0 }} />
         <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.18), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 26s ease-in-out infinite', zIndex: 0 }} />
 
-        <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: inParams ? 0 : 112 }}>
+        <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: hideNav ? 0 : 112 }}>
           {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} />}
           {tab === 'create' && !model && <ModelListScreen cat={cat} setCat={setCat} openModel={openModel} />}
           {tab === 'create' && model && <ParamsScreen key={model.id} model={model} onBack={() => setModel(null)} onSubmit={submitParams} />}
@@ -1543,7 +1545,7 @@ function App() {
           {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} />}
         </div>
 
-        {!inParams && <TabBar tab={tab} setTab={(k) => { setModel(null); setTab(k); }} />}
+        {!hideNav && <TabBar tab={tab} setTab={(k) => { setModel(null); setTab(k); }} />}
         {showBuy && <BuyScreen onClose={() => setShowBuy(false)} />}
         {confirmData && model && <ConfirmSheet model={model} params={confirmData} balance={balance} onClose={() => setConfirmData(null)} onConfirm={confirmSend} openBuy={() => { setConfirmData(null); setShowBuy(true); }} />}
         {job && <ResultSheet job={job} onClose={closeJob} onRetry={() => { const m = job.model; closeJob(); setModel(m); setTab('create'); }} goGallery={() => { closeJob(); setModel(null); setTab('gallery'); }} />}
