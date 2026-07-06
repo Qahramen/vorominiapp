@@ -812,8 +812,29 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
 }
 
 /* ── GALLERY ── */
+const galleryDownload = async (it, setMsg) => {
+  const tg = TG();
+  const url = API_BASE + it.url;
+  const fname = (it.type === 'video' ? 'voro-video-' : 'voro-rasm-') + (it.id ? it.id.slice(0, 8) : Date.now()) + (it.type === 'video' ? '.mp4' : '.png');
+  try {
+    if (tg && tg.downloadFile) { setMsg('id', '…'); tg.downloadFile({ url, file_name: fname }, (ok) => setMsg('id', ok ? '✓' : '')); return; }
+  } catch (e) { /* keyingi */ }
+  try {
+    setMsg('id', '…');
+    const r = await fetch(url); const blob = await r.blob();
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = u; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+    setMsg('id', '✓');
+  } catch (e) {
+    try { if (tg && tg.openLink) tg.openLink(url); } catch (e2) { window.open(url, '_blank'); }
+  }
+};
+
 function GalleryScreen({ goCreate }) {
   const [items, setItems] = useState(null);   /* null=yuklanmoqda, []=bo'sh */
+  const [dlState, setDlState] = useState({}); /* {itemId: '…'|'✓'} */
   useEffect(() => {
     apiFetch('/tg/history')
       .then((rows) => setItems(Array.isArray(rows) ? rows : []))
@@ -849,9 +870,15 @@ function GalleryScreen({ goCreate }) {
       <div className="rise" style={{ padding: '4px 16px 24px' }}>
         {items.map((it) => (
           <div key={it.id} style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 14, ...glass }}>
-            {it.type === 'video'
-              ? <video src={API_BASE + it.url} controls playsInline style={{ width: '100%', display: 'block', background: '#000' }} />
-              : <img src={API_BASE + it.url} alt={it.name} style={{ width: '100%', display: 'block' }} />}
+            <div style={{ position: 'relative' }}>
+              {it.type === 'video'
+                ? <video src={API_BASE + it.url} controls playsInline style={{ width: '100%', display: 'block', background: '#000' }} />
+                : <img src={API_BASE + it.url} alt={it.name} style={{ width: '100%', display: 'block' }} />}
+              <button className="tap" onClick={() => galleryDownload(it, (_, v) => setDlState((s) => ({ ...s, [it.id]: v })))}
+                style={{ position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', color: '#fff', fontSize: dlState[it.id] === '✓' ? 16 : 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                {dlState[it.id] === '…' ? <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} /> : (dlState[it.id] === '✓' ? '✓' : '⬇')}
+              </button>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
               <span style={{ fontSize: 14, fontWeight: 600 }}>{it.emoji} {it.name}</span>
               <span style={{ fontSize: 13, color: c.sub, ...num }}>{it.price}⚡</span>
@@ -1003,11 +1030,37 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
   const running = !done && !failed;
   const mediaUrl = job.result_url ? (API_BASE + job.result_url) : null;
 
-  const download = () => {
+  const [dlMsg, setDlMsg] = useState('');
+  const download = async () => {
     if (!mediaUrl) return;
     const tg = TG();
-    try { if (tg && tg.openLink) { tg.openLink(mediaUrl); return; } } catch (e) { /* noop */ }
-    window.open(mediaUrl, '_blank');
+    const fname = (job.type === 'video' ? 'voro-video-' : 'voro-rasm-') + Date.now() + (job.type === 'video' ? '.mp4' : '.png');
+    /* 1-usul: Telegram downloadFile (galereyaga/Fayllarga saqlaydi, brauzerga O'TMAYDI) */
+    try {
+      if (tg && tg.downloadFile) {
+        setDlMsg('Yuklanmoqda…');
+        tg.downloadFile({ url: mediaUrl, file_name: fname }, (ok) => {
+          setDlMsg(ok ? 'Saqlandi ✓' : '');
+        });
+        return;
+      }
+    } catch (e) { /* keyingi usul */ }
+    /* 2-usul: blob orqali <a download> (qurilmaga saqlaydi) */
+    try {
+      setDlMsg('Yuklanmoqda…');
+      const r = await fetch(mediaUrl);
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      setDlMsg('Saqlandi ✓');
+      return;
+    } catch (e) { /* oxirgi chora */ }
+    /* 3-usul: oxirgi chora — Telegram ichida ochish */
+    try { if (tg && tg.openLink) tg.openLink(mediaUrl); } catch (e) { window.open(mediaUrl, '_blank'); }
   };
 
   return (
@@ -1061,7 +1114,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
         <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', display: 'flex', gap: 10 }}>
           {done ? (
             <>
-              <button className="tap" onClick={download} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>⬇ Yuklab olish</button>
+              <button className="tap" onClick={download} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>{dlMsg || '⬇ Yuklab olish'}</button>
               <button className="tap" onClick={goGallery} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>Galereya</button>
             </>
           ) : failed ? (
