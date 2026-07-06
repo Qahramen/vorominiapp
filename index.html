@@ -771,7 +771,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
                 {!full && (
                   <label key={'vid' + uploadKey} style={upTileStyle(uploadingKind === 'video', false)}>
                     {uploadingKind === 'video' ? <Spinner /> : <React.Fragment><Film size={22} strokeWidth={2} /><span style={upTileLabel}>Video</span></React.Fragment>}
-                    <input type="file" accept="video/*" onChange={onFileKind('video')} style={upInputStyle} />
+                    <input type="file" accept="video/*,video/mp4,video/quicktime,.mp4,.mov,.webm" onChange={onFileKind('video')} style={upInputStyle} />
                   </label>
                 )}
               </div>
@@ -793,7 +793,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
                 {!full && (
                   <label key={'aud' + uploadKey} style={upTileStyle(uploadingKind === 'audio', false)}>
                     {uploadingKind === 'audio' ? <Spinner /> : <React.Fragment><Mic size={22} strokeWidth={2} /><span style={upTileLabel}>Audio</span></React.Fragment>}
-                    <input type="file" accept="audio/*" onChange={onFileKind('audio')} style={upInputStyle} />
+                    <input type="file" accept="audio/*,audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/aac,audio/ogg,.mp3,.m4a,.wav,.aac,.ogg" onChange={onFileKind('audio')} style={upInputStyle} />
                   </label>
                 )}
               </div>
