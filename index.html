@@ -716,24 +716,9 @@ function ParamsScreen({ model, onBack, onSubmit }) {
                   {uploading ? <Spinner /> : <React.Fragment><Camera size={22} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
                   <input type="file" accept="image/*" capture="environment" onChange={onFile} style={upInputStyle} />
                 </label>
-                {/* JOYLASH — bufer (qotish imkonsiz) */}
-                <button className="tap" onClick={pasteImage} disabled={uploading} style={{ ...upTileStyle(uploading, false), fontFamily: 'inherit' }}>
-                  {uploading ? <Spinner /> : <React.Fragment><ClipboardPaste size={22} strokeWidth={2} /><span style={upTileLabel}>Joylash</span></React.Fragment>}
-                </button>
               </React.Fragment>
             )}
           </div>
-          {showPasteBox && (
-            <div style={{ margin: '10px 16px 0', padding: '4px', borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.06)' }}>
-              <div
-                contentEditable
-                suppressContentEditableWarning
-                onPaste={handleManualPaste}
-                style={{ minHeight: 46, borderRadius: 10, padding: '12px 14px', fontSize: 14, color: c.blue, outline: 'none', WebkitUserSelect: 'text', userSelect: 'text' }}
-              >{'Shu yerni bosib turib \u00ABPaste\u00BB (Joylash) ni tanlang\u2026'}</div>
-              <button className="tap" onClick={() => setShowPasteBox(false)} style={{ margin: '0 8px 8px', border: 'none', background: 'transparent', color: c.faint, fontSize: 12.5 }}>Bekor qilish</button>
-            </div>
-          )}
           {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
           <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'}</div>
         </div>
