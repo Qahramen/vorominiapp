@@ -27,6 +27,23 @@ const _ic = (paths) => ({ size=24, color='currentColor', fill='none', strokeWidt
 
 const Home        = _ic([['path',{d:'m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'}],['polyline',{points:'9 22 9 12 15 12 15 22'}]]);
 const Sparkles    = _ic([['path',{d:'m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'}],['path',{d:'M5 3v4'}],['path',{d:'M19 17v4'}],['path',{d:'M3 5h4'}],['path',{d:'M17 19h4'}]]);
+const Film        = _ic([['rect',{width:'18',height:'18',x:'3',y:'3',rx:'2'}],['path',{d:'M7 3v18M17 3v18M3 7.5h4M3 12h18M3 16.5h4M17 7.5h4M17 16.5h4'}]]);
+const ImageIc     = _ic([['rect',{width:'18',height:'18',x:'3',y:'3',rx:'2',ry:'2'}],['circle',{cx:'9',cy:'9',r:'2'}],['path',{d:'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'}]]);
+const Mic         = _ic([['path',{d:'M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z'}],['path',{d:'M19 10v2a7 7 0 0 1-14 0v-2'}],['line',{x1:'12',x2:'12',y1:'19',y2:'22'}]]);
+const Move        = _ic([['polyline',{points:'5 9 2 12 5 15'}],['polyline',{points:'9 5 12 2 15 5'}],['polyline',{points:'15 19 12 22 9 19'}],['polyline',{points:'19 9 22 12 19 15'}],['line',{x1:'2',x2:'22',y1:'12',y2:'12'}],['line',{x1:'12',x2:'12',y1:'2',y2:'22'}]]);
+const Video       = _ic([['path',{d:'m22 8-6 4 6 4V8Z'}],['rect',{width:'14',height:'12',x:'2',y:'6',rx:'2',ry:'2'}]]);
+const Zap         = _ic([['polygon',{points:'13 2 3 14 12 14 11 22 21 10 12 10 13 2'}]]);
+const Bot         = _ic([['path',{d:'M12 8V4H8'}],['rect',{width:'16',height:'12',x:'4',y:'8',rx:'2'}],['path',{d:'M2 14h2M20 14h2M15 13v2M9 13v2'}]]);
+const Sprout      = _ic([['path',{d:'M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4 2.2-.4 3.9-.1 5.1.6M14.1 6c-.3 1.1-.9 2.1-1.8 2.8-.4-1.1-.4-2.3-.2-3.3.4-1.3 1.2-2.3 2.7-3.3 1.4 1.5 1.5 3.2.3 4.8'}]]);
+const Sparkle2    = _ic([['path',{d:'M9.9 2.6 8.6 5.4l-2.8 1.3 2.8 1.3 1.3 2.8 1.3-2.8 2.8-1.3-2.8-1.3zM18 8l-.9 2-2 .9 2 .9.9 2 .9-2 2-.9-2-.9zM13 15l-1 2.2-2.2 1 2.2 1 1 2.2 1-2.2 2.2-1-2.2-1z'}]]);
+const Wind        = _ic([['path',{d:'M12.8 19.6A2 2 0 1 0 14 16H2M17.5 8a2.5 2.5 0 1 1 2 4H2M9.8 4.4A2 2 0 1 1 11 8H2'}]]);
+const Droplet     = _ic([['path',{d:'M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'}]]);
+const Flower      = _ic([['circle',{cx:'12',cy:'12',r:'3'}],['path',{d:'M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5M12 7.5V9M7.5 12H9M16.5 12H15M12 16.5V15'}]]);
+const Crystal     = _ic([['path',{d:'m6 3 6-1 6 1 3 6-9 13L3 9l3-6Z'}],['path',{d:'M12 2v20M3 9h18'}]]);
+const Monitor     = _ic([['rect',{width:'20',height:'14',x:'2',y:'3',rx:'2'}],['line',{x1:'8',x2:'16',y1:'21',y2:'21'}],['line',{x1:'12',x2:'12',y1:'17',y2:'21'}]]);
+const Banana      = _ic([['path',{d:'M4 9c0 4.5 4.5 8.5 10 8.5 4 0 7-2 7.5-4.5'}],['path',{d:'M4 9c-.3-1 0-2 .8-2.3'}],['path',{d:'M21.5 13c.4-.2.5-.8.2-1.3'}],['path',{d:'M6 11c1.5 3 5 5 9 4.8'}]]);
+const Download    = _ic([['path',{d:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'}],['polyline',{points:'7 10 12 15 17 10'}],['line',{x1:'12',x2:'12',y1:'15',y2:'3'}]]);
+const Wand        = _ic([['path',{d:'m15 4 1 1M2 22l14-14M13 3l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3ZM20 12l.7 2.1 2.1.7-2.1.7-.7 2.1-.7-2.1-2.1-.7 2.1-.7.7-2.1Z'}]]);
 const Images      = _ic([['path',{d:'M18 22H4a2 2 0 0 1-2-2V6'}],['rect',{x:'6',y:'2',width:'16',height:'16',rx:'2'}],['circle',{cx:'11',cy:'8',r:'2'}],['path',{d:'m22 13-2.121-2.121a2 2 0 0 0-2.828 0L10 18'}]]);
 const User        = _ic([['path',{d:'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'}],['circle',{cx:'12',cy:'7',r:'4'}]]);
 const Star        = _ic([['polygon',{points:'12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'}]]);
@@ -37,7 +54,6 @@ const Wallet      = _ic([['path',{d:'M21 12V7H5a2 2 0 0 1 0-4h14v4'}],['path',{d
 const Globe       = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['line',{x1:'2',x2:'22',y1:'12',y2:'12'}],['path',{d:'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'}]]);
 const HelpCircle  = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['path',{d:'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'}],['path',{d:'M12 17h.01'}]]);
 const Crown       = _ic([['path',{d:'m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'}]]);
-const Video       = _ic([['path',{d:'m22 8-6 4 6 4V8z'}],['rect',{x:'2',y:'6',width:'14',height:'12',rx:'2'}]]);
 const ImageIcon   = _ic([['rect',{x:'3',y:'3',width:'18',height:'18',rx:'2'}],['circle',{cx:'8.5',cy:'8.5',r:'1.5'}],['polyline',{points:'21 15 16 10 5 21'}]]);
 const Bell        = _ic([['path',{d:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'}],['path',{d:'M10.3 21a1.94 1.94 0 0 0 3.4 0'}]]);
 const Info        = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['path',{d:'M12 16v-4'}],['path',{d:'M12 8h.01'}]]);
@@ -209,12 +225,25 @@ function IconTile({ icon: Icon, size = 46, tone = 'cyan' }) {
     </div>
   );
 }
-function EmojiTile({ emoji, size = 46 }) {
+/* Emojiga mos professional ikon — HAMMASI bir xil brand rangda (saytdek) */
+const EMOJI_ICON = {
+  '🎥': Video, '🎬': Film, '🖥️': Monitor, '🖥': Monitor,
+  '🌱': Sprout, '⚡': Zap, '⚡️': Zap,
+  '🤖': Bot, '🍌': Banana, '🌀': Wind, '🌊': Droplet,
+  '🌸': Flower, '🔮': Crystal, '🗣': Mic, '🤿': Move,
+  '🐴': Sparkles, '🎨': Wand,
+};
+function EmojiTile({ emoji, size = 46, id }) {
   const r = size * 0.28;
+  const useEmoji = emoji === '🍌';   /* banan uchun emoji + kulrang filter (SVG banan tushunarsiz) */
+  const Ic = EMOJI_ICON[emoji] || Sparkles;
+  const fg = 'rgba(236,241,248,0.62)';   /* pastki panel kabi kulrang */
   return (
-    <div style={{ width: size, height: size, borderRadius: r, position: 'relative', overflow: 'hidden', flex: '0 0 auto', display: 'grid', placeItems: 'center', fontSize: size * 0.5, background: 'linear-gradient(160deg,#23242B,#0A0B0E)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: `0 8px 18px rgba(43,212,255,0.18), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -${size * 0.22}px ${size * 0.34}px rgba(43,212,255,0.28)` }}>
-      <div style={{ position: 'absolute', top: -size * 0.5, left: -size * 0.1, width: size * 1.2, height: size * 0.85, borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 72%)', pointerEvents: 'none' }} />
-      <span style={{ position: 'relative', lineHeight: 1 }}>{emoji}</span>
+    <div style={{ width: size, height: size, borderRadius: r, position: 'relative', overflow: 'hidden', flex: '0 0 auto', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)', border: '1px solid rgba(255,255,255,0.14)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -8px 20px rgba(255,255,255,0.03), 0 8px 22px rgba(0,0,0,0.35)' }}>
+      <div style={{ position: 'absolute', top: -size * 0.45, left: -size * 0.1, width: size * 1.2, height: size * 0.8, borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 72%)', pointerEvents: 'none' }} />
+      {useEmoji
+        ? <span style={{ fontSize: size * 0.5, lineHeight: 1, position: 'relative', filter: 'grayscale(1) brightness(1.7) contrast(0.85)', opacity: 0.9 }}>{emoji}</span>
+        : <Ic size={size * 0.46} color={fg} strokeWidth={2} />}
     </div>
   );
 }
@@ -391,7 +420,7 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy }) {
         {featured.map((m) => (
           <button key={m.id} className="tap" onClick={() => openModel(m)} style={{ flex: '0 0 auto', width: 150, borderRadius: 20, padding: 14, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(43,212,255,0.22)' }}>
             <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
-            <EmojiTile emoji={m.emoji} size={44} />
+            <EmojiTile emoji={m.emoji} id={m.id} size={44} />
             <div style={{ position: 'relative' }}>
               <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
               <div style={{ fontSize: 11.5, color: isVideoModel(m) ? c.blue : c.sub, fontWeight: 600, marginTop: 2 }}>{isVideoModel(m) ? 'Video' : 'Rasm'}</div>
@@ -464,7 +493,7 @@ function ModelListScreen({ cat, setCat, openModel }) {
           const pTxt = minPriceText(m);
           return (
             <button key={m.id} className="tap rise" onClick={() => openModel(m)} style={{ borderRadius: 14, padding: '12px 13px', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', animationDelay: Math.min(i * 35, 350) + 'ms', ...glass }}>
-              <EmojiTile emoji={m.emoji} size={44} />
+              <EmojiTile emoji={m.emoji} id={m.id} size={44} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</div>
                 <div style={{ fontSize: 11.5, color: m.badge ? c.blue : c.faint, fontWeight: 600, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.badge || meta.hook}</div>
@@ -645,7 +674,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       <div className="rise" style={{ margin: '8px 16px', borderRadius: 20, padding: 16, position: 'relative', overflow: 'hidden', border: '1px solid rgba(43,212,255,0.28)', background: 'linear-gradient(160deg, rgba(43,212,255,0.14), rgba(255,255,255,0.04) 60%, rgba(10,12,16,0.3))', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 14px 36px rgba(0,0,0,0.45)' }}>
         <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 60, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 10, position: 'relative' }}>
-          <EmojiTile emoji={model.emoji} size={50} />
+          <EmojiTile emoji={model.emoji} id={model.id} size={50} />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: c.text, letterSpacing: -0.3 }}>{model.name}</div>
             {model.badge ? <div style={{ fontSize: 12, color: c.blue, fontWeight: 600, marginTop: 1 }}>{model.badge}</div> : null}
@@ -761,7 +790,7 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
       <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ width: '100%', borderRadius: '28px 28px 0 0', padding: '10px 16px calc(20px + env(safe-area-inset-bottom))', background: 'linear-gradient(180deg,#15161B,#0B0C0F)', border: '1px solid rgba(255,255,255,0.1)', borderBottom: 'none', boxShadow: '0 -20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
         <div style={{ width: 40, height: 4.5, borderRadius: 3, background: 'rgba(255,255,255,0.2)', margin: '6px auto 16px' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 14 }}>
-          <EmojiTile emoji={model.emoji} size={48} />
+          <EmojiTile emoji={model.emoji} id={model.id} size={48} />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3 }}>{model.name}</div>
             <div style={{ fontSize: 12.5, color: c.sub, marginTop: 1 }}>Buyurtmani tasdiqlang</div>
@@ -876,7 +905,7 @@ function GalleryScreen({ goCreate }) {
                 : <img src={API_BASE + it.url} alt={it.name} style={{ width: '100%', display: 'block' }} />}
               <button className="tap" onClick={() => galleryDownload(it, (_, v) => setDlState((s) => ({ ...s, [it.id]: v })))}
                 style={{ position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', color: '#fff', fontSize: dlState[it.id] === '✓' ? 16 : 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                {dlState[it.id] === '…' ? <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} /> : (dlState[it.id] === '✓' ? '✓' : '⬇')}
+                {dlState[it.id] === '…' ? <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} /> : (dlState[it.id] === '✓' ? <Check size={18} /> : <Download size={18} />)}
               </button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
@@ -983,7 +1012,7 @@ function BuyScreen({ onClose }) {
           {STAR_PACKAGES.map((p, i) => (
             <button key={p.tangacha} className="tap rise" onClick={() => buy(p)} style={{ position: 'relative', borderRadius: 20, padding: 16, display: 'flex', alignItems: 'center', gap: 15, textAlign: 'left', animationDelay: i * 55 + 'ms', ...glass, ...(p.badge ? { border: '1px solid rgba(43,212,255,0.5)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 0 44px rgba(43,212,255,0.18), 0 12px 30px rgba(0,0,0,0.35)' } : {}) }}>
               {p.badge ? <span style={{ position: 'absolute', top: -8, right: 14, padding: '3px 10px', borderRadius: 20, fontSize: 10.5, fontWeight: 700, ...glossy }}>{p.badge} {p.label}</span> : null}
-              <EmojiTile emoji={p.emoji} size={50} />
+              <EmojiTile emoji={p.emoji} id={p.id} size={50} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3, ...num }}>
                   {p.tangacha}{p.bonus > 0 ? <span style={{ color: c.blue, fontSize: 14 }}> +{p.bonus}</span> : null} ⚡
@@ -1067,7 +1096,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
     <div style={{ position: 'absolute', inset: 0, zIndex: 70, background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
       <div className="rise" style={{ width: '100%', maxWidth: 400, borderRadius: 24, overflow: 'hidden', background: 'linear-gradient(180deg,#15161B,#0B0C0F)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 70px rgba(0,0,0,0.7)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <EmojiTile emoji={job.model.emoji} size={38} />
+          <EmojiTile emoji={job.model.emoji} id={job.model.id} size={38} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 15.5, fontWeight: 800, color: c.text }}>{job.model.name}</div>
             <div style={{ fontSize: 12.5, color: running ? c.blue : (done ? '#4ADE80' : '#FF6B6B'), fontWeight: 600 }}>
@@ -1114,7 +1143,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
         <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', display: 'flex', gap: 10 }}>
           {done ? (
             <>
-              <button className="tap" onClick={download} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>{dlMsg || '⬇ Yuklab olish'}</button>
+              <button className="tap" onClick={download} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, justifyContent: 'center' }}>{dlMsg ? dlMsg : <React.Fragment><Download size={18} /> Yuklab olish</React.Fragment>}</span></button>
               <button className="tap" onClick={goGallery} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>Galereya</button>
             </>
           ) : failed ? (
