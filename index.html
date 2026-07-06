@@ -491,28 +491,44 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [refs, setRefs] = useState([]);      /* [{id, url, preview}] */
   const [upErr, setUpErr] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadKey, setUploadKey] = useState(0);   /* input'ni qayta yaratish uchun — WebViewda Photo Library qotsa tiklanadi */
   const onFile = async (e) => {
     const file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
+    e.target.value = '';       /* keyingi tanlov uchun tozalash */
+    if (!file) { setUploading(false); return; }   /* bekor qilindi — tugma tiklanadi */
     if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); return; }
     if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); return; }
     setUploading(true); setUpErr('');
+    const preview = URL.createObjectURL(file);
+    const fd = new FormData(); fd.append('file', file);
+    const tg = TG();
+    /* MUHIM: FormData'da Content-Type QO'YILMAYDI — brauzer o'zi boundary bilan qo'yadi */
+    const headers = {};
+    const initData = tg && tg.initData ? tg.initData : '';
+    if (initData) headers['X-Tg-Init-Data'] = initData;
+    const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
+    if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
     try {
-      const preview = URL.createObjectURL(file);
-      const fd = new FormData(); fd.append('file', file);
-      const tg = TG();
-      const headers = {};
-      const initData = tg && tg.initData ? tg.initData : '';
-      if (initData) headers['X-Tg-Init-Data'] = initData;
-      const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
-      if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
-      const r = await fetch(API_BASE + '/tg/upload', { method: 'POST', headers, body: fd });
-      const d = await r.json();
-      if (!r.ok || !d.upload_id) { setUpErr(d.error || 'Yuklashda xato'); setUploading(false); return; }
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 45000);   /* 45s timeout */
+      let r;
+      try {
+        r = await fetch(API_BASE + '/tg/upload', { method: 'POST', headers, body: fd, signal: ctrl.signal });
+      } finally { clearTimeout(timer); }
+      let d = {};
+      try { d = await r.json(); } catch (pe) { d = {}; }
+      if (!r.ok) { setUpErr(d.error || ('Yuklashda xato (' + r.status + ')')); setUploading(false); return; }
+      if (!d.upload_id) { setUpErr('Server javobida xato'); setUploading(false); return; }
       setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview }]);
-    } catch (err) { setUpErr('Tarmoq xatosi'); }
+      haptic('light');
+    } catch (err) {
+      const msg = (err && err.name === 'AbortError') ? 'Yuklash cho\'zildi — qayta urining' : 'Ulanmadi — internetni tekshiring';
+      setUpErr(msg);
+    }
     setUploading(false);
+    /* input'ni yangilaymiz (keyingi tanlov + Photo Library qotgan holatdan tiklanish) */
+    setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
   const removeRef = (id) => setRefs((prev) => prev.filter((x) => x.id !== id));
   const summary = [res, asp, dur ? dur + 's' : null, prompt.trim() ? '\u270D\uFE0F' : null].filter(Boolean).join(' · ');
@@ -586,9 +602,16 @@ function ParamsScreen({ model, onBack, onSubmit }) {
               </div>
             ))}
             {refs.length < meta.refs && (
-              <label style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 12, fontWeight: 600, cursor: 'pointer', overflow: 'hidden' }}>
+              <label key={uploadKey} htmlFor={'reffile-' + uploadKey} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 12, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent', pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.6 : 1 }}>
                 {uploading ? <span style={{ fontSize: 20 }}>…</span> : <><Paperclip size={18} /><span>Qo'shish</span></>}
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/*" onChange={onFile} disabled={uploading} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+                {/* input: iOS PHPicker uchun DOM'da to'liq mavjud, ustma-ust, disabled EMAS (picker uzilmasin) */}
+                <input
+                  id={'reffile-' + uploadKey}
+                  type="file"
+                  accept="image/*"
+                  onChange={onFile}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16, WebkitAppearance: 'none' }}
+                />
               </label>
             )}
           </div>
@@ -967,6 +990,7 @@ function App() {
     const tg = TG();
     if (!tg) return;
     try { tg.ready(); tg.expand(); } catch (e) { /* noop */ }
+    try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) { /* noop */ }
     try { tg.setHeaderColor('#070809'); tg.setBackgroundColor('#070809'); } catch (e) { /* noop */ }
     try {
       const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
