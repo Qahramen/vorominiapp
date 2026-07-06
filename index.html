@@ -513,6 +513,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [uploadKey, setUploadKey] = useState(0);   /* input'ni qayta yaratish uchun — WebViewda Photo Library qotsa tiklanadi */
   const galleryTriedAt = React.useRef(0);          /* Galereya bosilgan vaqt — qotishni aniqlash uchun */
   const gotFileAfterTry = React.useRef(false);
+  const reviveTimer = React.useRef(null);
   const uploadOne = async (file) => {
     const preview = URL.createObjectURL(file);
     const fd = new FormData(); fd.append('file', file);
@@ -537,6 +538,8 @@ function ParamsScreen({ model, onBack, onSubmit }) {
 
   const onFile = async (e) => {
     gotFileAfterTry.current = true;   /* fayl keldi — qotish bo'lmadi */
+    galleryTriedAt.current = 0;
+    if (reviveTimer.current) { clearTimeout(reviveTimer.current); reviveTimer.current = null; }
     const files = Array.from((e.target && e.target.files) || []);
     e.target.value = '';
     if (!files.length) { setUploading(false); return; }   /* bekor qilindi */
@@ -559,61 +562,74 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
-  const pasteImage = async () => {
-    setUpErr('');
-    if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
-    if (!navigator.clipboard || !navigator.clipboard.read) {
-      setUpErr("Bu qurilmada Joylash ishlamaydi — Galereya yoki Kamera ishlating");
-      return;
+  const [showPasteBox, setShowPasteBox] = useState(false);
+  const handleManualPaste = async (e) => {
+    e.preventDefault();
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    let file = null;
+    for (const it of items) {
+      if (it.kind === 'file' && it.type.indexOf('image/') === 0) { file = it.getAsFile(); break; }
     }
-    try {
-      const items = await navigator.clipboard.read();
-      let found = null;
-      for (const it of items) {
-        const t = (it.types || []).find((x) => x.indexOf('image/') === 0);
-        if (t) { found = await it.getType(t); break; }
-      }
-      if (!found) { setUpErr("Buferda rasm topilmadi. Avval rasmni bosib turib \u00ABCopy\u00BB qiling, so'ng Joylash bosing."); return; }
-      setUploading(true);
-      const file = new File([found], 'paste.' + ((found.type.split('/')[1]) || 'png'), { type: found.type });
-      await uploadOne(file);
-      haptic('light');
-    } catch (err) {
-      if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
-        setUpErr("Joylash uchun ruxsat kerak. Rasmni Fotolardan \u00ABCopy\u00BB qilib, shu tugmani bosing. Ishlamasa — Galereya yoki Kamera.");
-      } else {
-        setUpErr((err && err.message) ? err.message : "Joylashda xato — Galereya ishlating");
-      }
-    }
+    setShowPasteBox(false);
+    if (!file) { setUpErr("Buferda rasm topilmadi \u2014 avval rasmni Copy qiling"); return; }
+    setUploading(true); setUpErr('');
+    try { await uploadOne(file); haptic('light'); }
+    catch (err) { setUpErr((err && err.message) || 'Yuklashda xato'); }
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
+  const pasteImage = async () => {
+    setUpErr('');
+    if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    /* 1-urinish: to'g'ridan clipboard.read (Android/desktop'da ishlaydi) */
+    if (navigator.clipboard && navigator.clipboard.read) {
+      try {
+        const items = await navigator.clipboard.read();
+        for (const it of items) {
+          const t = (it.types || []).find((x) => x.indexOf('image/') === 0);
+          if (t) {
+            const blob = await it.getType(t);
+            setUploading(true);
+            const file = new File([blob], 'paste.' + ((blob.type.split('/')[1]) || 'png'), { type: blob.type });
+            await uploadOne(file);
+            haptic('light');
+            setUploading(false);
+            setTimeout(() => setUploadKey((k) => k + 1), 100);
+            return;
+          }
+        }
+        setUpErr("Buferda rasm topilmadi \u2014 avval rasmni Copy qiling");
+        return;
+      } catch (err) { /* bloklangan (iOS Telegram) — paste-box'ga o'tamiz */ }
+    }
+    /* 2-yo'l: qo'lda Paste maydoni (iOS'da doim ishlaydi) */
+    setShowPasteBox(true);
+  };
 
-  /* Qotishdan avto-tiklanish + qotish aniqlansa foydalanuvchiga tushunarli xabar */
+  /* Qotish detektori: fokus qaytgach 2.5s fayl kutamiz.
+     Fayl kelsa — hech narsa qilmaymiz (oddiy oqim buzilmaydi).
+     Kelmasa — haqiqiy qotish: xabar + tugmalarni tiklash. */
   useEffect(() => {
-    const bump = () => { setUploading(false); setUploadKey((k) => k + 1); };
-    const revive = () => {
-      /* Bir necha bosqichda tiklaymiz — WebView blur'dan sekin qaytishi mumkin */
-      bump();
-      setTimeout(bump, 250);
-      setTimeout(bump, 700);
-      const tried = galleryTriedAt.current;
-      if (tried && !gotFileAfterTry.current && (Date.now() - tried) > 1500) {
-        setUpErr("Galereya ochilmadi \u2014 bu Telegram qulfi (Face ID) xatosi. \u00ABKamera\u00BB ishlating yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni vaqtincha o'chiring.");
-      }
-      galleryTriedAt.current = 0;
+    const onReturn = () => {
+      if (!galleryTriedAt.current) return;            /* Galereya bosilmagan — aralashmaymiz */
+      if (reviveTimer.current) clearTimeout(reviveTimer.current);
+      reviveTimer.current = setTimeout(() => {
+        reviveTimer.current = null;
+        if (galleryTriedAt.current && !gotFileAfterTry.current) {
+          setUploading(false);
+          setUploadKey((k) => k + 1);
+          setUpErr("Galereya ochilmadi \u2014 bu Telegram qulfi (Face ID) xatosi. \u00ABKamera\u00BB ishlating yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni vaqtincha o'chiring.");
+        }
+        galleryTriedAt.current = 0;
+      }, 2500);
     };
-    document.addEventListener('visibilitychange', revive);
-    window.addEventListener('focus', revive);
-    window.addEventListener('pageshow', revive);
-    /* Telegram viewport hodisasi ham tiklaydi (qulf blur'idan keyin) */
-    const tgi = TG();
-    try { if (tgi && tgi.onEvent) tgi.onEvent('viewportChanged', revive); } catch (e) { /* noop */ }
+    const onVis = () => { if (document.visibilityState === 'visible') onReturn(); };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('focus', onReturn);
     return () => {
-      document.removeEventListener('visibilitychange', revive);
-      window.removeEventListener('focus', revive);
-      window.removeEventListener('pageshow', revive);
-      try { if (tgi && tgi.offEvent) tgi.offEvent('viewportChanged', revive); } catch (e) { /* noop */ }
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('focus', onReturn);
+      if (reviveTimer.current) clearTimeout(reviveTimer.current);
     };
   }, []);
 
@@ -707,6 +723,17 @@ function ParamsScreen({ model, onBack, onSubmit }) {
               </React.Fragment>
             )}
           </div>
+          {showPasteBox && (
+            <div style={{ margin: '10px 16px 0', padding: '4px', borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.06)' }}>
+              <div
+                contentEditable
+                suppressContentEditableWarning
+                onPaste={handleManualPaste}
+                style={{ minHeight: 46, borderRadius: 10, padding: '12px 14px', fontSize: 14, color: c.blue, outline: 'none', WebkitUserSelect: 'text', userSelect: 'text' }}
+              >{'Shu yerni bosib turib \u00ABPaste\u00BB (Joylash) ni tanlang\u2026'}</div>
+              <button className="tap" onClick={() => setShowPasteBox(false)} style={{ margin: '0 8px 8px', border: 'none', background: 'transparent', color: c.faint, fontSize: 12.5 }}>Bekor qilish</button>
+            </div>
+          )}
           {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
           <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'}</div>
         </div>
