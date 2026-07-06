@@ -536,14 +536,16 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [asp, setAsp] = useState(meta.aspects.length ? meta.aspects[0] : null);
   const [dur, setDur] = useState(video && meta.dur_steps.length ? meta.dur_steps[0] : null);
   const [prompt, setPrompt] = useState('');
-  const [refs, setRefs] = useState([]);      /* [{id, url, preview}] */
+  const [refs, setRefs] = useState([]);      /* [{id, url, preview, kind}] */
+  const isSeedance = /seedance-2\.0/.test(model.id || '');   /* audio+video qabul qiladi */
   const [upErr, setUpErr] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadingKind, setUploadingKind] = useState(null);   /* 'image'|'video'|'audio' — faqat shu bo'limda spinner */
   const [uploadKey, setUploadKey] = useState(0);   /* input'ni qayta yaratish uchun — WebViewda Photo Library qotsa tiklanadi */
   const galleryTriedAt = React.useRef(0);          /* Galereya bosilgan vaqt — qotishni aniqlash uchun */
   const gotFileAfterTry = React.useRef(false);
   const reviveTimer = React.useRef(null);
-  const uploadOne = async (file) => {
+  const uploadOne = async (file, kind) => {
     const preview = URL.createObjectURL(file);
     const fd = new FormData(); fd.append('file', file);
     const tg = TG();
@@ -562,35 +564,35 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     try { d = await r.json(); } catch (pe) { d = {}; }
     if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
     if (!d.upload_id) throw new Error('Server javobida xato');
-    setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview }]);
+    setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview, kind: kind || d.kind || 'image' }]);
   };
 
-  const onFile = async (e) => {
-    gotFileAfterTry.current = true;   /* fayl keldi — qotish bo'lmadi */
+  const onFileKind = (kind) => async (e) => {
+    gotFileAfterTry.current = true;
     galleryTriedAt.current = 0;
     if (reviveTimer.current) { clearTimeout(reviveTimer.current); reviveTimer.current = null; }
     const files = Array.from((e.target && e.target.files) || []);
     e.target.value = '';
-    if (!files.length) { setUploading(false); return; }   /* bekor qilindi */
+    if (!files.length) { setUploading(false); setUploadingKind(null); return; }
+    setUploadingKind(kind);
     setUpErr('');
     const slots = meta.refs - refs.length;
-    if (slots <= 0) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    if (slots <= 0) { setUpErr('Maksimal ' + meta.refs + ' ta fayl'); return; }
+    const typeRe = kind === 'audio' ? /^audio\// : (kind === 'video' ? /^video\// : /^image\//);
+    const limitMB = kind === 'video' ? 50 : (kind === 'audio' ? 20 : 10);
     const batch = files.slice(0, slots);
-    if (files.length > slots) setUpErr('Faqat ' + slots + ' tasi qo\'shildi (limit ' + meta.refs + ')');
     setUploading(true);
     for (const file of batch) {
-      if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); continue; }
-      if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta o\'tkazildi'); continue; }
-      try {
-        await uploadOne(file);
-        haptic('light');
-      } catch (err) {
-        setUpErr((err && err.name === 'AbortError') ? 'Yuklash cho\'zildi — qayta urining' : (err.message || 'Ulanmadi'));
-      }
+      if (!typeRe.test(file.type || '')) { setUpErr('Fayl turi mos emas'); continue; }
+      if (file.size > limitMB * 1024 * 1024) { setUpErr('Fayl ' + limitMB + ' MB dan katta'); continue; }
+      try { await uploadOne(file, kind); haptic('light'); }
+      catch (err) { setUpErr((err && err.name === 'AbortError') ? 'Yuklash cho\'zildi' : (err.message || 'Ulanmadi')); }
     }
     setUploading(false);
+    setUploadingKind(null);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
+  const onFile = onFileKind('image');
   const [showPasteBox, setShowPasteBox] = useState(false);
   const handleManualPaste = async (e) => {
     e.preventDefault();
@@ -723,35 +725,86 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         <div style={{ padding: '6px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>G'oyangizni qancha aniq yozsangiz, natija shuncha yaxshi chiqadi.</div>
       </div>
 
-      {meta.refs > 0 && (
+      {meta.refs > 0 && (() => {
+        const imgRefs = refs.filter((r) => (r.kind || 'image') === 'image');
+        const vidRefs = refs.filter((r) => r.kind === 'video');
+        const audRefs = refs.filter((r) => r.kind === 'audio');
+        const full = refs.length >= meta.refs;
+        return (
         <div className="rise" style={{ margin: '18px 16px 0', animationDelay: '200ms' }}>
-          <Label>{'REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY') + ' \u00B7 ' + refs.length + '/' + meta.refs}</Label>
+          {/* ── RASM ── */}
+          <Label>{isSeedance ? 'RASM' : ('REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ''))}</Label>
           <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-            {refs.map((rf) => (
+            {imgRefs.map((rf) => (
               <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
                 <img src={rf.preview} alt="ref" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <button className="tap" onClick={() => removeRef(rf.id)} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
               </div>
             ))}
-            {refs.length < meta.refs && (
-              <React.Fragment key={uploadKey}>
-                {/* GALEREYA — multiple => iOS'da to'g'ridan rasm tanlash (action sheet'siz) */}
-                <label onClick={() => { galleryTriedAt.current = Date.now(); gotFileAfterTry.current = false; }} style={upTileStyle(uploading, true)}>
-                  {uploading ? <Spinner /> : <React.Fragment><Images size={22} strokeWidth={2} /><span style={upTileLabel}>Galereya</span></React.Fragment>}
-                  <input type="file" accept="image/*" multiple onChange={onFile} style={upInputStyle} />
+            {!full && (
+              <React.Fragment key={'img' + uploadKey}>
+                <label onClick={() => { galleryTriedAt.current = Date.now(); gotFileAfterTry.current = false; }} style={upTileStyle(uploadingKind === 'image', true)}>
+                  {uploadingKind === 'image' ? <Spinner /> : <React.Fragment><Images size={22} strokeWidth={2} /><span style={upTileLabel}>Galereya</span></React.Fragment>}
+                  <input type="file" accept="image/*" multiple onChange={onFileKind('image')} style={upInputStyle} />
                 </label>
-                {/* KAMERA */}
-                <label style={upTileStyle(uploading, false)}>
-                  {uploading ? <Spinner /> : <React.Fragment><Camera size={22} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
-                  <input type="file" accept="image/*" capture="environment" onChange={onFile} style={upInputStyle} />
+                <label style={upTileStyle(uploadingKind === 'image', false)}>
+                  {uploadingKind === 'image' ? <Spinner /> : <React.Fragment><Camera size={22} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
+                  <input type="file" accept="image/*" capture="environment" onChange={onFileKind('image')} style={upInputStyle} />
                 </label>
               </React.Fragment>
             )}
           </div>
-          {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'}</div>
+
+          {/* ── VIDEO (faqat Seedance, ixtiyoriy) ── */}
+          {isSeedance && (
+            <React.Fragment>
+              <div style={{ height: 14 }} />
+              <Label>{'VIDEO \u00B7 IXTIYORIY'}</Label>
+              <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {vidRefs.map((rf) => (
+                  <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', background: '#000' }}>
+                    <video src={rf.preview} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', pointerEvents: 'none' }}><Film size={20} color="#fff" /></div>
+                    <button className="tap" onClick={() => removeRef(rf.id)} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
+                  </div>
+                ))}
+                {!full && (
+                  <label key={'vid' + uploadKey} style={upTileStyle(uploadingKind === 'video', false)}>
+                    {uploadingKind === 'video' ? <Spinner /> : <React.Fragment><Film size={22} strokeWidth={2} /><span style={upTileLabel}>Video</span></React.Fragment>}
+                    <input type="file" accept="video/*" onChange={onFileKind('video')} style={upInputStyle} />
+                  </label>
+                )}
+              </div>
+            </React.Fragment>
+          )}
+
+          {/* ── AUDIO (faqat Seedance, ixtiyoriy) ── */}
+          {isSeedance && (
+            <React.Fragment>
+              <div style={{ height: 14 }} />
+              <Label>{'AUDIO \u00B7 IXTIYORIY'}</Label>
+              <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {audRefs.map((rf) => (
+                  <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.05)' }}>
+                    <Mic size={24} color={c.sub} />
+                    <button className="tap" onClick={() => removeRef(rf.id)} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
+                  </div>
+                ))}
+                {!full && (
+                  <label key={'aud' + uploadKey} style={upTileStyle(uploadingKind === 'audio', false)}>
+                    {uploadingKind === 'audio' ? <Spinner /> : <React.Fragment><Mic size={22} strokeWidth={2} /><span style={upTileLabel}>Audio</span></React.Fragment>}
+                    <input type="file" accept="audio/*" onChange={onFileKind('audio')} style={upInputStyle} />
+                  </label>
+                )}
+              </div>
+            </React.Fragment>
+          )}
+
+          {upErr ? <div style={{ padding: '10px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
+          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? 'Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).' : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.')}</div>
         </div>
-      )}
+        );
+      })()}
 
       {/* sticky CTA */}
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
