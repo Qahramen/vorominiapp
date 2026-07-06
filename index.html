@@ -213,6 +213,14 @@ const TONES = {
 };
 
 /* ── atoms ── */
+const TEMPLATE_ICON = (id) => {
+  const map = { fotosessiya: Camera, restore: Wand, product_ad: ImageIcon, wedding: Crown, thumb: Film };
+  return map[id] || Wand;
+};
+const TOOL_ICON = (id) => {
+  const map = { restore: Wand, product_ad: ImageIcon, wedding: Crown, thumb: Film };
+  return map[id] || Wand;
+};
 function IconTile({ icon: Icon, size = 46, tone = 'cyan' }) {
   const t = TONES[tone] || TONES.cyan; const r = size * 0.28;
   return (
@@ -370,7 +378,7 @@ function DurationSlider({ steps, value, onChange }) {
 }
 
 /* ── HOME ── */
-function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate }) {
+function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate, tools, openTool }) {
   const featured = FEATURED_IDS.map((id) => [...VIDEO_MODELS, ...IMAGE_MODELS].find((m) => m.id === id)).filter(Boolean);
   return (
     <div>
@@ -422,10 +430,28 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
             {templates.map((t) => (
               <button key={t.id} className="tap" onClick={() => openTemplate(t)} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(255,209,102,0.28)' }}>
                 <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
-                <div style={{ fontSize: 30 }}>{(t.name || '').match(/^\p{Emoji}/u) ? (t.name.match(/^(\p{Emoji}\uFE0F?)/u) || [''])[0] : '✨'}</div>
+                <IconTile icon={TEMPLATE_ICON(t.id)} size={48} tone="gold" />
                 <div style={{ position: 'relative' }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(t.name || '').replace(/^(\p{Emoji}\uFE0F?\s*)/u, '')}</div>
                   <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + ' uslub' : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </React.Fragment>
+      )}
+
+      {tools && tools.length > 0 && (
+        <React.Fragment>
+          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Vositalar</div>
+          <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '170ms' }}>
+            {tools.map((t) => (
+              <button key={t.id} className="tap" onClick={() => openTool(t)} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(95,230,255,0.22)' }}>
+                <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
+                <IconTile icon={TOOL_ICON(t.id)} size={48} tone="cyan" />
+                <div style={{ position: 'relative' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</div>
+                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.cost ? t.cost + '⚡' : ''}</div>
                 </div>
               </button>
             ))}
@@ -1060,6 +1086,96 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
   );
 }
 
+function ToolScreen({ tool, balance, onBack, onGenerate }) {
+  const [refs, setRefs] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [upErr, setUpErr] = useState('');
+  const [uploadKey, setUploadKey] = useState(0);
+  const cost = tool.cost;
+  const notEnough = balance != null && cost != null && cost > balance;
+
+  const uploadOne = async (file) => {
+    const preview = URL.createObjectURL(file);
+    const fd = new FormData(); fd.append('file', file);
+    const tg = TG();
+    const headers = {};
+    const initData = tg && tg.initData ? tg.initData : '';
+    if (initData) headers['X-Tg-Init-Data'] = initData;
+    const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
+    if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 60000);
+    let r;
+    try { r = await fetch(API_BASE + '/tg/upload', { method: 'POST', headers, body: fd, signal: ctrl.signal }); }
+    finally { clearTimeout(timer); }
+    let d = {};
+    try { d = await r.json(); } catch (e) { d = {}; }
+    if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
+    if (!d.upload_id) throw new Error('Server javobida xato');
+    setRefs([{ id: d.upload_id, url: d.url, preview }]);
+  };
+  const onFile = async (e) => {
+    const files = Array.from((e.target && e.target.files) || []);
+    e.target.value = '';
+    if (!files.length) { setUploading(false); return; }
+    setUpErr('');
+    setUploading(true);
+    const file = files[0];
+    if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); setUploading(false); return; }
+    if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); setUploading(false); return; }
+    try { await uploadOne(file); haptic('light'); }
+    catch (err) { setUpErr(err.message || 'Ulanmadi'); }
+    setUploading(false);
+    setTimeout(() => setUploadKey((k) => k + 1), 100);
+  };
+
+  const canGen = refs.length > 0 && !notEnough;
+  const doGen = () => {
+    if (refs.length === 0) { setUpErr('Rasm yuklang'); return; }
+    if (notEnough) { setUpErr('Balans yetarli emas'); return; }
+    haptic('medium');
+    onGenerate({ tool_id: tool.id, refs: refs.map((r) => r.id), refPreviews: refs.map((r) => r.preview), cost: cost });
+  };
+
+  return (
+    <div style={{ paddingBottom: 120 }}>
+      <Header title={tool.name} onBack={onBack} />
+      {tool.desc && <div style={{ padding: '4px 18px 0', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{tool.desc}</div>}
+
+      <div style={{ padding: '20px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Rasmingiz</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, padding: '0 16px' }}>
+        {refs.map((rf) => (
+          <div key={rf.id} style={{ position: 'relative', width: 96, height: 96, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
+            <img src={rf.preview} alt="ref" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <button className="tap" onClick={() => setRefs([])} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
+          </div>
+        ))}
+        {refs.length === 0 && (
+          <React.Fragment key={uploadKey}>
+            <label style={{ ...upTileStyle(uploading, true), width: 96, height: 96 }}>
+              {uploading ? <Spinner /> : <React.Fragment><Images size={24} strokeWidth={2} /><span style={upTileLabel}>Galereya</span></React.Fragment>}
+              <input type="file" accept="image/*" onChange={onFile} style={upInputStyle} />
+            </label>
+            <label style={{ ...upTileStyle(uploading, false), width: 96, height: 96 }}>
+              {uploading ? <Spinner /> : <React.Fragment><Camera size={24} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
+              <input type="file" accept="image/*" capture="environment" onChange={onFile} style={upInputStyle} />
+            </label>
+          </React.Fragment>
+        )}
+      </div>
+      {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
+
+      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+        <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <button className="tap" onClick={doGen} disabled={!canGen} style={{ width: '100%', padding: '15px 0', borderRadius: 16, fontSize: 15.5, fontWeight: 700, ...(canGen ? glossy : { ...glass, color: c.faint }) }}>
+            {notEnough ? 'Balans yetarli emas' : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GalleryScreen({ goCreate }) {
   const [items, setItems] = useState(null);   /* null=yuklanmoqda, []=bo'sh */
   const [dlState, setDlState] = useState({}); /* {itemId: '…'|'✓'} */
@@ -1372,6 +1488,8 @@ function App() {
   const [job, setJob] = useState(null); /* {status, progress, result_url, type, model, error} */
   const [templates, setTemplates] = useState([]);   /* backend'dan shablonlar */
   const [activeTemplate, setActiveTemplate] = useState(null);   /* tanlangan shablon */
+  const [tools, setTools] = useState([]);   /* backend'dan vositalar */
+  const [activeTool, setActiveTool] = useState(null);   /* tanlangan vosita */
 
   useEffect(() => {
     const tg = TG();
@@ -1399,6 +1517,9 @@ function App() {
     apiFetch('/tg/templates')
       .then((d) => { if (d && Array.isArray(d.templates)) setTemplates(d.templates); })
       .catch(() => { /* shablonsiz ishlaydi */ });
+    apiFetch('/tg/tools')
+      .then((d) => { if (d && Array.isArray(d.tools)) setTools(d.tools); })
+      .catch(() => { /* vositasiz ishlaydi */ });
   }, []);
 
   /* Telegram BackButton — har qadamda to'g'ri "orqaga" */
@@ -1411,18 +1532,20 @@ function App() {
       else if (job) { /* ishlayotganda yopmaymiz — foydalanuvchi kutadi */ }
       else if (confirmData) setConfirmData(null);
       else if (showBuy) setShowBuy(false);
+      else if (activeTool) { setActiveTool(null); setTab('home'); }
       else if (activeTemplate) { setActiveTemplate(null); setTab('home'); }
       else if (model) setModel(null);
       else if (tab !== 'home') setTab('home');
     };
     try { tg.BackButton.onClick(handler); } catch (e) { /* noop */ }
-    const needBack = job || confirmData || showBuy || model || activeTemplate || tab !== 'home';
+    const needBack = job || confirmData || showBuy || model || activeTemplate || activeTool || tab !== 'home';
     try { needBack ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) { /* noop */ }
     return () => { try { tg.BackButton.offClick(handler); } catch (e) { /* noop */ } };
-  }, [confirmData, showBuy, model, tab, job, activeTemplate]);
+  }, [confirmData, showBuy, model, tab, job, activeTemplate, activeTool]);
 
   const openModel = (m) => { setCat(isVideoModel(m) ? 'video' : 'image'); setModel(m); setTab('create'); haptic('medium'); };
   const openTemplate = (t) => { setActiveTemplate(t); setTab('template'); haptic('medium'); };
+  const openTool = (t) => { setActiveTool(t); setTab('tool'); haptic('medium'); };
   const goCat = (k) => { setCat(k); setModel(null); setTab('create'); haptic('medium'); };
   const submitParams = (params) => setConfirmData(params);
   const apiPost = async (path, body) => {
@@ -1508,9 +1631,38 @@ function App() {
     setTimeout(poll, 2500);
   };
 
+  const toolGenerate = async (data) => {
+    hapticOk();
+    const preview = (data.refPreviews && data.refPreviews[0]) || null;
+    setActiveTool(null);
+    setTab('home');
+    setJob({ status: 'queued', progress: 5, type: 'image', model: { name: 'Vosita', emoji: '✨', id: 'tool' }, preview, result_url: null, error: null });
+    const payload = { tool_id: data.tool_id, refs: data.refs };
+    const res = await apiPost('/tg/generate', payload);
+    if (!res.ok || !res.data.job_id) {
+      const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
+      setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
+      return;
+    }
+    if (typeof res.data.balance === 'number') setBalance(res.data.balance);
+    const jobId = res.data.job_id;
+    const poll = async () => {
+      try {
+        const jr = await apiFetch('/tg/job/' + jobId);
+        if (typeof jr.balance === 'number') setBalance(jr.balance);
+        if (jr.status === 'done') { hapticOk(); setJob((j) => j ? { ...j, status: 'done', progress: 100, result_url: jr.result_url } : null); return; }
+        if (jr.status === 'failed') { setJob((j) => j ? { ...j, status: 'failed', error: jr.error || 'Amalga oshmadi' } : null); return; }
+        setJob((j) => j ? { ...j, status: jr.status, progress: Math.min(95, jr.progress || j.progress) } : null);
+        setTimeout(poll, 3000);
+      } catch (e) { setTimeout(poll, 4000); }
+    };
+    setTimeout(poll, 2500);
+  };
+
   const inParams = tab === 'create' && !!model;
   const inTemplate = tab === 'template' && !!activeTemplate;
-  const hideNav = inParams || inTemplate;
+  const inTool = tab === 'tool' && !!activeTool;
+  const hideNav = inParams || inTemplate || inTool;
 
   return (
     <div style={{ background: '#000', minHeight: '100vh', display: 'flex', justifyContent: 'center', fontFamily: font }}>
@@ -1537,10 +1689,11 @@ function App() {
         <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.18), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 26s ease-in-out infinite', zIndex: 0 }} />
 
         <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: hideNav ? 0 : 112 }}>
-          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} />}
+          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} tools={tools} openTool={openTool} />}
           {tab === 'create' && !model && <ModelListScreen cat={cat} setCat={setCat} openModel={openModel} />}
           {tab === 'create' && model && <ParamsScreen key={model.id} model={model} onBack={() => setModel(null)} onSubmit={submitParams} />}
           {tab === 'template' && activeTemplate && <TemplateScreen key={activeTemplate.id} template={activeTemplate} balance={balance} onBack={() => { setActiveTemplate(null); setTab('home'); }} onGenerate={templateGenerate} />}
+          {tab === 'tool' && activeTool && <ToolScreen key={activeTool.id} tool={activeTool} balance={balance} onBack={() => { setActiveTool(null); setTab('home'); }} onGenerate={toolGenerate} />}
           {tab === 'gallery' && <GalleryScreen goCreate={() => goCat('video')} />}
           {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} />}
         </div>
