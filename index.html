@@ -492,6 +492,8 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [upErr, setUpErr] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadKey, setUploadKey] = useState(0);   /* input'ni qayta yaratish uchun — WebViewda Photo Library qotsa tiklanadi */
+  const galleryTriedAt = React.useRef(0);          /* Galereya bosilgan vaqt — qotishni aniqlash uchun */
+  const gotFileAfterTry = React.useRef(false);
   const uploadOne = async (file) => {
     const preview = URL.createObjectURL(file);
     const fd = new FormData(); fd.append('file', file);
@@ -515,6 +517,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   };
 
   const onFile = async (e) => {
+    gotFileAfterTry.current = true;   /* fayl keldi — qotish bo'lmadi */
     const files = Array.from((e.target && e.target.files) || []);
     e.target.value = '';
     if (!files.length) { setUploading(false); return; }   /* bekor qilindi */
@@ -537,6 +540,48 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
+  const pasteImage = async () => {
+    setUpErr('');
+    if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.read) {
+        setUpErr("Joylash qo'llab-quvvatlanmaydi — Galereya yoki Kamera ishlating");
+        return;
+      }
+      const items = await navigator.clipboard.read();
+      let found = null;
+      for (const it of items) {
+        const t = (it.types || []).find((x) => x.indexOf('image/') === 0);
+        if (t) { found = await it.getType(t); break; }
+      }
+      if (!found) { setUpErr("Buferda rasm yo'q — avval rasmni Copy qiling"); return; }
+      setUploading(true);
+      const file = new File([found], 'paste.' + (found.type.split('/')[1] || 'png'), { type: found.type });
+      await uploadOne(file);
+      haptic('light');
+    } catch (err) {
+      setUpErr(err && err.name === 'NotAllowedError' ? "Joylashga ruxsat berilmadi" : (err.message || 'Xatolik'));
+    }
+    setUploading(false);
+    setTimeout(() => setUploadKey((k) => k + 1), 100);
+  };
+
+  /* Qotishdan avto-tiklanish + qotish aniqlansa foydalanuvchiga tushunarli xabar */
+  useEffect(() => {
+    const revive = () => {
+      setUploading(false); setUploadKey((k) => k + 1);
+      /* Galereya bosilgan, 2s+ o'tgan, lekin fayl kelmagan = katta ehtimol Telegram qulfi qotirdi */
+      const tried = galleryTriedAt.current;
+      if (tried && !gotFileAfterTry.current && (Date.now() - tried) > 2000) {
+        setUpErr("Galereya ochilmadi — bu Telegram qulfi (Face ID) xatosi. Yechim: \u00ABKamera\u00BB yoki \u00ABJoylash\u00BB (rasmni Copy qilib) ishlating. Yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni o'chiring.");
+      }
+      galleryTriedAt.current = 0;
+    };
+    document.addEventListener('visibilitychange', revive);
+    window.addEventListener('focus', revive);
+    return () => { document.removeEventListener('visibilitychange', revive); window.removeEventListener('focus', revive); };
+  }, []);
+
   const removeRef = (id) => setRefs((prev) => prev.filter((x) => x.id !== id));
   const summary = [res, asp, dur ? dur + 's' : null, prompt.trim() ? '\u270D\uFE0F' : null].filter(Boolean).join(' · ');
   const price = getPrice(model, { res, dur });
@@ -611,7 +656,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             {refs.length < meta.refs && (
               <React.Fragment key={uploadKey}>
                 {/* GALEREYA: multiple -> iOS action sheet O'TKAZIB, to'g'ridan PHPicker ochadi (ruxsat/FaceID YO'Q, qotmaydi) */}
-                <label style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent', pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.6 : 1 }}>
+                <label onClick={() => { galleryTriedAt.current = Date.now(); gotFileAfterTry.current = false; }} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent', pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.6 : 1 }}>
                   {uploading ? <span style={{ fontSize: 20 }}>…</span> : <><span style={{ fontSize: 19 }}>🖼</span><span>Galereya</span></>}
                   <input type="file" accept="image/*" multiple onChange={onFile} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16 }} />
                 </label>
@@ -620,11 +665,15 @@ function ParamsScreen({ model, onBack, onSubmit }) {
                   {uploading ? <span style={{ fontSize: 20 }}>…</span> : <><span style={{ fontSize: 19 }}>📷</span><span>Kamera</span></>}
                   <input type="file" accept="image/*" capture="environment" onChange={onFile} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16 }} />
                 </label>
+                {/* JOYLASH: clipboard'dan — picker umuman ochilmaydi, qotish imkonsiz */}
+                <button className="tap" onClick={pasteImage} disabled={uploading} style={{ width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(255,255,255,0.28)', background: 'rgba(255,255,255,0.05)', color: c.sub, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', opacity: uploading ? 0.6 : 1 }}>
+                  <span style={{ fontSize: 19 }}>📋</span><span>Joylash</span>
+                </button>
               </React.Fragment>
             )}
           </div>
           {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm yuklab, uni asos qilishingiz mumkin.'}</div>
+          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Galereya qotsa: rasmni Copy qilib \u00ABJoylash\u00BB bosing — ishlaydi.'}</div>
         </div>
       )}
 
