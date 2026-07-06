@@ -488,6 +488,36 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [asp, setAsp] = useState(meta.aspects.length ? meta.aspects[0] : null);
   const [dur, setDur] = useState(video && meta.dur_steps.length ? meta.dur_steps[0] : null);
   const [prompt, setPrompt] = useState('');
+  const [refs, setRefs] = useState([]);      /* [{id, url, preview}] */
+  const [upErr, setUpErr] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = React.useRef(null);
+
+  const pickFile = () => { setUpErr(''); if (fileRef.current) fileRef.current.click(); };
+  const onFile = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); return; }
+    setUploading(true); setUpErr('');
+    try {
+      const preview = URL.createObjectURL(file);
+      const fd = new FormData(); fd.append('file', file);
+      const tg = TG();
+      const headers = {};
+      const initData = tg && tg.initData ? tg.initData : '';
+      if (initData) headers['X-Tg-Init-Data'] = initData;
+      const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
+      if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
+      const r = await fetch(API_BASE + '/tg/upload', { method: 'POST', headers, body: fd });
+      const d = await r.json();
+      if (!r.ok || !d.upload_id) { setUpErr(d.error || 'Yuklashda xato'); setUploading(false); return; }
+      setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview }]);
+    } catch (err) { setUpErr('Tarmoq xatosi'); }
+    setUploading(false);
+  };
+  const removeRef = (id) => setRefs((prev) => prev.filter((x) => x.id !== id));
   const summary = [res, asp, dur ? dur + 's' : null, prompt.trim() ? '\u270D\uFE0F' : null].filter(Boolean).join(' · ');
   const price = getPrice(model, { res, dur });
   const psec = perSecInfo(model);
@@ -549,9 +579,24 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       </div>
 
       {meta.refs > 0 && (
-        <div className="rise" style={{ margin: '16px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, background: 'rgba(43,212,255,0.1)', border: '1px solid rgba(43,212,255,0.28)', fontSize: 13, color: c.blue, lineHeight: 1.4, animationDelay: '200ms' }}>
-          <Paperclip size={16} style={{ flex: 'none' }} />
-          <span>{meta.refs_req ? "Bu model rasm talab qiladi — yuborgach, bot rasmni so'raydi." : "Ixtiyoriy: reference rasm qo'shsangiz bo'ladi (bot so'raydi)."}</span>
+        <div className="rise" style={{ margin: '18px 16px 0', animationDelay: '200ms' }}>
+          <Label>{'REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY') + ' \u00B7 ' + refs.length + '/' + meta.refs}</Label>
+          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} style={{ display: 'none' }} />
+          <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {refs.map((rf) => (
+              <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
+                <img src={rf.preview} alt="ref" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <button className="tap" onClick={() => removeRef(rf.id)} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
+              </div>
+            ))}
+            {refs.length < meta.refs && (
+              <button className="tap" onClick={pickFile} disabled={uploading} style={{ width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 12, fontWeight: 600 }}>
+                {uploading ? '…' : <><Paperclip size={18} /><span>Qo'shish</span></>}
+              </button>
+            )}
+          </div>
+          {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
+          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm yuklab, uni asos qilishingiz mumkin.'}</div>
         </div>
       )}
 
@@ -562,7 +607,11 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{model.name}</div>
             <div style={{ fontSize: 12, color: c.sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...num }}>{summary || '—'}</div>
           </div>
-          <button className="tap" onClick={() => { haptic('medium'); onSubmit({ res, asp, dur, prompt: prompt.trim() }); }} style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 15, fontSize: 15, fontWeight: 700, ...glossy }}>
+          <button className="tap" onClick={() => {
+              if (meta.refs_req && refs.length === 0) { setUpErr('Bu model kamida 1 ta rasm talab qiladi'); return; }
+              haptic('medium');
+              onSubmit({ res, asp, dur, prompt: prompt.trim(), refs: refs.map((x) => x.id), refPreviews: refs.map((x) => x.preview) });
+            }} style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 15, fontSize: 15, fontWeight: 700, ...glossy }}>
             {(price != null ? price + ' ⚡ · ' : '') + 'Davom etish →'}
           </button>
         </div>
@@ -823,6 +872,88 @@ function TabBar({ tab, setTab }) {
   );
 }
 
+/* ── RESULT SHEET (generatsiya natijasi Mini App ichida) ── */
+function ResultSheet({ job, onClose, onRetry, goGallery }) {
+  const done = job.status === 'done';
+  const failed = job.status === 'failed';
+  const running = !done && !failed;
+  const mediaUrl = job.result_url ? (API_BASE + job.result_url) : null;
+
+  const download = () => {
+    if (!mediaUrl) return;
+    const tg = TG();
+    try { if (tg && tg.openLink) { tg.openLink(mediaUrl); return; } } catch (e) { /* noop */ }
+    window.open(mediaUrl, '_blank');
+  };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 70, background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18 }}>
+      <div className="rise" style={{ width: '100%', maxWidth: 400, borderRadius: 24, overflow: 'hidden', background: 'linear-gradient(180deg,#15161B,#0B0C0F)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 70px rgba(0,0,0,0.7)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '15px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <EmojiTile emoji={job.model.emoji} size={38} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 15.5, fontWeight: 800, color: c.text }}>{job.model.name}</div>
+            <div style={{ fontSize: 12.5, color: running ? c.blue : (done ? '#4ADE80' : '#FF6B6B'), fontWeight: 600 }}>
+              {running ? 'Yaratilmoqda…' : done ? 'Tayyor ✓' : 'Xatolik'}
+            </div>
+          </div>
+          {(done || failed) && (
+            <button className="tap" onClick={onClose} style={{ border: 'none', background: 'rgba(255,255,255,0.09)', color: c.text, borderRadius: 10, width: 32, height: 32, fontSize: 16 }}>✕</button>
+          )}
+        </div>
+
+        {/* MEDIA / PROGRESS */}
+        <div style={{ position: 'relative', width: '100%', aspectRatio: job.type === 'video' ? '16/9' : '1/1', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          {done && mediaUrl ? (
+            job.type === 'video'
+              ? <video src={mediaUrl} controls autoPlay playsInline loop style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+              : <img src={mediaUrl} alt="natija" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          ) : (
+            <>
+              {job.preview && <img src={job.preview} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25, filter: 'blur(2px)' }} />}
+              <div style={{ position: 'relative', textAlign: 'center', padding: 20 }}>
+                {failed ? (
+                  <>
+                    <div style={{ fontSize: 40, marginBottom: 8 }}>⚠️</div>
+                    <div style={{ fontSize: 14, color: '#FF9B9B', lineHeight: 1.5, maxWidth: 280 }}>{job.error || 'Xatolik'}</div>
+                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 8 }}>Tangacha qaytarildi.</div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ width: 54, height: 54, margin: '0 auto 14px', border: '3px solid rgba(43,212,255,0.25)', borderTopColor: c.blue, borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
+                    <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text }}>Yaratilmoqda…</div>
+                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 4 }}>Bu 1-3 daqiqa olishi mumkin</div>
+                    <div style={{ width: 180, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.12)', margin: '14px auto 0', overflow: 'hidden' }}>
+                      <div style={{ width: (job.progress || 5) + '%', height: '100%', background: c.blue, borderRadius: 3, transition: 'width 0.5s' }} />
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* ACTIONS */}
+        <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', display: 'flex', gap: 10 }}>
+          {done ? (
+            <>
+              <button className="tap" onClick={download} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>⬇ Yuklab olish</button>
+              <button className="tap" onClick={goGallery} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>Galereya</button>
+            </>
+          ) : failed ? (
+            <>
+              <button className="tap" onClick={onRetry} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>Qayta urinish</button>
+              <button className="tap" onClick={onClose} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>Yopish</button>
+            </>
+          ) : (
+            <div style={{ flex: 1, textAlign: 'center', fontSize: 12.5, color: c.faint, padding: '6px 0' }}>Ilovani yopsangiz ham, natija Galereyada saqlanadi.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── APP ── */
 function App() {
   const [tab, setTab] = useState('home');
@@ -833,6 +964,7 @@ function App() {
   const [balance, setBalance] = useState(null);
   const [userName, setUserName] = useState('Ijodkor');
   const [userHandle, setUserHandle] = useState('');
+  const [job, setJob] = useState(null); /* {status, progress, result_url, type, model, error} */
 
   useEffect(() => {
     const tg = TG();
@@ -863,35 +995,83 @@ function App() {
     if (!tg || !tg.BackButton) return;
     const handler = () => {
       haptic('light');
-      if (confirmData) setConfirmData(null);
+      if (job && (job.status === 'done' || job.status === 'failed')) setJob(null);
+      else if (job) { /* ishlayotganda yopmaymiz — foydalanuvchi kutadi */ }
+      else if (confirmData) setConfirmData(null);
       else if (showBuy) setShowBuy(false);
       else if (model) setModel(null);
       else if (tab !== 'home') setTab('home');
     };
     try { tg.BackButton.onClick(handler); } catch (e) { /* noop */ }
-    const needBack = confirmData || showBuy || model || tab !== 'home';
+    const needBack = job || confirmData || showBuy || model || tab !== 'home';
     try { needBack ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) { /* noop */ }
     return () => { try { tg.BackButton.offClick(handler); } catch (e) { /* noop */ } };
-  }, [confirmData, showBuy, model, tab]);
+  }, [confirmData, showBuy, model, tab, job]);
 
   const openModel = (m) => { setCat(isVideoModel(m) ? 'video' : 'image'); setModel(m); setTab('create'); haptic('medium'); };
   const goCat = (k) => { setCat(k); setModel(null); setTab('create'); haptic('medium'); };
   const submitParams = (params) => setConfirmData(params);
-  const confirmSend = () => {
+  const apiPost = async (path, body) => {
+    const tg = TG();
+    const headers = { 'Content-Type': 'application/json' };
+    const initData = tg && tg.initData ? tg.initData : '';
+    if (initData) headers['X-Tg-Init-Data'] = initData;
+    const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
+    if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
+    const r = await fetch(API_BASE + path, { method: 'POST', headers, body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    return { ok: r.ok, status: r.status, data: d };
+  };
+
+  const confirmSend = async () => {
     if (!model || !confirmData) return;
     hapticOk();
+    const preview = (confirmData.refPreviews && confirmData.refPreviews[0]) || null;
+    const isVid = isVideoModel(model);
+    setConfirmData(null);
+    setJob({ status: 'queued', progress: 5, type: isVid ? 'video' : 'image', model, preview, result_url: null, error: null });
     const payload = { mid: model.id, res: confirmData.res, asp: confirmData.asp };
     if (confirmData.dur) payload.dur = confirmData.dur;
     if (confirmData.prompt) payload.prompt = confirmData.prompt;
-    send(payload);
-    setConfirmData(null);
+    if (confirmData.refs && confirmData.refs.length) payload.refs = confirmData.refs;
+
+    const res = await apiPost('/tg/generate', payload);
+    if (!res.ok || !res.data.job_id) {
+      const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
+      setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
+      return;
+    }
+    if (typeof res.data.balance === 'number') setBalance(res.data.balance);
+    const jobId = res.data.job_id;
+
+    /* Poll — har 3s da holatni tekshiramiz */
+    const poll = async () => {
+      try {
+        const jr = await apiFetch('/tg/job/' + jobId);
+        if (typeof jr.balance === 'number') setBalance(jr.balance);
+        if (jr.status === 'done') {
+          hapticOk();
+          setJob((j) => j ? { ...j, status: 'done', progress: 100, result_url: jr.result_url } : null);
+          return;
+        }
+        if (jr.status === 'failed') {
+          setJob((j) => j ? { ...j, status: 'failed', error: jr.error || 'Generatsiya amalga oshmadi' } : null);
+          return;
+        }
+        setJob((j) => j ? { ...j, status: jr.status, progress: Math.min(95, jr.progress || j.progress) } : null);
+        setTimeout(poll, 3000);
+      } catch (e) { setTimeout(poll, 4000); }
+    };
+    setTimeout(poll, 2500);
   };
+  const closeJob = () => setJob(null);
 
   const inParams = tab === 'create' && !!model;
 
   return (
     <div style={{ background: '#000', minHeight: '100vh', display: 'flex', justifyContent: 'center', fontFamily: font }}>
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         @keyframes sheen { 0% { transform: translateX(-140%) rotate(8deg); } 100% { transform: translateX(560%) rotate(8deg); } }
         @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(34px,46px); } }
@@ -923,6 +1103,7 @@ function App() {
         {!inParams && <TabBar tab={tab} setTab={(k) => { setModel(null); setTab(k); }} />}
         {showBuy && <BuyScreen onClose={() => setShowBuy(false)} />}
         {confirmData && model && <ConfirmSheet model={model} params={confirmData} balance={balance} onClose={() => setConfirmData(null)} onConfirm={confirmSend} openBuy={() => { setConfirmData(null); setShowBuy(true); }} />}
+        {job && <ResultSheet job={job} onClose={closeJob} onRetry={() => { const m = job.model; closeJob(); setModel(m); setTab('create'); }} goGallery={() => { closeJob(); setModel(null); setTab('gallery'); }} />}
 
         <div style={{ position: 'absolute', inset: 0, zIndex: 70, pointerEvents: 'none', opacity: 0.08, mixBlendMode: 'overlay', backgroundImage: noise, backgroundSize: '150px 150px' }} />
       </div>
