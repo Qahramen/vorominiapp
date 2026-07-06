@@ -42,6 +42,8 @@ const ImageIcon   = _ic([['rect',{x:'3',y:'3',width:'18',height:'18',rx:'2'}],['
 const Bell        = _ic([['path',{d:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'}],['path',{d:'M10.3 21a1.94 1.94 0 0 0 3.4 0'}]]);
 const Info        = _ic([['circle',{cx:'12',cy:'12',r:'10'}],['path',{d:'M12 16v-4'}],['path',{d:'M12 8h.01'}]]);
 const Search      = _ic([['circle',{cx:'11',cy:'11',r:'8'}],['path',{d:'m21 21-4.35-4.35'}]]);
+const Camera      = _ic([['path',{d:'M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z'}],['circle',{cx:'12',cy:'13',r:'3'}]]);
+const ClipboardPaste = _ic([['path',{d:'M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z'}],['path',{d:'M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4'}],['path',{d:'M16 4h2a2 2 0 0 1 2 2v2'}],['path',{d:'M20 12v6a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2Z'}]]);
 const Paperclip   = _ic([['path',{d:'m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48'}]]);
 const X           = _ic([['path',{d:'M18 6 6 18'}],['path',{d:'m6 6 12 12'}]]);
 const Check       = _ic([['path',{d:'M20 6 9 17l-5-5'}]]);
@@ -481,6 +483,23 @@ function ModelListScreen({ cat, setCat, openModel }) {
 }
 
 /* ── PARAMS ── */
+const upTileStyle = (uploading, primary) => ({
+  position: 'relative', width: 78, height: 78, borderRadius: 18,
+  background: primary ? 'linear-gradient(160deg, rgba(43,212,255,0.18), rgba(43,212,255,0.04))' : 'rgba(255,255,255,0.04)',
+  border: primary ? '1px solid rgba(43,212,255,0.4)' : '1px solid rgba(255,255,255,0.12)',
+  boxShadow: primary ? 'inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 14px rgba(43,212,255,0.12)' : 'inset 0 1px 0 rgba(255,255,255,0.05)',
+  color: primary ? '#5CD9FF' : 'rgba(255,255,255,0.72)',
+  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+  cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent',
+  pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.55 : 1,
+  transition: 'transform 0.12s, opacity 0.2s',
+});
+const upTileLabel = { fontSize: 11.5, fontWeight: 700, letterSpacing: 0.2 };
+const upInputStyle = { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16 };
+function Spinner() {
+  return <span style={{ width: 22, height: 22, border: '2.5px solid rgba(255,255,255,0.25)', borderTopColor: '#5CD9FF', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />;
+}
+
 function ParamsScreen({ model, onBack, onSubmit }) {
   const meta = getMeta(model);
   const video = isVideoModel(model);
@@ -543,24 +562,28 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const pasteImage = async () => {
     setUpErr('');
     if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    if (!navigator.clipboard || !navigator.clipboard.read) {
+      setUpErr("Bu qurilmada Joylash ishlamaydi — Galereya yoki Kamera ishlating");
+      return;
+    }
     try {
-      if (!navigator.clipboard || !navigator.clipboard.read) {
-        setUpErr("Joylash qo'llab-quvvatlanmaydi — Galereya yoki Kamera ishlating");
-        return;
-      }
       const items = await navigator.clipboard.read();
       let found = null;
       for (const it of items) {
         const t = (it.types || []).find((x) => x.indexOf('image/') === 0);
         if (t) { found = await it.getType(t); break; }
       }
-      if (!found) { setUpErr("Buferda rasm yo'q — avval rasmni Copy qiling"); return; }
+      if (!found) { setUpErr("Buferda rasm topilmadi. Avval rasmni bosib turib \u00ABCopy\u00BB qiling, so'ng Joylash bosing."); return; }
       setUploading(true);
-      const file = new File([found], 'paste.' + (found.type.split('/')[1] || 'png'), { type: found.type });
+      const file = new File([found], 'paste.' + ((found.type.split('/')[1]) || 'png'), { type: found.type });
       await uploadOne(file);
       haptic('light');
     } catch (err) {
-      setUpErr(err && err.name === 'NotAllowedError' ? "Joylashga ruxsat berilmadi" : (err.message || 'Xatolik'));
+      if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
+        setUpErr("Joylash uchun ruxsat kerak. Rasmni Fotolardan \u00ABCopy\u00BB qilib, shu tugmani bosing. Ishlamasa — Galereya yoki Kamera.");
+      } else {
+        setUpErr((err && err.message) ? err.message : "Joylashda xato — Galereya ishlating");
+      }
     }
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
@@ -568,18 +591,30 @@ function ParamsScreen({ model, onBack, onSubmit }) {
 
   /* Qotishdan avto-tiklanish + qotish aniqlansa foydalanuvchiga tushunarli xabar */
   useEffect(() => {
+    const bump = () => { setUploading(false); setUploadKey((k) => k + 1); };
     const revive = () => {
-      setUploading(false); setUploadKey((k) => k + 1);
-      /* Galereya bosilgan, 2s+ o'tgan, lekin fayl kelmagan = katta ehtimol Telegram qulfi qotirdi */
+      /* Bir necha bosqichda tiklaymiz — WebView blur'dan sekin qaytishi mumkin */
+      bump();
+      setTimeout(bump, 250);
+      setTimeout(bump, 700);
       const tried = galleryTriedAt.current;
-      if (tried && !gotFileAfterTry.current && (Date.now() - tried) > 2000) {
-        setUpErr("Galereya ochilmadi — bu Telegram qulfi (Face ID) xatosi. Yechim: \u00ABKamera\u00BB yoki \u00ABJoylash\u00BB (rasmni Copy qilib) ishlating. Yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni o'chiring.");
+      if (tried && !gotFileAfterTry.current && (Date.now() - tried) > 1500) {
+        setUpErr("Galereya ochilmadi \u2014 bu Telegram qulfi (Face ID) xatosi. \u00ABKamera\u00BB ishlating yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni vaqtincha o'chiring.");
       }
       galleryTriedAt.current = 0;
     };
     document.addEventListener('visibilitychange', revive);
     window.addEventListener('focus', revive);
-    return () => { document.removeEventListener('visibilitychange', revive); window.removeEventListener('focus', revive); };
+    window.addEventListener('pageshow', revive);
+    /* Telegram viewport hodisasi ham tiklaydi (qulf blur'idan keyin) */
+    const tgi = TG();
+    try { if (tgi && tgi.onEvent) tgi.onEvent('viewportChanged', revive); } catch (e) { /* noop */ }
+    return () => {
+      document.removeEventListener('visibilitychange', revive);
+      window.removeEventListener('focus', revive);
+      window.removeEventListener('pageshow', revive);
+      try { if (tgi && tgi.offEvent) tgi.offEvent('viewportChanged', revive); } catch (e) { /* noop */ }
+    };
   }, []);
 
   const removeRef = (id) => setRefs((prev) => prev.filter((x) => x.id !== id));
@@ -640,7 +675,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             style={{ width: '100%', boxSizing: 'border-box', minHeight: 106, resize: 'none', borderRadius: 16, padding: 14, fontSize: 15, lineHeight: 1.45, color: c.text, outline: 'none', caretColor: c.blue, fontFamily: font, ...glass }}
           />
         </div>
-        <div style={{ padding: '6px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>Bo'sh qoldirsangiz \u2014 bot chatda so'raydi. Yozib yuborsangiz \u2014 bevosita ishga tushadi.</div>
+        <div style={{ padding: '6px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>G'oyangizni qancha aniq yozsangiz, natija shuncha yaxshi chiqadi.</div>
       </div>
 
       {meta.refs > 0 && (
@@ -655,25 +690,25 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             ))}
             {refs.length < meta.refs && (
               <React.Fragment key={uploadKey}>
-                {/* GALEREYA: multiple -> iOS action sheet O'TKAZIB, to'g'ridan PHPicker ochadi (ruxsat/FaceID YO'Q, qotmaydi) */}
-                <label onClick={() => { galleryTriedAt.current = Date.now(); gotFileAfterTry.current = false; }} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(43,212,255,0.5)', background: 'rgba(43,212,255,0.08)', color: c.blue, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent', pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.6 : 1 }}>
-                  {uploading ? <span style={{ fontSize: 20 }}>…</span> : <><span style={{ fontSize: 19 }}>🖼</span><span>Galereya</span></>}
-                  <input type="file" accept="image/*" multiple onChange={onFile} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16 }} />
+                {/* GALEREYA — multiple => iOS'da to'g'ridan rasm tanlash (action sheet'siz) */}
+                <label onClick={() => { galleryTriedAt.current = Date.now(); gotFileAfterTry.current = false; }} style={upTileStyle(uploading, true)}>
+                  {uploading ? <Spinner /> : <React.Fragment><Images size={22} strokeWidth={2} /><span style={upTileLabel}>Galereya</span></React.Fragment>}
+                  <input type="file" accept="image/*" multiple onChange={onFile} style={upInputStyle} />
                 </label>
-                {/* KAMERA: capture -> to'g'ridan kamera (action sheet yo'q) */}
-                <label style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(255,255,255,0.28)', background: 'rgba(255,255,255,0.05)', color: c.sub, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', overflow: 'hidden', WebkitTapHighlightColor: 'transparent', pointerEvents: uploading ? 'none' : 'auto', opacity: uploading ? 0.6 : 1 }}>
-                  {uploading ? <span style={{ fontSize: 20 }}>…</span> : <><span style={{ fontSize: 19 }}>📷</span><span>Kamera</span></>}
-                  <input type="file" accept="image/*" capture="environment" onChange={onFile} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.001, cursor: 'pointer', fontSize: 16 }} />
+                {/* KAMERA */}
+                <label style={upTileStyle(uploading, false)}>
+                  {uploading ? <Spinner /> : <React.Fragment><Camera size={22} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
+                  <input type="file" accept="image/*" capture="environment" onChange={onFile} style={upInputStyle} />
                 </label>
-                {/* JOYLASH: clipboard'dan — picker umuman ochilmaydi, qotish imkonsiz */}
-                <button className="tap" onClick={pasteImage} disabled={uploading} style={{ width: 76, height: 76, borderRadius: 14, border: '1.5px dashed rgba(255,255,255,0.28)', background: 'rgba(255,255,255,0.05)', color: c.sub, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', opacity: uploading ? 0.6 : 1 }}>
-                  <span style={{ fontSize: 19 }}>📋</span><span>Joylash</span>
+                {/* JOYLASH — bufer (qotish imkonsiz) */}
+                <button className="tap" onClick={pasteImage} disabled={uploading} style={{ ...upTileStyle(uploading, false), fontFamily: 'inherit' }}>
+                  {uploading ? <Spinner /> : <React.Fragment><ClipboardPaste size={22} strokeWidth={2} /><span style={upTileLabel}>Joylash</span></React.Fragment>}
                 </button>
               </React.Fragment>
             )}
           </div>
           {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Galereya qotsa: rasmni Copy qilib \u00ABJoylash\u00BB bosing — ishlaydi.'}</div>
+          <div style={{ padding: '7px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'}</div>
         </div>
       )}
 
@@ -734,10 +769,10 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
             {params.prompt.length > 180 ? params.prompt.slice(0, 180) + '\u2026' : params.prompt}
           </div>
         ) : null}
-        {meta.refs > 0 && (
+        {params.refs && params.refs.length > 0 && (
           <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 9, fontSize: 12.5, color: c.blue, lineHeight: 1.4 }}>
             <Paperclip size={14} style={{ flex: 'none' }} />
-            <span>{meta.refs_req ? 'Keyingi qadamda bot rasm so\u02bbraydi (majburiy).' : 'Keyingi qadamda reference qo\u02bbshish mumkin (ixtiyoriy).'}</span>
+            <span>{params.refs.length} ta reference rasm biriktirildi</span>
           </div>
         )}
         {notEnough ? (
