@@ -87,7 +87,7 @@ const VIDEO_MODELS = [
   { id: 'kwaivgi/kling-video-o3-pro/video-edit', name: 'Kling O3 Video', emoji: '🖥️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [], refs: 1, refs_req: true, hook: "Video tahrirlash — narx yuborilgan video uzunligiga qarab (maks 10s)." } },
   { id: 'kwaivgi/kling-v2.6-std/motion-control', name: 'Kling Motion Control', emoji: '🤿', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [], refs: 2, refs_req: true, hook: "Harakatni boshqarish — narx reference video uzunligiga qarab (maks 60s)." } },
   { id: 'kwaivgi/kling-v2.5-turbo-pro/image-to-video', name: 'Kling 2.5 Turbo', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Tezkor Pro model, rasm→video." } },
-  { id: 'atlascloud/infinitetalk', name: 'InfiniteTalk', emoji: '🗣', badge: 'Lipsync', meta: { resolutions: ['480p', '720p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [], refs: 1, refs_req: true, hook: "Lipsync — narx yuborilgan audio uzunligiga qarab (maks 120s)." } },
+  { id: 'atlascloud/infinitetalk', name: 'InfiniteTalk', emoji: '🗣', badge: 'Lipsync', meta: { resolutions: ['480p', '720p'], aspects: [], dur_steps: [], refs: 2, refs_req: true, needImage: true, needAudio: true, imgReq: true, audReq: true, hook: "Rasm gapiradi — portret + ovoz yuklang, lablar ovozga sinxronlanadi. Narx audio uzunligiga qarab (maks 120s)." } },
   { id: 'kwaivgi/kling-v2.6-pro/image-to-video', name: 'Kling 2.6', emoji: '⚡', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Kling 2.6 Pro — yuqori sifatli animatsiya." } },
   { id: 'alibaba/wan-2.7/text-to-video', name: 'Wan 2.7', emoji: '🌀', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan video." } },
   { id: 'alibaba/wan-2.7/image-to-video', name: 'Wan 2.7 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Wan 2.7 — rasmdan video." } },
@@ -538,6 +538,10 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const [prompt, setPrompt] = useState('');
   const [refs, setRefs] = useState([]);      /* [{id, url, preview, kind}] */
   const isSeedance = /seedance-2\.0/.test(model.id || '');   /* audio+video qabul qiladi */
+  const needAudio = !!meta.needAudio || isSeedance;   /* audio bo'limi kerakmi */
+  const needVideo = !!meta.needVideo || isSeedance;   /* video bo'limi kerakmi */
+  const audioReq = !!meta.audReq;   /* audio majburiymi (InfiniteTalk) */
+  const videoReq = !!meta.vidReq;
   const [upErr, setUpErr] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadingKind, setUploadingKind] = useState(null);   /* 'image'|'video'|'audio' — faqat shu bo'limda spinner */
@@ -564,7 +568,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     try { d = await r.json(); } catch (pe) { d = {}; }
     if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
     if (!d.upload_id) throw new Error('Server javobida xato');
-    setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview, kind: kind || d.kind || 'image' }]);
+    setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview, kind: kind || d.kind || 'image', duration: d.duration || 0 }]);
   };
 
   const onFileKind = (kind) => async (e) => {
@@ -668,6 +672,10 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   const summary = [res, asp, dur ? dur + 's' : null, prompt.trim() ? '\u270D\uFE0F' : null].filter(Boolean).join(' · ');
   const price = getPrice(model, { res, dur });
   const psec = perSecInfo(model);
+  const audRef = refs.find((r) => r.kind === 'audio' && r.duration > 0);
+  const vidRefForPrice = refs.find((r) => r.kind === 'video' && r.duration > 0);
+  const psecDur = psec ? (psec.unit === 'audio' ? (audRef ? audRef.duration : 0) : (vidRefForPrice ? vidRefForPrice.duration : 0)) : 0;
+  const psecPrice = (psec && psecDur > 0) ? Math.max(1, Math.ceil(psec.perSec * psecDur)) : null;
 
   return (
     <div style={{ paddingBottom: 130 }}>
@@ -707,7 +715,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       {psec && (
         <div className="rise" style={{ margin: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, ...glass, fontSize: 13, color: c.text, lineHeight: 1.45, animationDelay: '150ms' }}>
           <Star size={16} fill={c.blue} color={c.blue} style={{ flex: 'none' }} />
-          <span>Narx: har soniyasiga ~{psec.perSec} ⚡ — {psec.unit === 'audio' ? 'yuborilgan audio' : 'yuborilgan video'} uzunligiga qarab (maks {psec.max}s). Aniq narx botda ko'rsatiladi.</span>
+          <span>{psecPrice != null ? ('Narx: ' + psecPrice + ' \u26A1 (' + Math.round(psecDur) + 's ' + (psec.unit === 'audio' ? 'audio' : 'video') + ')') : ('Narx: har soniyasiga ~' + psec.perSec + ' \u26A1 — ' + (psec.unit === 'audio' ? 'audio' : 'video') + ' yuklang, aniq narx chiqadi (maks ' + psec.max + 's).')}</span>
         </div>
       )}
 
@@ -733,7 +741,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         return (
         <div className="rise" style={{ margin: '18px 16px 0', animationDelay: '200ms' }}>
           {/* ── RASM ── */}
-          <Label>{isSeedance ? 'RASM' : ('REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ''))}</Label>
+          <Label>{(isSeedance || needAudio) ? ('RASM' + (meta.imgReq ? ' \u00B7 MAJBURIY' : '')) : ('REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ''))}</Label>
           <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {imgRefs.map((rf) => (
               <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
@@ -756,10 +764,10 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           </div>
 
           {/* ── VIDEO (faqat Seedance, ixtiyoriy) ── */}
-          {isSeedance && (
+          {needVideo && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'VIDEO \u00B7 IXTIYORIY'}</Label>
+              <Label>{'VIDEO' + (videoReq ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY')}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {vidRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', background: '#000' }}>
@@ -779,10 +787,10 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           )}
 
           {/* ── AUDIO (faqat Seedance, ixtiyoriy) ── */}
-          {isSeedance && (
+          {needAudio && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'AUDIO \u00B7 IXTIYORIY'}</Label>
+              <Label>{'AUDIO' + (audioReq ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY')}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {audRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.05)' }}>
@@ -801,7 +809,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           )}
 
           {upErr ? <div style={{ padding: '10px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? 'Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).' : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.')}</div>
+          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? 'Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).' : (needAudio ? 'Portret rasm + audio yuklang. Lablar ovozga sinxronlanadi.' : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'))}</div>
         </div>
         );
       })()}
@@ -814,11 +822,14 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             <div style={{ fontSize: 12, color: c.sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...num }}>{summary || '—'}</div>
           </div>
           <button className="tap" onClick={() => {
-              if (meta.refs_req && refs.length === 0) { setUpErr('Bu model kamida 1 ta rasm talab qiladi'); return; }
+              if (needAudio && audioReq && !refs.some((r) => r.kind === 'audio')) { setUpErr('Audio fayl yuklang (majburiy)'); return; }
+              if (needVideo && videoReq && !refs.some((r) => r.kind === 'video')) { setUpErr('Video yuklang (majburiy)'); return; }
+              if (meta.imgReq && !refs.some((r) => (r.kind || 'image') === 'image')) { setUpErr('Portret rasm yuklang (majburiy)'); return; }
+              if (meta.refs_req && !meta.needAudio && refs.length === 0) { setUpErr('Bu model kamida 1 ta rasm talab qiladi'); return; }
               haptic('medium');
-              onSubmit({ res, asp, dur, prompt: prompt.trim(), refs: refs.map((x) => x.id), refPreviews: refs.map((x) => x.preview) });
+              onSubmit({ res, asp, dur, prompt: prompt.trim(), refs: refs.map((x) => x.id), refPreviews: refs.map((x) => x.preview), estPrice: psecPrice, psecDur: Math.round(psecDur) });
             }} style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 15, fontSize: 15, fontWeight: 700, ...glossy }}>
-            {(price != null ? price + ' ⚡ · ' : '') + 'Davom etish →'}
+            {((price != null ? price : psecPrice) != null ? (price != null ? price : psecPrice) + ' ⚡ · ' : '') + 'Davom etish →'}
           </button>
         </div>
       </div>
@@ -831,12 +842,13 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
   const meta = getMeta(model);
   const price = getPrice(model, params);
   const psec = perSecInfo(model);
-  const notEnough = balance != null && price != null && price > balance;
+  const effPrice = params.estPrice != null ? params.estPrice : price;
+  const notEnough = balance != null && effPrice != null && effPrice > balance;
   const rows = [
     ['Sifat', params.res],
     ['Nisbat', params.asp],
     params.dur ? ['Davomiylik', params.dur + ' soniya'] : null,
-    ['Narx', psec ? '~' + psec.perSec + ' ⚡/soniya' : (price != null ? price + ' ⚡' : "Botda ko'rsatiladi")],
+    ['Narx', (params.estPrice != null ? params.estPrice + ' ⚡ (' + params.psecDur + 's)' : (psec ? '~' + psec.perSec + ' ⚡/soniya' : (price != null ? price + ' ⚡' : "Botda ko'rsatiladi")))],
   ].filter(Boolean);
   return (
     <div onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end' }}>
