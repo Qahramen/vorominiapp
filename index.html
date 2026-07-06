@@ -421,21 +421,22 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
             <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{IMAGE_MODELS.length} model</div>
           </div>
         </button>
-        {tools && tools.length > 0 && (
-          <button className="tap" onClick={() => { haptic('medium'); openToolList(); }} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
-            <IconTile icon={Wand} size={48} tone="gold" />
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Vositalar</div>
-              <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{tools.length} ta vosita</div>
-            </div>
-          </button>
-        )}
       </div>
 
-      {templates && templates.length > 0 && (
+      {((templates && templates.length > 0) || (tools && tools.length > 0)) && (
         <React.Fragment>
-          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Shablonlar</div>
+          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Shablonlar va vositalar</div>
           <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '160ms' }}>
+            {tools && tools.length > 0 && (
+              <button className="tap" onClick={() => { haptic('medium'); openToolList(); }} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(95,230,255,0.24)' }}>
+                <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
+                <IconTile icon={Wand} size={48} tone="cyan" />
+                <div style={{ position: 'relative' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Vositalar</div>
+                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2 }}>{tools.length} ta vosita</div>
+                </div>
+              </button>
+            )}
             {templates.map((t) => (
               <button key={t.id} className="tap" onClick={() => openTemplate(t)} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(255,209,102,0.28)' }}>
                 <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
