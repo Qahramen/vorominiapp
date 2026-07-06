@@ -1109,14 +1109,18 @@ function ToolListScreen({ tools, onBack, openTool }) {
 }
 
 function ToolScreen({ tool, balance, onBack, onGenerate }) {
-  const [refs, setRefs] = useState([]);
-  const [uploading, setUploading] = useState(false);
+  const isForm = tool.input === 'form';
+  const imgSlots = isForm ? (tool.images || []) : [{ key: '_single', label: 'Rasm' }];
+  const fields = isForm ? (tool.fields || []) : [];
+  const [imgs, setImgs] = useState({});   /* {slotKey: {id, url, preview}} */
+  const [vals, setVals] = useState({});   /* {fieldKey: text} */
+  const [uploadingKey, setUploadingKey] = useState(null);
   const [upErr, setUpErr] = useState('');
   const [uploadKey, setUploadKey] = useState(0);
   const cost = tool.cost;
   const notEnough = balance != null && cost != null && cost > balance;
 
-  const uploadOne = async (file) => {
+  const uploadOne = async (file, slotKey) => {
     const preview = URL.createObjectURL(file);
     const fd = new FormData(); fd.append('file', file);
     const tg = TG();
@@ -1134,81 +1138,83 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
     try { d = await r.json(); } catch (e) { d = {}; }
     if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
     if (!d.upload_id) throw new Error('Server javobida xato');
-    setRefs([{ id: d.upload_id, url: d.url, preview }]);
+    setImgs((prev) => ({ ...prev, [slotKey]: { id: d.upload_id, url: d.url, preview } }));
   };
-  const onFile = async (e) => {
+  const onFile = async (e, slotKey) => {
     const files = Array.from((e.target && e.target.files) || []);
     e.target.value = '';
-    if (!files.length) { setUploading(false); return; }
+    if (!files.length) { setUploadingKey(null); return; }
     setUpErr('');
-    setUploading(true);
     const file = files[0];
-    if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); setUploading(false); return; }
-    if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); setUploading(false); return; }
-    try { await uploadOne(file); haptic('light'); }
+    if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); return; }
+    if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); return; }
+    setUploadingKey(slotKey);
+    try { await uploadOne(file, slotKey); haptic('light'); }
     catch (err) { setUpErr(err.message || 'Ulanmadi'); }
-    setUploading(false);
+    setUploadingKey(null);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
 
-  const canGen = refs.length > 0 && !notEnough;
+  const allImgsReady = imgSlots.every((s) => imgs[s.key]);
+  const allFieldsFilled = fields.every((f) => (vals[f.key] || '').trim().length > 0);
+  const canGen = allImgsReady && (fields.length === 0 || allFieldsFilled) && !notEnough;
   const doGen = () => {
-    if (refs.length === 0) { setUpErr('Rasm yuklang'); return; }
+    if (!allImgsReady) { setUpErr('Barcha rasmlarni yuklang'); return; }
+    if (fields.length > 0 && !allFieldsFilled) { setUpErr('Barcha maydonlarni to\'ldiring'); return; }
     if (notEnough) { setUpErr('Balans yetarli emas'); return; }
     haptic('medium');
-    onGenerate({ tool_id: tool.id, refs: refs.map((r) => r.id), refPreviews: refs.map((r) => r.preview), cost: cost });
+    /* rasmlar tartibi: imgSlots tartibida */
+    const refIds = imgSlots.map((s) => imgs[s.key].id);
+    const previews = imgSlots.map((s) => imgs[s.key].preview);
+    onGenerate({ tool_id: tool.id, refs: refIds, refPreviews: previews, fields: vals, cost: cost });
   };
 
   return (
-    <div style={{ paddingBottom: 120 }}>
+    <div style={{ paddingBottom: 130 }}>
       <Header title={tool.name} onBack={onBack} />
       {tool.desc && <div style={{ padding: '4px 18px 0', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{tool.desc}</div>}
 
-      {tool.id === 'restore' && (
+      {/* RASMLAR */}
+      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{imgSlots.length > 1 ? 'Rasmlar' : 'Rasmingiz'}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, padding: '0 16px' }}>
+        {imgSlots.map((slot) => {
+          const cur = imgs[slot.key];
+          return (
+            <div key={slot.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              {cur ? (
+                <div style={{ position: 'relative', width: 104, height: 104, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
+                  <img src={cur.preview} alt={slot.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button className="tap" onClick={() => setImgs((prev) => { const n = { ...prev }; delete n[slot.key]; return n; })} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
+                </div>
+              ) : (
+                <label key={uploadKey} style={{ ...upTileStyle(uploadingKey === slot.key, true), width: 104, height: 104 }}>
+                  {uploadingKey === slot.key ? <Spinner /> : <React.Fragment><Images size={22} strokeWidth={2} /><span style={upTileLabel}>Yuklash</span></React.Fragment>}
+                  <input type="file" accept="image/*" onChange={(e) => onFile(e, slot.key)} style={upInputStyle} />
+                </label>
+              )}
+              <span style={{ fontSize: 12, color: c.sub, fontWeight: 600 }}>{slot.label}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* MATN MAYDONLARI */}
+      {fields.length > 0 && (
         <React.Fragment>
-          <div style={{ padding: '16px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Natija namunasi</div>
-          <div className="noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 4px' }}>
-            {RESTORE_SAMPLES.map((s, i) => (
-              <div key={i} style={{ flex: '0 0 auto', display: 'flex', gap: 8, borderRadius: 16, padding: 10, ...glass }}>
-                <div style={{ position: 'relative' }}>
-                  <img src={s.before} alt="oldin" style={{ width: 112, height: 150, objectFit: 'cover', borderRadius: 10, display: 'block', filter: 'grayscale(0.2)' }} />
-                  <div style={{ position: 'absolute', bottom: 6, left: 6, fontSize: 10, fontWeight: 700, color: '#fff', background: 'rgba(0,0,0,0.6)', padding: '2px 7px', borderRadius: 6 }}>Oldin</div>
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <img src={s.after} alt="keyin" style={{ width: 112, height: 150, objectFit: 'cover', borderRadius: 10, display: 'block' }} />
-                  <div style={{ position: 'absolute', bottom: 6, left: 6, fontSize: 10, fontWeight: 700, color: '#00161F', background: c.blue, padding: '2px 7px', borderRadius: 6 }}>Keyin</div>
-                </div>
+          <div style={{ padding: '20px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Ma'lumotlar</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '0 16px' }}>
+            {fields.map((f) => (
+              <div key={f.key}>
+                <div style={{ fontSize: 12.5, color: c.sub, fontWeight: 600, marginBottom: 5, paddingLeft: 2 }}>{f.label}</div>
+                <input type="text" value={vals[f.key] || ''} placeholder={f.placeholder || ''} onChange={(e) => setVals((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '13px 15px', borderRadius: 13, fontSize: 15, color: c.text, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', outline: 'none', fontFamily: font }} />
               </div>
             ))}
-          </div>
-          <div style={{ padding: '8px 18px 0', fontSize: 12, color: c.faint, lineHeight: 1.45, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Sparkles size={13} color={c.blue} /> AI yoriqlarni tuzatadi, rang qo'shadi — yuzni saqlagan holda.
           </div>
         </React.Fragment>
       )}
 
-      <div style={{ padding: '20px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Rasmingiz</div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, padding: '0 16px' }}>
-        {refs.map((rf) => (
-          <div key={rf.id} style={{ position: 'relative', width: 96, height: 96, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
-            <img src={rf.preview} alt="ref" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <button className="tap" onClick={() => setRefs([])} style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: 11, border: 'none', background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: 13, lineHeight: '22px', padding: 0 }}>✕</button>
-          </div>
-        ))}
-        {refs.length === 0 && (
-          <React.Fragment key={uploadKey}>
-            <label style={{ ...upTileStyle(uploading, true), width: 96, height: 96 }}>
-              {uploading ? <Spinner /> : <React.Fragment><Images size={24} strokeWidth={2} /><span style={upTileLabel}>Galereya</span></React.Fragment>}
-              <input type="file" accept="image/*" onChange={onFile} style={upInputStyle} />
-            </label>
-            <label style={{ ...upTileStyle(uploading, false), width: 96, height: 96 }}>
-              {uploading ? <Spinner /> : <React.Fragment><Camera size={24} strokeWidth={2} /><span style={upTileLabel}>Kamera</span></React.Fragment>}
-              <input type="file" accept="image/*" capture="environment" onChange={onFile} style={upInputStyle} />
-            </label>
-          </React.Fragment>
-        )}
-      </div>
-      {upErr ? <div style={{ padding: '8px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
+      {upErr ? <div style={{ padding: '10px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
 
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
@@ -1684,6 +1690,7 @@ function App() {
     setTab('home');
     setJob({ status: 'queued', progress: 5, type: 'image', model: { name: 'Vosita', emoji: '✨', id: 'tool' }, preview, result_url: null, error: null });
     const payload = { tool_id: data.tool_id, refs: data.refs };
+    if (data.fields) payload.fields = data.fields;
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
       const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
