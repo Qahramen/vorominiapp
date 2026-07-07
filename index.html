@@ -185,9 +185,165 @@ const LANGS = { uz: "O'zbek", en: 'English', ru: 'Русский' };
 const LANG_FLAG = { uz: '🇺🇿', en: '🇬🇧', ru: '🇷🇺' };
 let CUR_LANG = 'uz';
 const I18N = {
-  uz: {},
-  en: {},
-  ru: {},
+  uz: {
+    welcome: 'Xush kelibsiz',
+    balance: 'Balans',
+    tangacha: 'tangacha',
+    topup: 'To\'ldirish',
+    create: 'Yaratish',
+    video: 'Video',
+    image: 'Rasm',
+    models_count: 'model',
+    featured: 'Mashhur modellar',
+    templates_tools: 'Shablonlar va vositalar',
+    tools: 'Vositalar',
+    tools_count: 'ta vosita',
+    styles_count: 'uslub',
+    nav_home: 'Bosh sahifa',
+    nav_create: 'Yaratish',
+    nav_gallery: 'Galereya',
+    nav_profile: 'Profil',
+    big_packs: 'Katta paketlar — bonus bilan',
+    pay_stars: 'To\'lov Telegram Stars orqali ⭐ · xavfsiz',
+    quality: 'SIFAT',
+    ratio: 'NISBAT',
+    duration: 'DAVOMIYLIK',
+    confirm_order: 'Buyurtmani tasdiqlang',
+    gallery_up: 'Galereya',
+    camera: 'Kamera',
+    audio: 'Audio',
+    upload: 'Yuklash',
+    choose_style: 'Uslub tanlang',
+    your_photo: 'Rasmingiz',
+    your_photos: 'Rasmlar',
+    info_fields: 'Ma\'lumotlar',
+    loading: 'Yuklanmoqda…',
+    gallery_empty: 'Ijodlaringiz shu yerda',
+    start_creating: 'Yaratishni boshlash',
+    generating: 'Yaratilmoqda…',
+    gen_time: 'Bu 1-3 daqiqa olishi mumkin',
+    download: 'Yuklab olish',
+    retry: 'Qayta urinish',
+    close: 'Yopish',
+    result_saved: 'Ilovani yopsangiz ham, natija Galereyada saqlanadi.',
+    refunded: 'Tangacha qaytarildi.',
+    lang: 'Til',
+    notifications: 'Bildirishnomalar',
+    coming_soon: 'Tez orada',
+    help: 'Yordam',
+    about: 'Biz haqimizda',
+    choose_lang: 'Tilni tanlang',
+    not_enough: 'Balans yetarli emas',
+    create_btn: 'Yaratish',
+    continue_btn: 'Davom etish',
+    confirm_send: 'Tasdiqlash va yuborish',
+  },
+  en: {
+    welcome: 'Welcome',
+    balance: 'Balance',
+    tangacha: 'credits',
+    topup: 'Top up',
+    create: 'Create',
+    video: 'Video',
+    image: 'Image',
+    models_count: 'models',
+    featured: 'Popular models',
+    templates_tools: 'Templates & tools',
+    tools: 'Tools',
+    tools_count: 'tools',
+    styles_count: 'styles',
+    nav_home: 'Home',
+    nav_create: 'Create',
+    nav_gallery: 'Gallery',
+    nav_profile: 'Profile',
+    big_packs: 'Big packs — with bonus',
+    pay_stars: 'Payment via Telegram Stars ⭐ · secure',
+    quality: 'QUALITY',
+    ratio: 'RATIO',
+    duration: 'DURATION',
+    confirm_order: 'Confirm your order',
+    gallery_up: 'Gallery',
+    camera: 'Camera',
+    audio: 'Audio',
+    upload: 'Upload',
+    choose_style: 'Choose a style',
+    your_photo: 'Your photo',
+    your_photos: 'Photos',
+    info_fields: 'Details',
+    loading: 'Loading…',
+    gallery_empty: 'Your creations here',
+    start_creating: 'Start creating',
+    generating: 'Generating…',
+    gen_time: 'This may take 1-3 minutes',
+    download: 'Download',
+    retry: 'Retry',
+    close: 'Close',
+    result_saved: 'Even if you close the app, the result is saved in the Gallery.',
+    refunded: 'Credits refunded.',
+    lang: 'Language',
+    notifications: 'Notifications',
+    coming_soon: 'Coming soon',
+    help: 'Help',
+    about: 'About us',
+    choose_lang: 'Choose language',
+    not_enough: 'Insufficient balance',
+    create_btn: 'Create',
+    continue_btn: 'Continue',
+    confirm_send: 'Confirm and send',
+  },
+  ru: {
+    welcome: 'Добро пожаловать',
+    balance: 'Баланс',
+    tangacha: 'кредиты',
+    topup: 'Пополнить',
+    create: 'Создать',
+    video: 'Видео',
+    image: 'Фото',
+    models_count: 'моделей',
+    featured: 'Популярные модели',
+    templates_tools: 'Шаблоны и инструменты',
+    tools: 'Инструменты',
+    tools_count: 'инструментов',
+    styles_count: 'стилей',
+    nav_home: 'Главная',
+    nav_create: 'Создать',
+    nav_gallery: 'Галерея',
+    nav_profile: 'Профиль',
+    big_packs: 'Большие пакеты — с бонусом',
+    pay_stars: 'Оплата через Telegram Stars ⭐ · безопасно',
+    quality: 'КАЧЕСТВО',
+    ratio: 'ФОРМАТ',
+    duration: 'ДЛИТЕЛЬНОСТЬ',
+    confirm_order: 'Подтвердите заказ',
+    gallery_up: 'Галерея',
+    camera: 'Камера',
+    audio: 'Аудио',
+    upload: 'Загрузить',
+    choose_style: 'Выберите стиль',
+    your_photo: 'Ваше фото',
+    your_photos: 'Фото',
+    info_fields: 'Данные',
+    loading: 'Загрузка…',
+    gallery_empty: 'Ваши работы здесь',
+    start_creating: 'Начать создавать',
+    generating: 'Генерация…',
+    gen_time: 'Это может занять 1-3 минуты',
+    download: 'Скачать',
+    retry: 'Повторить',
+    close: 'Закрыть',
+    result_saved: 'Даже если закрыть приложение, результат сохранится в Галерее.',
+    refunded: 'Кредиты возвращены.',
+    lang: 'Язык',
+    notifications: 'Уведомления',
+    coming_soon: 'Скоро',
+    help: 'Помощь',
+    about: 'О нас',
+    choose_lang: 'Выберите язык',
+    not_enough: 'Недостаточно средств',
+    create_btn: 'Создать',
+    continue_btn: 'Продолжить',
+    confirm_send: 'Подтвердить и отправить',
+  },
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
 function t(key, fallback) {
@@ -429,13 +585,13 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
         <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 70, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)' }} />
         <div style={{ position: 'absolute', bottom: -60, right: -40, width: 190, height: 190, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.45) 0%, transparent 70%)' }} />
         <div style={{ position: 'absolute', top: 4, right: 6 }}><VLogo size={130} color="#fff" stroke={9} opacity={0.1} /></div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.72)', fontWeight: 600 }}>Balans</div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.72)', fontWeight: 600 }}>{t('balance','Balans')}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
           <Star size={26} fill={c.blue} color={c.blue} style={{ filter: 'drop-shadow(0 0 10px rgba(43,212,255,0.9))' }} />
           <span style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1.5, ...num }}>{balance == null ? '—' : fmt(balance)}</span>
-          <span style={{ fontSize: 16, opacity: 0.7, marginTop: 12 }}>tangacha</span>
+          <span style={{ fontSize: 16, opacity: 0.7, marginTop: 12 }}>{t('tangacha','tangacha')}</span>
         </div>
-        <button className="tap" onClick={() => { haptic('medium'); openBuy(); }} style={{ marginTop: 16, padding: '12px 18px', borderRadius: 15, fontWeight: 700, fontSize: 15, width: '100%', ...glossy }}>To'ldirish</button>
+        <button className="tap" onClick={() => { haptic('medium'); openBuy(); }} style={{ marginTop: 16, padding: '12px 18px', borderRadius: 15, fontWeight: 700, fontSize: 15, width: '100%', ...glossy }}>{t('topup','To\'ldirish')}</button>
       </div>
 
       <div style={{ padding: '20px 16px 8px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
@@ -445,14 +601,14 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
         <button className="tap" onClick={() => goCat('video')} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
           <IconTile icon={Video} size={48} tone="azure" />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Video</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{t('video','Video')}</div>
             <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{VIDEO_MODELS.length} model</div>
           </div>
         </button>
         <button className="tap" onClick={() => goCat('image')} style={{ borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, ...glass }}>
           <IconTile icon={ImageIcon} size={48} tone="cyan" />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>Rasm</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{t('image','Rasm')}</div>
             <div style={{ fontSize: 13, color: c.sub, marginTop: 1 }}>{IMAGE_MODELS.length} model</div>
           </div>
         </button>
@@ -460,15 +616,15 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
 
       {((templates && templates.length > 0) || (tools && tools.length > 0)) && (
         <React.Fragment>
-          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Shablonlar va vositalar</div>
+          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>{t('templates_tools','Shablonlar va vositalar')}</div>
           <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '160ms' }}>
             {tools && tools.length > 0 && (
               <button className="tap" onClick={() => { haptic('medium'); openToolList(); }} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(95,230,255,0.24)' }}>
                 <div className="sheen" style={{ position: 'absolute', top: '-50%', left: 0, width: 46, height: '200%', background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)' }} />
                 <IconTile icon={Wrench} size={48} tone="cyan" />
                 <div style={{ position: 'relative' }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Vositalar</div>
-                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2 }}>{tools.length} ta vosita</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t('tools','Vositalar')}</div>
+                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2 }}>{tools.length} {t('tools_count','ta vosita')}</div>
                 </div>
               </button>
             )}
@@ -486,7 +642,7 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
         </React.Fragment>
       )}
 
-      <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>Mashhur modellar</div>
+      <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>{t('featured','Mashhur modellar')}</div>
       <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '180ms' }}>
         {featured.map((m) => (
           <button key={m.id} className="tap" onClick={() => openModel(m)} style={{ flex: '0 0 auto', width: 150, borderRadius: 20, padding: 14, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(43,212,255,0.22)' }}>
@@ -929,7 +1085,7 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
           <EmojiTile emoji={model.emoji} id={model.id} size={48} />
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3 }}>{model.name}</div>
-            <div style={{ fontSize: 12.5, color: c.sub, marginTop: 1 }}>Buyurtmani tasdiqlang</div>
+            <div style={{ fontSize: 12.5, color: c.sub, marginTop: 1 }}>{t('confirm_order','Buyurtmani tasdiqlang')}</div>
           </div>
         </div>
         <div style={{ borderRadius: 16, overflow: 'hidden', ...glass, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}>
@@ -1063,7 +1219,7 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
       {template.desc && <div style={{ padding: '4px 18px 0', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{template.desc}</div>}
 
       {/* USLUB TANLASH */}
-      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Uslub tanlang</div>
+      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{t('choose_style','Uslub tanlang')}</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
         {styles.map((st) => {
           const active = styleId === st.id;
@@ -1235,7 +1391,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
       {/* MATN MAYDONLARI */}
       {fields.length > 0 && (
         <React.Fragment>
-          <div style={{ padding: '20px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>Ma'lumotlar</div>
+          <div style={{ padding: '20px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{t('info_fields','Ma\'lumotlar')}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '0 16px' }}>
             {fields.map((f) => (
               <div key={f.key}>
@@ -1287,7 +1443,7 @@ function GalleryScreen({ goCreate }) {
           <IconTile icon={Images} size={64} tone="cyan" />
           <div style={{ fontSize: 18, fontWeight: 700, color: c.text, marginTop: 18 }}>Ijodlaringiz shu yerda</div>
           <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.</div>
-          <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>Yaratishni boshlash</button>
+          <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>{t('start_creating','Yaratishni boshlash')}</button>
         </div>
       </div>
     );
@@ -1445,10 +1601,10 @@ function BuyScreen({ onClose }) {
 /* ── TAB BAR ── */
 function TabBar({ tab, setTab }) {
   const items = [
-    { k: 'home', icon: Home, label: 'Bosh sahifa' },
-    { k: 'create', icon: Sparkles, label: 'Yaratish' },
-    { k: 'gallery', icon: Images, label: 'Galereya' },
-    { k: 'profile', icon: User, label: 'Profil' },
+    { k: 'home', icon: Home, label: t('nav_home','Bosh sahifa') },
+    { k: 'create', icon: Sparkles, label: t('nav_create','Yaratish') },
+    { k: 'gallery', icon: Images, label: t('nav_gallery','Galereya') },
+    { k: 'profile', icon: User, label: t('nav_profile','Profil') },
   ];
   return (
     <div style={{ position: 'absolute', bottom: 14, left: 14, right: 14, borderRadius: 30, display: 'flex', padding: '8px 6px 10px', zIndex: 10, background: 'rgba(18,19,23,0.55)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), 0 14px 36px rgba(0,0,0,0.55)' }}>
@@ -1535,12 +1691,12 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
                   <>
                     <div style={{ fontSize: 40, marginBottom: 8 }}>⚠️</div>
                     <div style={{ fontSize: 14, color: '#FF9B9B', lineHeight: 1.5, maxWidth: 280 }}>{job.error || 'Xatolik'}</div>
-                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 8 }}>Tangacha qaytarildi.</div>
+                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 8 }}>{t('refunded','Tangacha qaytarildi.')}</div>
                   </>
                 ) : (
                   <>
                     <div style={{ width: 54, height: 54, margin: '0 auto 14px', border: '3px solid rgba(43,212,255,0.25)', borderTopColor: c.blue, borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
-                    <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text }}>Yaratilmoqda…</div>
+                    <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text }}>{t('generating','Yaratilmoqda…')}</div>
                     <div style={{ fontSize: 12.5, color: c.sub, marginTop: 4 }}>Bu 1-3 daqiqa olishi mumkin</div>
                     <div style={{ width: 180, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.12)', margin: '14px auto 0', overflow: 'hidden' }}>
                       <div style={{ width: (job.progress || 5) + '%', height: '100%', background: c.blue, borderRadius: 3, transition: 'width 0.5s' }} />
@@ -1561,8 +1717,8 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
             </>
           ) : failed ? (
             <>
-              <button className="tap" onClick={onRetry} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>Qayta urinish</button>
-              <button className="tap" onClick={onClose} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>Yopish</button>
+              <button className="tap" onClick={onRetry} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>{t('retry','Qayta urinish')}</button>
+              <button className="tap" onClick={onClose} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>{t('close','Yopish')}</button>
             </>
           ) : (
             <div style={{ flex: 1, textAlign: 'center', fontSize: 12.5, color: c.faint, padding: '6px 0' }}>Ilovani yopsangiz ham, natija Galereyada saqlanadi.</div>
