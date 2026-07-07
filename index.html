@@ -178,6 +178,33 @@ const minPriceText = (m) => { const p = PRICING[m.id]; if (!p) return null; if (
 
 /* ── Telegram ── */
 const TG = () => (typeof window !== 'undefined' && window.Telegram ? window.Telegram.WebApp : null);
+
+/* ── Til tizimi (i18n) ── */
+const LANGS = { uz: "O'zbek", en: 'English', ru: 'Русский' };
+const LANG_FLAG = { uz: '🇺🇿', en: '🇬🇧', ru: '🇷🇺' };
+let CUR_LANG = 'uz';
+const I18N = {
+  uz: {},
+  en: {},
+  ru: {},
+};
+/* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
+function t(key, fallback) {
+  const dict = I18N[CUR_LANG] || {};
+  if (dict[key] != null) return dict[key];
+  return fallback != null ? fallback : key;
+}
+/* Boshlang'ich tilni aniqlash: saqlangan -> Telegram tili -> uz */
+function detectLang() {
+  try {
+    const saved = (typeof localStorage !== 'undefined') ? null : null; /* localStorage artifactda ishlamaydi */
+    const tg = TG();
+    const tgLang = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? (tg.initDataUnsafe.user.language_code || '') : '';
+    if (tgLang.startsWith('ru')) return 'ru';
+    if (tgLang.startsWith('en')) return 'en';
+    return 'uz';
+  } catch (e) { return 'uz'; }
+}
 /* ── BACKEND API (voro.uz) ── */
 const API_BASE = 'https://voroapi.duckdns.org';
 /* URL parametrlari (bot imzolangan uid+sig+n qo'shadi — KeyboardButton'da initData bo'sh keladi) */
@@ -379,16 +406,22 @@ function DurationSlider({ steps, value, onChange }) {
 }
 
 /* ── HOME ── */
-function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate, tools, openTool, openToolList }) {
+function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, openTemplate, tools, openTool, openToolList, lang, onFlagClick }) {
   const featured = FEATURED_IDS.map((id) => [...VIDEO_MODELS, ...IMAGE_MODELS].find((m) => m.id === id)).filter(Boolean);
   return (
     <div>
       <div className="rise" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 6px' }}>
         <div>
-          <div style={{ fontSize: 15, color: c.sub, fontWeight: 500 }}>Xush kelibsiz</div>
+          <div style={{ fontSize: 15, color: c.sub, fontWeight: 500 }}>{t('welcome', 'Xush kelibsiz')}</div>
           <div style={{ fontSize: 26, fontWeight: 800, color: c.text, letterSpacing: -0.4 }}>{userName}</div>
         </div>
-        <Avatar s={44} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button className="tap" onClick={onFlagClick} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 11px', borderRadius: 20, border: 'none', ...glass, fontSize: 18, lineHeight: 1 }}>
+            <span>{LANG_FLAG[lang] || '🇺🇿'}</span>
+            <ChevronDown size={13} color={c.faint} />
+          </button>
+          <Avatar s={44} />
+        </div>
       </div>
 
       <div className="rise" style={{ margin: '12px 16px 4px', borderRadius: 26, padding: 20, color: '#fff', position: 'relative', overflow: 'hidden', animationDelay: '60ms', background: 'linear-gradient(165deg, rgba(43,212,255,0.14) 0%, rgba(255,255,255,0.04) 38%, rgba(8,9,12,0.4) 100%), linear-gradient(165deg,#1A1B20 0%,#0B0C0F 60%,#070809 100%)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 50px rgba(0,0,0,0.6), 0 0 60px rgba(43,212,255,0.08)' }}>
@@ -1319,8 +1352,8 @@ const HELP_QA = [
   ["Muammo bo'lsa?", "@Vorouz ga yozing — tez javob beramiz."],
 ];
 
-function ProfileScreen({ balance, userName, userHandle, openBuy }) {
-  const [sheet, setSheet] = useState(null); /* 'help' | 'about' | null */
+function ProfileScreen({ balance, userName, userHandle, openBuy, lang, setLang }) {
+  const [sheet, setSheet] = useState(null); /* 'help' | 'about' | 'lang' | null */
   return (
     <div>
       <Header title="Profil" />
@@ -1336,7 +1369,7 @@ function ProfileScreen({ balance, userName, userHandle, openBuy }) {
         <Row icon={Star} tone="gold" label="Tangacha to'ldirish" onClick={openBuy} last />
       </Group>
       <Group>
-        <Row icon={Globe} tone="graphite" label="Til" value="O'zbekcha" />
+        <Row icon={Globe} tone="graphite" label="Til" value={LANGS[lang] || "O'zbek"} onClick={() => setSheet('lang')} />
         <Row icon={Bell} tone="azure" label="Bildirishnomalar" value="Tez orada" last />
       </Group>
       <Group>
@@ -1345,6 +1378,19 @@ function ProfileScreen({ balance, userName, userHandle, openBuy }) {
       </Group>
       <div style={{ textAlign: 'center', fontSize: 12, color: c.faint, margin: '18px 0 8px' }}>VoroCreator Studio · v2.0</div>
 
+      {sheet === 'lang' && (
+        <InfoSheet title="Tilni tanlang" onClose={() => setSheet(null)}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {Object.keys(LANGS).map((code) => (
+              <button key={code} className="tap" onClick={() => { setLang(code); setSheet(null); }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 16px', borderRadius: 14, fontSize: 16, fontWeight: 600, color: c.text, ...(lang === code ? glossy : glass) }}>
+                <span style={lang === code ? { color: '#00161F' } : {}}>{LANGS[code]}</span>
+                {lang === code ? <Check size={18} strokeWidth={3} color="#00161F" /> : null}
+              </button>
+            ))}
+          </div>
+        </InfoSheet>
+      )}
       {sheet === 'help' && (
         <InfoSheet title="Yordam markazi" onClose={() => setSheet(null)}>
           {HELP_QA.map((qa, i) => (
@@ -1541,11 +1587,27 @@ function App() {
   const [activeTemplate, setActiveTemplate] = useState(null);   /* tanlangan shablon */
   const [tools, setTools] = useState([]);   /* backend'dan vositalar */
   const [activeTool, setActiveTool] = useState(null);   /* tanlangan vosita */
+  const [lang, setLangState] = useState(CUR_LANG);
+  const [langSheet, setLangSheet] = useState(false);
+  const setLang = (l) => {
+    if (!LANGS[l]) return;
+    CUR_LANG = l; setLangState(l); haptic('light');
+    try { const tg = TG(); if (tg && tg.CloudStorage) tg.CloudStorage.setItem('voro_lang', l); } catch (e) {}
+  };
 
   useEffect(() => {
     const tg = TG();
     if (!tg) return;
     try { tg.ready(); tg.expand(); } catch (e) { /* noop */ }
+    /* Til: saqlangandan yoki Telegram tilidan */
+    try {
+      if (tg.CloudStorage && tg.CloudStorage.getItem) {
+        tg.CloudStorage.getItem('voro_lang', (err, val) => {
+          if (!err && val && LANGS[val]) { CUR_LANG = val; setLangState(val); }
+          else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
+        });
+      } else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
+    } catch (e) { const d = detectLang(); CUR_LANG = d; setLangState(d); }
     try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) { /* noop */ }
     try { tg.setHeaderColor('#070809'); tg.setBackgroundColor('#070809'); } catch (e) { /* noop */ }
     try {
@@ -1742,18 +1804,36 @@ function App() {
         <div style={{ position: 'absolute', bottom: -60, left: '30%', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(43,212,255,0.18), transparent 70%)', filter: 'blur(20px)', animation: 'drift1 26s ease-in-out infinite', zIndex: 0 }} />
 
         <div className="noscroll" style={{ position: 'relative', zIndex: 1, height: '100vh', overflowY: 'auto', paddingBottom: hideNav ? 0 : 112 }}>
-          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} tools={tools} openTool={openTool} openToolList={openToolList} />}
+          {tab === 'home' && <HomeScreen balance={balance} userName={userName} goCat={goCat} openModel={openModel} openBuy={() => setShowBuy(true)} templates={templates} openTemplate={openTemplate} tools={tools} openTool={openTool} openToolList={openToolList} lang={lang} onFlagClick={() => setLangSheet(true)} />}
           {tab === 'create' && !model && <ModelListScreen cat={cat} setCat={setCat} openModel={openModel} />}
           {tab === 'create' && model && <ParamsScreen key={model.id} model={model} onBack={() => setModel(null)} onSubmit={submitParams} />}
           {tab === 'template' && activeTemplate && <TemplateScreen key={activeTemplate.id} template={activeTemplate} balance={balance} onBack={() => { setActiveTemplate(null); setTab('home'); }} onGenerate={templateGenerate} />}
           {tab === 'toollist' && <ToolListScreen tools={tools} onBack={() => setTab('home')} openTool={openTool} />}
           {tab === 'tool' && activeTool && <ToolScreen key={activeTool.id} tool={activeTool} balance={balance} onBack={() => { setActiveTool(activeTool); setActiveTool(null); setTab('toollist'); }} onGenerate={toolGenerate} />}
           {tab === 'gallery' && <GalleryScreen goCreate={() => goCat('video')} />}
-          {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} />}
+          {tab === 'profile' && <ProfileScreen balance={balance} userName={userName} userHandle={userHandle} openBuy={() => setShowBuy(true)} lang={lang} setLang={setLang} />}
         </div>
 
         {!hideNav && <TabBar tab={tab} setTab={(k) => { setModel(null); setTab(k); }} />}
         {showBuy && <BuyScreen onClose={() => setShowBuy(false)} />}
+        {langSheet && (
+          <div onClick={() => setLangSheet(false)} style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 430, background: c.card, borderRadius: '22px 22px 0 0', padding: '10px 16px calc(20px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ width: 38, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.2)', margin: '6px auto 16px' }} />
+              <div style={{ fontSize: 17, fontWeight: 700, color: c.text, marginBottom: 14, textAlign: 'center' }}>{t('choose_lang', 'Tilni tanlang')}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {Object.keys(LANGS).map((code) => (
+                  <button key={code} className="tap" onClick={() => { setLang(code); setLangSheet(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '15px 16px', borderRadius: 14, fontSize: 16, fontWeight: 600, ...(lang === code ? glossy : glass) }}>
+                    <span style={{ fontSize: 22 }}>{LANG_FLAG[code]}</span>
+                    <span style={{ flex: 1, textAlign: 'left', color: lang === code ? '#00161F' : c.text }}>{LANGS[code]}</span>
+                    {lang === code ? <Check size={18} strokeWidth={3} color="#00161F" /> : null}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         {confirmData && model && <ConfirmSheet model={model} params={confirmData} balance={balance} onClose={() => setConfirmData(null)} onConfirm={confirmSend} openBuy={() => { setConfirmData(null); setShowBuy(true); }} />}
         {job && <ResultSheet job={job} onClose={closeJob} onRetry={() => { const m = job.model; closeJob(); setModel(m); setTab('create'); }} goGallery={() => { closeJob(); setModel(null); setTab('gallery'); }} />}
 
