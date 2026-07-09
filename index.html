@@ -1890,9 +1890,10 @@ function App() {
   const [activeTool, setActiveTool] = useState(null);   /* tanlangan vosita */
   const [lang, setLangState] = useState(CUR_LANG);
   const [langSheet, setLangSheet] = useState(false);
+  const langChosenRef = useRef(false);
   const setLang = (l) => {
     if (!LANGS[l]) return;
-    CUR_LANG = l; setLangState(l); haptic('light');
+    CUR_LANG = l; setLangState(l); haptic('light'); langChosenRef.current = true;
     try { const tg = TG(); if (tg && tg.CloudStorage) tg.CloudStorage.setItem('voro_lang', l); } catch (e) {}
   };
 
@@ -1904,7 +1905,7 @@ function App() {
     try {
       if (tg.CloudStorage && tg.CloudStorage.getItem) {
         tg.CloudStorage.getItem('voro_lang', (err, val) => {
-          if (!err && val && LANGS[val]) { CUR_LANG = val; setLangState(val); }
+          if (!err && val && LANGS[val]) { CUR_LANG = val; setLangState(val); langChosenRef.current = true; }
           else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
         });
       } else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
@@ -1925,6 +1926,10 @@ function App() {
       .then((me) => {
         if (me && me.name) setUserName(me.name);
         if (me && typeof me.balance === 'number') setBalance(me.balance);
+        /* Bot tilini olamiz — faqat foydalanuvchi Mini App'da o'zi tanlamagan bo'lsa */
+        if (me && me.lang && LANGS[me.lang] && !langChosenRef.current) {
+          CUR_LANG = me.lang; setLangState(me.lang);
+        }
       })
       .catch(() => { /* backend yetmasa start_param balansi qoladi */ });
     /* Shablonlar */
