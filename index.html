@@ -323,6 +323,13 @@ const I18N = {
     seg_video: 'Video',
     seg_image: 'Rasm',
     job_type_word: 'Vosita',
+    prompt_tavsif_label: 'PROMPT · TAVSIF',
+    optional_word: 'IXTIYORIY',
+    lbl_video: 'VIDEO',
+    lbl_audio: 'AUDIO',
+    lbl_rasm: 'RASM',
+    lbl_reference: 'REFERENCE',
+    lbl_ref_rasm: 'REFERENCE RASM',
 },
   en: {
     welcome: 'Welcome',
@@ -462,6 +469,13 @@ const I18N = {
     seg_video: 'Video',
     seg_image: 'Image',
     job_type_word: 'Tool',
+    prompt_tavsif_label: 'PROMPT · DESCRIPTION',
+    optional_word: 'OPTIONAL',
+    lbl_video: 'VIDEO',
+    lbl_audio: 'AUDIO',
+    lbl_rasm: 'IMAGE',
+    lbl_reference: 'REFERENCE',
+    lbl_ref_rasm: 'REFERENCE IMAGE',
 },
   ru: {
     welcome: 'Добро пожаловать',
@@ -601,6 +615,13 @@ const I18N = {
     seg_video: 'Видео',
     seg_image: 'Фото',
     job_type_word: 'Инструмент',
+    prompt_tavsif_label: 'ПРОМПТ · ОПИСАНИЕ',
+    optional_word: 'НЕОБЯЗАТЕЛЬНО',
+    lbl_video: 'ВИДЕО',
+    lbl_audio: 'АУДИО',
+    lbl_rasm: 'ФОТО',
+    lbl_reference: 'РЕФЕРЕНС',
+    lbl_ref_rasm: 'РЕФЕРЕНС ФОТО',
 },
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
@@ -629,6 +650,7 @@ const apiFetch = async (path) => {
   const headers = {};
   const initData = tg && tg.initData ? tg.initData : '';
   if (initData) headers['X-Tg-Init-Data'] = initData;
+  headers['X-Lang'] = CUR_LANG || 'uz';
   /* Imzolangan uid (initData bo'lmasa yoki qo'shimcha) */
   const uid = URLQ.get('uid'), sig = URLQ.get('sig'), n = URLQ.get('n');
   if (uid && sig) { headers['X-Tg-Uid'] = uid; headers['X-Tg-Sig'] = sig; if (n) headers['X-Tg-Name'] = n; }
@@ -1241,7 +1263,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       )}
 
       <div className="rise" style={{ animationDelay: '160ms' }}>
-        <Label>{'PROMPT \u00B7 TAVSIF' + (prompt.length ? ' \u00B7 ' + prompt.length : ' \u00B7 IXTIYORIY')}</Label>
+        <Label>{t('prompt_tavsif_label','PROMPT \u00B7 TAVSIF') + (prompt.length ? ' \u00B7 ' + prompt.length : ' \u00B7 ' + t('optional_word','IXTIYORIY'))}</Label>
         <div style={{ margin: '8px 16px 0' }}>
           <textarea
             value={prompt}
@@ -1273,7 +1295,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         return (
         <div className="rise" style={{ margin: '18px 16px 0', animationDelay: '200ms' }}>
           {/* ── RASM ── */}
-          <Label>{(isSeedance || needAudio) ? ('RASM' + (meta.imgReq ? t('required_suffix',' \u00B7 MAJBURIY') : '')) : ('REFERENCE RASM' + (meta.refs_req ? t('required_suffix',' \u00B7 MAJBURIY') : ''))}</Label>
+          <Label>{(isSeedance || needAudio) ? (t('lbl_rasm','RASM') + (meta.imgReq ? t('required_suffix',' \u00B7 MAJBURIY') : '')) : (t('lbl_ref_rasm','REFERENCE RASM') + (meta.refs_req ? t('required_suffix',' \u00B7 MAJBURIY') : ''))}</Label>
           <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {imgRefs.map((rf) => (
               <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
@@ -1299,7 +1321,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           {needVideo && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'VIDEO' + (videoReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 IXTIYORIY')}</Label>
+              <Label>{t('lbl_video','VIDEO') + (videoReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 ' + t('optional_word','IXTIYORIY'))}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {vidRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', background: '#000' }}>
@@ -1322,7 +1344,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           {needAudio && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'AUDIO' + (audioReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 IXTIYORIY')}</Label>
+              <Label>{t('lbl_audio','AUDIO') + (audioReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 ' + t('optional_word','IXTIYORIY'))}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {audRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.05)' }}>
