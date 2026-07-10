@@ -316,6 +316,13 @@ const I18N = {
     enhancing_word: 'Yaxshilanmoqda',
     ph_video: 'G\'oyangizni yozing — o\'zbekcha yoki inglizcha. Masalan: yomg\'ir ostida yurgan superqahramon, kinematik kadr, dramatik yorug\'lik...',
     ph_image: 'G\'oyangizni yozing. Masalan: futuristik robot portreti, elektr-ko\'k yog\'du, studiya yorug\'ligi...',
+    filter_fast: '⚡ Tez',
+    filter_t2v: '✍️ Matndan',
+    filter_premium: '💎 Premium',
+    filter_ref: '📎 Reference',
+    seg_video: 'Video',
+    seg_image: 'Rasm',
+    job_type_word: 'Vosita',
 },
   en: {
     welcome: 'Welcome',
@@ -448,6 +455,13 @@ const I18N = {
     enhancing_word: 'Enhancing',
     ph_video: 'Describe your idea — in any language. E.g.: a superhero walking in the rain, cinematic shot, dramatic lighting...',
     ph_image: 'Describe your idea. E.g.: a futuristic robot portrait, electric-blue glow, studio lighting...',
+    filter_fast: '⚡ Fast',
+    filter_t2v: '✍️ From text',
+    filter_premium: '💎 Premium',
+    filter_ref: '📎 Reference',
+    seg_video: 'Video',
+    seg_image: 'Image',
+    job_type_word: 'Tool',
 },
   ru: {
     welcome: 'Добро пожаловать',
@@ -580,6 +594,13 @@ const I18N = {
     enhancing_word: 'Улучшается',
     ph_video: 'Опишите идею — на русском или английском. Например: супергерой идёт под дождём, кинематографичный кадр, драматичный свет...',
     ph_image: 'Опишите идею. Например: портрет футуристического робота, электрик-синее свечение, студийный свет...',
+    filter_fast: '⚡ Быстро',
+    filter_t2v: '✍️ Из текста',
+    filter_premium: '💎 Премиум',
+    filter_ref: '📎 Референс',
+    seg_video: 'Видео',
+    seg_image: 'Фото',
+    job_type_word: 'Инструмент',
 },
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
@@ -925,7 +946,7 @@ function ModelListScreen({ cat, setCat, openModel }) {
   const [f, setF] = useState('all');
   const list = cat === 'video' ? VIDEO_MODELS : IMAGE_MODELS;
   const _rawFilters = cat === 'video' ? V_FILTERS : I_FILTERS;
-  const _filterLabels = { 'Hammasi': t('filter_all','Hammasi'), '🖼 Rasmdan': t('filter_img_from','🖼 Rasmdan') };
+  const _filterLabels = { 'Hammasi': t('filter_all','Hammasi'), '🖼 Rasmdan': t('filter_img_from','🖼 Rasmdan'), '⚡ Tez': t('filter_fast','⚡ Tez'), '✍️ Matndan': t('filter_t2v','✍️ Matndan'), '💎 Premium': t('filter_premium','💎 Premium'), 'Pro': 'Pro', '📎 Reference': t('filter_ref','📎 Reference') };
   const filters = _rawFilters.map(([k, lbl]) => [k, _filterLabels[lbl] || lbl]);
   const shown = list.filter((m) => matchFilter(m, f)).filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()));
 
@@ -933,7 +954,7 @@ function ModelListScreen({ cat, setCat, openModel }) {
     <div>
       <Header title={t('create','Yaratish')} />
       <div className="rise" style={{ margin: '8px 16px 0' }}>
-        <Segmented options={[['video', 'Video'], ['image', 'Rasm']]} value={cat} onChange={(k) => { setCat(k); setF('all'); setQ(''); }} />
+        <Segmented options={[['video', t('seg_video','Video')], ['image', t('seg_image','Rasm')]]} value={cat} onChange={(k) => { setCat(k); setF('all'); setQ(''); }} />
       </div>
 
       <div className="rise" style={{ margin: '12px 16px 0', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 14, padding: '11px 14px', animationDelay: '40ms', ...glass }}>
@@ -2185,7 +2206,7 @@ function App() {
     const preview = (data.refPreviews && data.refPreviews[0]) || null;
     setActiveTool(null);
     setTab('home');
-    setJob({ status: 'queued', progress: 5, type: 'image', model: { name: 'Vosita', emoji: '✨', id: 'tool' }, preview, result_url: null, error: null });
+    setJob({ status: 'queued', progress: 5, type: 'image', model: { name: t('job_type_word','Vosita'), emoji: '✨', id: 'tool' }, preview, result_url: null, error: null });
     const payload = { tool_id: data.tool_id, refs: data.refs };
     if (data.fields) payload.fields = data.fields;
     const res = await apiPost('/tg/generate', payload);
