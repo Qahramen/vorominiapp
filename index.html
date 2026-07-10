@@ -330,6 +330,35 @@ const I18N = {
     lbl_rasm: 'RASM',
     lbl_reference: 'REFERENCE',
     lbl_ref_rasm: 'REFERENCE RASM',
+    ref_hint_face: 'Yuzni saqlash yoki uslub uchun rasm yuklang.',
+    ref_hint_optional: 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.',
+    param_ratio: 'Nisbat',
+    param_duration: 'Davomiylik',
+    sec_word: 'soniya',
+    param_quality: 'Sifat',
+    param_price: 'Narx',
+    max_prefix: 'Maksimal ',
+    files_suffix: ' ta fayl',
+    file_type_bad: 'Fayl turi mos emas',
+    file_prefix: 'Fayl ',
+    mb_too_big_suffix: ' MB dan katta',
+    err_code_prefix: 'Xato (',
+    upload_err2: 'Yuklashda xato',
+    images_suffix: ' ta rasm',
+    fill_all_fields: 'Barcha maydonlarni to\'ldiring',
+    styles_count_suffix: ' uslub',
+    price_label_prefix: 'Narx: ',
+    single_image_label: 'Rasm',
+    images_title: 'Rasmlar',
+    error_occurred: 'Xatolik yuz berdi',
+    template_word: 'Shablon',
+    gen_failed: 'Generatsiya amalga oshmadi',
+    upload_timeout: 'Yuklash cho\'zildi',
+    not_connected: 'Ulanmadi',
+    price_per_sec: 'Narx: har soniyasiga ~',
+    per_sec_suffix: ' ⚡/soniya',
+    price_in_bot: 'Aniq narx botda ko\'rsatiladi va balansdan yechiladi',
+    amalga_oshmadi: 'Amalga oshmadi',
 },
   en: {
     welcome: 'Welcome',
@@ -476,6 +505,35 @@ const I18N = {
     lbl_rasm: 'IMAGE',
     lbl_reference: 'REFERENCE',
     lbl_ref_rasm: 'REFERENCE IMAGE',
+    ref_hint_face: 'Upload an image to preserve the face or style.',
+    ref_hint_optional: 'Optional — you can get a result based on an image.',
+    param_ratio: 'Ratio',
+    param_duration: 'Duration',
+    sec_word: 'seconds',
+    param_quality: 'Quality',
+    param_price: 'Price',
+    max_prefix: 'Maximum ',
+    files_suffix: ' files',
+    file_type_bad: 'Invalid file type',
+    file_prefix: 'File ',
+    mb_too_big_suffix: ' MB (too large)',
+    err_code_prefix: 'Error (',
+    upload_err2: 'Upload error',
+    images_suffix: ' images',
+    fill_all_fields: 'Fill in all fields',
+    styles_count_suffix: ' styles',
+    price_label_prefix: 'Price: ',
+    single_image_label: 'Image',
+    images_title: 'Images',
+    error_occurred: 'An error occurred',
+    template_word: 'Template',
+    gen_failed: 'Generation failed',
+    upload_timeout: 'Upload timed out',
+    not_connected: 'Could not connect',
+    price_per_sec: 'Price: ~ per second',
+    per_sec_suffix: ' ⚡/sec',
+    price_in_bot: 'The exact price is shown in the bot and charged from the balance',
+    amalga_oshmadi: 'Failed',
 },
   ru: {
     welcome: 'Добро пожаловать',
@@ -622,6 +680,35 @@ const I18N = {
     lbl_rasm: 'ФОТО',
     lbl_reference: 'РЕФЕРЕНС',
     lbl_ref_rasm: 'РЕФЕРЕНС ФОТО',
+    ref_hint_face: 'Загрузите фото для сохранения лица или стиля.',
+    ref_hint_optional: 'Необязательно — можно получить результат на основе фото.',
+    param_ratio: 'Соотношение',
+    param_duration: 'Длительность',
+    sec_word: 'секунд',
+    param_quality: 'Качество',
+    param_price: 'Цена',
+    max_prefix: 'Максимум ',
+    files_suffix: ' файлов',
+    file_type_bad: 'Неподходящий тип файла',
+    file_prefix: 'Файл ',
+    mb_too_big_suffix: ' МБ (слишком большой)',
+    err_code_prefix: 'Ошибка (',
+    upload_err2: 'Ошибка загрузки',
+    images_suffix: ' фото',
+    fill_all_fields: 'Заполните все поля',
+    styles_count_suffix: ' стилей',
+    price_label_prefix: 'Цена: ',
+    single_image_label: 'Фото',
+    images_title: 'Фото',
+    error_occurred: 'Произошла ошибка',
+    template_word: 'Шаблон',
+    gen_failed: 'Не удалось сгенерировать',
+    upload_timeout: 'Загрузка затянулась',
+    not_connected: 'Не удалось подключиться',
+    price_per_sec: 'Цена: ~ за секунду',
+    per_sec_suffix: ' ⚡/сек',
+    price_in_bot: 'Точная цена показывается в боте и спишется с баланса',
+    amalga_oshmadi: 'Не удалось',
 },
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
@@ -914,7 +1001,7 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
                 <IconTile icon={TEMPLATE_ICON(t.id)} size={48} tone="gold" />
                 <div style={{ position: 'relative' }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(t.name || '').replace(/^(\p{Emoji}\uFE0F?\s*)/u, '')}</div>
-                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + ' uslub' : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
+                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + t('styles_count_suffix',' uslub') : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
                 </div>
               </button>
             ))}
@@ -1071,7 +1158,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       } finally { clearTimeout(timer); }
       let d = {};
       try { d = await r.json(); } catch (pe) { d = {}; }
-      if (!r.ok) throw new Error(d.error || ('Xato (' + r.status + ')'));
+      if (!r.ok) throw new Error(d.error || (t('err_code_prefix','Xato (') + r.status + ')'));
       if (d.prompt && d.prompt.trim()) {
         setPrompt(clampBytes(d.prompt.trim(), 3400));
         try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success'); } catch (he) {}
@@ -1124,16 +1211,16 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     setUploadingKind(kind);
     setUpErr('');
     const slots = meta.refs - refs.length;
-    if (slots <= 0) { setUpErr('Maksimal ' + meta.refs + ' ta fayl'); return; }
+    if (slots <= 0) { setUpErr(t('max_prefix','Maksimal ') + meta.refs + t('files_suffix',' ta fayl')); return; }
     const typeRe = kind === 'audio' ? /^audio\// : (kind === 'video' ? /^video\// : /^image\//);
     const limitMB = kind === 'video' ? 50 : (kind === 'audio' ? 20 : 10);
     const batch = files.slice(0, slots);
     setUploading(true);
     for (const file of batch) {
-      if (!typeRe.test(file.type || '')) { setUpErr('Fayl turi mos emas'); continue; }
-      if (file.size > limitMB * 1024 * 1024) { setUpErr('Fayl ' + limitMB + ' MB dan katta'); continue; }
+      if (!typeRe.test(file.type || '')) { setUpErr(t('file_type_bad','Fayl turi mos emas')); continue; }
+      if (file.size > limitMB * 1024 * 1024) { setUpErr(t('file_prefix','Fayl ') + limitMB + t('mb_too_big_suffix',' MB dan katta')); continue; }
       try { await uploadOne(file, kind); haptic('light'); }
-      catch (err) { setUpErr((err && err.name === 'AbortError') ? 'Yuklash cho\'zildi' : (err.message || 'Ulanmadi')); }
+      catch (err) { setUpErr((err && err.name === 'AbortError') ? t('upload_timeout','Yuklash cho\'zildi') : (err.message || t('not_connected','Ulanmadi'))); }
     }
     setUploading(false);
     setUploadingKind(null);
@@ -1152,13 +1239,13 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     if (!file) { setUpErr(t('clip_no_img','Buferda rasm topilmadi')); return; }
     setUploading(true); setUpErr('');
     try { await uploadOne(file); haptic('light'); }
-    catch (err) { setUpErr((err && err.message) || 'Yuklashda xato'); }
+    catch (err) { setUpErr((err && err.message) || t('upload_err2','Yuklashda xato')); }
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
   const pasteImage = async () => {
     setUpErr('');
-    if (refs.length >= meta.refs) { setUpErr('Maksimal ' + meta.refs + ' ta rasm'); return; }
+    if (refs.length >= meta.refs) { setUpErr(t('max_prefix','Maksimal ') + meta.refs + t('images_suffix',' ta rasm')); return; }
     /* 1-urinish: to'g'ridan clipboard.read (Android/desktop'da ishlaydi) */
     if (navigator.clipboard && navigator.clipboard.read) {
       try {
@@ -1258,7 +1345,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       {psec && (
         <div className="rise" style={{ margin: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, ...glass, fontSize: 13, color: c.text, lineHeight: 1.45, animationDelay: '150ms' }}>
           <Star size={16} fill={c.blue} color={c.blue} style={{ flex: 'none' }} />
-          <span>{psecPrice != null ? ('Narx: ' + psecPrice + ' \u26A1 (' + Math.round(psecDur) + 's ' + (psec.unit === 'audio' ? 'audio' : 'video') + ')') : ('Narx: har soniyasiga ~' + psec.perSec + ' \u26A1 — ' + (psec.unit === 'audio' ? 'audio' : 'video') + t('price_persec_tail',' yuklang, aniq narx chiqadi (maks ') + psec.max + 's).')}</span>
+          <span>{psecPrice != null ? (t('price_label_prefix','Narx: ') + psecPrice + ' \u26A1 (' + Math.round(psecDur) + 's ' + (psec.unit === 'audio' ? 'audio' : 'video') + ')') : (t('price_per_sec','Narx: har soniyasiga ~') + psec.perSec + ' \u26A1 — ' + (psec.unit === 'audio' ? 'audio' : 'video') + t('price_persec_tail',' yuklang, aniq narx chiqadi (maks ') + psec.max + 's).')}</span>
         </div>
       )}
 
@@ -1363,7 +1450,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           )}
 
           {upErr ? <div style={{ padding: '10px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? t('ref_hint_full','Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).') : (needAudio ? t('talkinghead_hint','Portret rasm + audio yuklang.') : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'))}</div>
+          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? t('ref_hint_full','Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).') : (needAudio ? t('talkinghead_hint','Portret rasm + audio yuklang.') : (meta.refs_req ? t('ref_hint_face','Yuzni saqlash yoki uslub uchun rasm yuklang.') : t('ref_hint_optional','Ixtiyoriy — rasm asosida natija olishingiz mumkin.')))}</div>
         </div>
         );
       })()}
@@ -1399,10 +1486,10 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
   const effPrice = params.estPrice != null ? params.estPrice : price;
   const notEnough = balance != null && effPrice != null && effPrice > balance;
   const rows = [
-    ['Sifat', params.res],
-    ['Nisbat', params.asp],
-    params.dur ? ['Davomiylik', params.dur + ' soniya'] : null,
-    ['Narx', (params.estPrice != null ? params.estPrice + ' ⚡ (' + params.psecDur + 's)' : (psec ? '~' + psec.perSec + ' ⚡/soniya' : (price != null ? price + ' ⚡' : "Botda ko'rsatiladi")))],
+    [t('param_quality','Sifat'), params.res],
+    [t('param_ratio','Nisbat'), params.asp],
+    params.dur ? [t('param_duration','Davomiylik'), params.dur + ' ' + t('sec_word','soniya')] : null,
+    [t('param_price','Narx'), (params.estPrice != null ? params.estPrice + ' ⚡ (' + params.psecDur + 's)' : (psec ? '~' + psec.perSec + t('per_sec_suffix',' ⚡/soniya') : (price != null ? price + ' ⚡' : "Botda ko'rsatiladi")))],
   ].filter(Boolean);
   return (
     <div onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end' }}>
@@ -1419,7 +1506,7 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
           {rows.map(([k, v], i) => (
             <div key={k} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: i === rows.length - 1 ? 'none' : `1px solid ${c.hair}` }}>
               <span style={{ fontSize: 14.5, color: c.sub }}>{k}</span>
-              <span style={{ fontSize: k === 'Narx' ? 15.5 : 14.5, fontWeight: k === 'Narx' ? 800 : 700, color: k === 'Narx' ? c.blue : c.text, ...num }}>{v || '—'}</span>
+              <span style={{ fontSize: k === t('param_price','Narx') ? 15.5 : 14.5, fontWeight: k === t('param_price','Narx') ? 800 : 700, color: k === t('param_price','Narx') ? c.blue : c.text, ...num }}>{v || '—'}</span>
             </div>
           ))}
         </div>
@@ -1517,13 +1604,13 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
     if (!files.length) { setUploading(false); return; }
     setUpErr('');
     const slots = maxRefs - refs.length;
-    if (slots <= 0) { setUpErr('Maksimal ' + maxRefs + ' ta rasm'); return; }
+    if (slots <= 0) { setUpErr(t('max_prefix','Maksimal ') + maxRefs + t('images_suffix',' ta rasm')); return; }
     setUploading(true);
     for (const file of files.slice(0, slots)) {
       if (!/^image\//.test(file.type || '')) { setUpErr(t('only_image_file','Faqat rasm fayli')); continue; }
       if (file.size > 10 * 1024 * 1024) { setUpErr(t('img_too_big','Rasm 10 MB dan katta')); continue; }
       try { await uploadOne(file); haptic('light'); }
-      catch (err) { setUpErr(err.message || 'Ulanmadi'); }
+      catch (err) { setUpErr(err.message || t('not_connected','Ulanmadi')); }
     }
     setUploading(false);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
@@ -1627,7 +1714,7 @@ function ToolListScreen({ tools, onBack, openTool }) {
 
 function ToolScreen({ tool, balance, onBack, onGenerate }) {
   const isForm = tool.input === 'form';
-  const imgSlots = isForm ? (tool.images || []) : [{ key: '_single', label: 'Rasm' }];
+  const imgSlots = isForm ? (tool.images || []) : [{ key: '_single', label: t('single_image_label','Rasm') }];
   const fields = isForm ? (tool.fields || []) : [];
   const [imgs, setImgs] = useState({});   /* {slotKey: {id, url, preview}} */
   const [vals, setVals] = useState({});   /* {fieldKey: text} */
@@ -1667,7 +1754,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
     if (file.size > 10 * 1024 * 1024) { setUpErr(t('img_too_big','Rasm 10 MB dan katta')); return; }
     setUploadingKey(slotKey);
     try { await uploadOne(file, slotKey); haptic('light'); }
-    catch (err) { setUpErr(err.message || 'Ulanmadi'); }
+    catch (err) { setUpErr(err.message || t('not_connected','Ulanmadi')); }
     setUploadingKey(null);
     setTimeout(() => setUploadKey((k) => k + 1), 100);
   };
@@ -1677,7 +1764,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
   const canGen = allImgsReady && (fields.length === 0 || allFieldsFilled) && !notEnough;
   const doGen = () => {
     if (!allImgsReady) { setUpErr(t('upload_all_imgs','Barcha rasmlarni yuklang')); return; }
-    if (fields.length > 0 && !allFieldsFilled) { setUpErr('Barcha maydonlarni to\'ldiring'); return; }
+    if (fields.length > 0 && !allFieldsFilled) { setUpErr(t('fill_all_fields','Barcha maydonlarni to\'ldiring')); return; }
     if (notEnough) { setUpErr(t('not_enough','Balans yetarli emas')); return; }
     haptic('medium');
     /* rasmlar tartibi: imgSlots tartibida */
@@ -1692,7 +1779,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
       {tool.desc && <div style={{ padding: '4px 18px 0', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{tool.desc}</div>}
 
       {/* RASMLAR */}
-      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{imgSlots.length > 1 ? 'Rasmlar' : 'Rasmingiz'}</div>
+      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{imgSlots.length > 1 ? t('images_title','Rasmlar') : t('your_image','Rasmingiz')}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, padding: '0 16px' }}>
         {imgSlots.map((slot) => {
           const cur = imgs[slot.key];
@@ -2011,7 +2098,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
                 {failed ? (
                   <>
                     <div style={{ fontSize: 40, marginBottom: 8 }}>⚠️</div>
-                    <div style={{ fontSize: 14, color: '#FF9B9B', lineHeight: 1.5, maxWidth: 280 }}>{job.error || 'Xatolik'}</div>
+                    <div style={{ fontSize: 14, color: '#FF9B9B', lineHeight: 1.5, maxWidth: 280 }}>{job.error || t('error_occurred','Xatolik yuz berdi')}</div>
                     <div style={{ fontSize: 12.5, color: c.sub, marginTop: 8 }}>{t('refunded','Tangacha qaytarildi.')}</div>
                   </>
                 ) : (
@@ -2166,7 +2253,7 @@ function App() {
 
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || t('error_occurred','Xatolik yuz berdi'));
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
@@ -2184,7 +2271,7 @@ function App() {
           return;
         }
         if (jr.status === 'failed') {
-          setJob((j) => j ? { ...j, status: 'failed', error: jr.error || 'Generatsiya amalga oshmadi' } : null);
+          setJob((j) => j ? { ...j, status: 'failed', error: jr.error || t('gen_failed','Generatsiya amalga oshmadi') } : null);
           return;
         }
         setJob((j) => j ? { ...j, status: jr.status, progress: Math.min(95, jr.progress || j.progress) } : null);
@@ -2200,11 +2287,11 @@ function App() {
     const preview = (data.refPreviews && data.refPreviews[0]) || null;
     setActiveTemplate(null);
     setTab('home');
-    setJob({ status: 'queued', progress: 5, type: 'image', model: { name: 'Shablon', emoji: '✨', id: 'template' }, preview, result_url: null, error: null });
+    setJob({ status: 'queued', progress: 5, type: 'image', model: { name: t('template_word','Shablon'), emoji: '✨', id: 'template' }, preview, result_url: null, error: null });
     const payload = { template_id: data.template_id, style_id: data.style_id, refs: data.refs };
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || t('error_occurred','Xatolik yuz berdi'));
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
@@ -2215,7 +2302,7 @@ function App() {
         const jr = await apiFetch('/tg/job/' + jobId);
         if (typeof jr.balance === 'number') setBalance(jr.balance);
         if (jr.status === 'done') { hapticOk(); setJob((j) => j ? { ...j, status: 'done', progress: 100, result_url: jr.result_url } : null); return; }
-        if (jr.status === 'failed') { setJob((j) => j ? { ...j, status: 'failed', error: jr.error || 'Generatsiya amalga oshmadi' } : null); return; }
+        if (jr.status === 'failed') { setJob((j) => j ? { ...j, status: 'failed', error: jr.error || t('gen_failed','Generatsiya amalga oshmadi') } : null); return; }
         setJob((j) => j ? { ...j, status: jr.status, progress: Math.min(95, jr.progress || j.progress) } : null);
         setTimeout(poll, 3000);
       } catch (e) { setTimeout(poll, 4000); }
@@ -2233,7 +2320,7 @@ function App() {
     if (data.fields) payload.fields = data.fields;
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || t('error_occurred','Xatolik yuz berdi'));
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
@@ -2244,7 +2331,7 @@ function App() {
         const jr = await apiFetch('/tg/job/' + jobId);
         if (typeof jr.balance === 'number') setBalance(jr.balance);
         if (jr.status === 'done') { hapticOk(); setJob((j) => j ? { ...j, status: 'done', progress: 100, result_url: jr.result_url } : null); return; }
-        if (jr.status === 'failed') { setJob((j) => j ? { ...j, status: 'failed', error: jr.error || 'Amalga oshmadi' } : null); return; }
+        if (jr.status === 'failed') { setJob((j) => j ? { ...j, status: 'failed', error: jr.error || t('amalga_oshmadi','Amalga oshmadi') } : null); return; }
         setJob((j) => j ? { ...j, status: jr.status, progress: Math.min(95, jr.progress || j.progress) } : null);
         setTimeout(poll, 3000);
       } catch (e) { setTimeout(poll, 4000); }
