@@ -1689,7 +1689,7 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <button className="tap" onClick={doGen} disabled={!canGen} style={{ width: '100%', padding: '15px 0', borderRadius: 16, fontSize: 15.5, fontWeight: 700, ...(canGen ? glossy : { ...glass, color: c.faint }) }}>
-            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
+            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + t('create','Yaratish'))}
           </button>
         </div>
       </div>
@@ -1837,7 +1837,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <button className="tap" onClick={doGen} disabled={!canGen} style={{ width: '100%', padding: '15px 0', borderRadius: 16, fontSize: 15.5, fontWeight: 700, ...(canGen ? glossy : { ...glass, color: c.faint }) }}>
-            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
+            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + t('create','Yaratish'))}
           </button>
         </div>
       </div>
