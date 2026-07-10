@@ -183,7 +183,15 @@ const TG = () => (typeof window !== 'undefined' && window.Telegram ? window.Tele
 /* ── Til tizimi (i18n) ── */
 const LANGS = { uz: "O'zbek", en: 'English', ru: 'Русский' };
 const LANG_FLAG = { uz: '🇺🇿', en: '🇬🇧', ru: '🇷🇺' };
-let CUR_LANG = 'uz';
+let CUR_LANG = (function() {
+    try {
+      var tg = (typeof window !== 'undefined' && window.Telegram) ? window.Telegram.WebApp : null;
+      var lc = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? (tg.initDataUnsafe.user.language_code || '') : '';
+      if (lc.indexOf('ru') === 0) return 'ru';
+      if (lc.indexOf('en') === 0) return 'en';
+    } catch (e) {}
+    return 'uz';
+  })();
 const I18N = {
   uz: {
     welcome: 'Xush kelibsiz',
@@ -2204,7 +2212,7 @@ function App() {
     apiFetch('/tg/tools')
       .then((d) => { if (d && Array.isArray(d.tools)) setTools(d.tools); })
       .catch(() => { /* vositasiz ishlaydi */ });
-  }, []);
+  }, [lang]);
 
   /* Telegram BackButton — har qadamda to'g'ri "orqaga" */
   useEffect(() => {
