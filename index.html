@@ -359,6 +359,8 @@ const I18N = {
     per_sec_suffix: ' ⚡/soniya',
     price_in_bot: 'Aniq narx botda ko\'rsatiladi va balansdan yechiladi',
     amalga_oshmadi: 'Amalga oshmadi',
+    confirm_send: 'Tasdiqlash va yuborish',
+    cancel_btn: 'Bekor qilish',
 },
   en: {
     welcome: 'Welcome',
@@ -534,6 +536,8 @@ const I18N = {
     per_sec_suffix: ' ⚡/sec',
     price_in_bot: 'The exact price is shown in the bot and charged from the balance',
     amalga_oshmadi: 'Failed',
+    confirm_send: 'Confirm and send',
+    cancel_btn: 'Cancel',
 },
   ru: {
     welcome: 'Добро пожаловать',
@@ -709,6 +713,8 @@ const I18N = {
     per_sec_suffix: ' ⚡/сек',
     price_in_bot: 'Точная цена показывается в боте и спишется с баланса',
     amalga_oshmadi: 'Не удалось',
+    confirm_send: 'Подтвердить и отправить',
+    cancel_btn: 'Отмена',
 },
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
@@ -1535,11 +1541,11 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
           </button>
         ) : (
           <button className="tap" onClick={onConfirm} style={{ marginTop: 12, width: '100%', borderRadius: 16, padding: '15px 0', fontSize: 16.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...glossy }}>
-            <Check size={19} strokeWidth={3} /> Tasdiqlash va yuborish{price != null ? ' · ' + price + ' ⚡' : ''}
+            <Check size={19} strokeWidth={3} /> {t('confirm_send','Tasdiqlash va yuborish')}{price != null ? ' · ' + price + ' ⚡' : ''}
           </button>
         )}
         <button className="tap" onClick={onClose} style={{ marginTop: 9, width: '100%', borderRadius: 16, padding: '13px 0', fontSize: 15, fontWeight: 600, color: c.sub, background: 'transparent', border: '1px solid rgba(255,255,255,0.12)' }}>
-          Bekor qilish
+          {t('cancel_btn','Bekor qilish')}
         </button>
       </div>
     </div>
