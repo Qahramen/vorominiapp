@@ -78,47 +78,47 @@ const Check       = _ic([['path',{d:'M20 6 9 17l-5-5'}]]);
 const DEFAULT_META = { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5], refs: 0, refs_req: false };
 
 const VIDEO_MODELS = [
-  { id: 'google/veo3.1/reference-to-video', name: 'Veo 3.1', emoji: '🎥', badge: '💎 Premium', meta: { resolutions: ['720p', '1080p', '4k'], aspects: [], dur_steps: [8], refs: 3, refs_req: true, hook: "Dunyo #1 AI video modeli. Rasmlarni reference bering — belgi va uslub saqlanadi." } },
-  { id: 'google/veo3.1-fast/image-to-video', name: 'Veo 3.1 Fast', emoji: '🎥', badge: '🖼→🎬 Rasm→Video', meta: { resolutions: ['720p', '1080p', '4k'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 2, refs_req: false, hook: "Rasmdan video. 1-rasm boshlang'ich, 2-rasm (ixtiyoriy) yakuniy kadr." } },
-  { id: 'google/veo3.1-lite/image-to-video', name: 'Veo 3.1 Lite', emoji: '🎥', badge: '💰 Tejamkor', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 1, refs_req: true, hook: "Eng arzon Veo. 1 rasm → video. Audio yo'q." } },
-  { id: 'google/veo3.1-lite/start-end-frame-to-video', name: 'Veo 3.1 Start/End', emoji: '🎥', badge: '🎬 Boshi+Oxiri', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [8], refs: 2, refs_req: true, hook: "Birinchi va oxirgi kadr berasiz — Veo o'rtasini yaratadi." } },
-  { id: 'bytedance/seedance-2.0/text-to-video', name: 'Seedance 2.0', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p', '1440p', '4k'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 7, refs_req: false, hook: "4K video + audio. Rasm/Audio/Video biriktirishingiz mumkin. Yuz nazorati kuchli." } },
-  { id: 'bytedance/seedance-2.0-fast/reference-to-video', name: 'Seedance 2.0 Fast', emoji: '⚡', badge: '⚡ Tez', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 9, refs_req: false, hook: "Seedance 2.0 ning 3x tezroq versiyasi. Lipsync + reference. ~20% arzon." } },
-  { id: 'bytedance/seedance-v1.5-pro/image-to-video-fast', name: 'Seedance 1.5 Pro', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1'], dur_steps: [4, 5, 6, 8, 10, 12], refs: 1, refs_req: true, hook: "Pro sifatli rasm→video, tezkor." } },
-  { id: 'kwaivgi/kling-v3.0-std/image-to-video', name: 'Kling 3.0', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Kling 3.0 — silliq harakat, yuqori sifat." } },
-  { id: 'kwaivgi/kling-video-o3-pro/video-edit', name: 'Kling O3 Video', emoji: '🖥️', badge: '', meta: { resolutions: [], aspects: [], dur_steps: [], refs: 5, refs_req: true, needImage: true, needVideo: true, vidReq: true, hook: "Video tahrirlash — video yuklang (maks 10s), promptda o'zgartirishni ayting: fon, obyekt, effekt. Rasm ixtiyoriy (4 tagacha). Narx video uzunligiga qarab." } },
-  { id: 'kwaivgi/kling-v2.6-std/motion-control', name: 'Kling Motion Control', emoji: '🤿', badge: '', meta: { resolutions: [], aspects: [], dur_steps: [], refs: 2, refs_req: true, needImage: true, needVideo: true, imgReq: true, vidReq: true, hook: "Harakat ko'chirish — xarakter rasmi + harakat videosi yuklang. Videodagi harakat rasmingizga ko'chadi. Narx video uzunligiga qarab (maks 60s)." } },
-  { id: 'kwaivgi/kling-v2.5-turbo-pro/image-to-video', name: 'Kling 2.5 Turbo', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Tezkor Pro model, rasm→video." } },
-  { id: 'atlascloud/infinitetalk', name: 'InfiniteTalk', emoji: '🗣', badge: 'Lipsync', meta: { resolutions: ['480p', '720p'], aspects: [], dur_steps: [], refs: 2, refs_req: true, needImage: true, needAudio: true, imgReq: true, audReq: true, hook: "Rasm gapiradi — portret + ovoz yuklang, lablar ovozga sinxronlanadi. Narx audio uzunligiga qarab (maks 120s)." } },
-  { id: 'kwaivgi/kling-v2.6-pro/image-to-video', name: 'Kling 2.6', emoji: '⚡', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Kling 2.6 Pro — yuqori sifatli animatsiya." } },
-  { id: 'alibaba/wan-2.7/text-to-video', name: 'Wan 2.7', emoji: '🌀', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan video." } },
-  { id: 'alibaba/wan-2.7/image-to-video', name: 'Wan 2.7 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Wan 2.7 — rasmdan video." } },
-  { id: 'minimax/hailuo-2.3/t2v-standard', name: 'Hailuo 2.3', emoji: '🌊', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 0, refs_req: false, hook: "Hailuo 2.3 — sifatli matndan video." } },
-  { id: 'minimax/hailuo-2.3/fast', name: 'Hailuo 2.3 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 1, refs_req: true, hook: "Hailuo 2.3 — tezkor rasmdan video." } },
-  { id: 'xai/grok-imagine-video-v1.5/image-to-video', name: 'Grok Video 1.5', emoji: '🤖', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8], refs: 1, refs_req: true, hook: "xAI Grok — rasmdan video." } },
-  { id: 'alibaba/happyhorse-1.0/text-to-video', name: 'HappyHorse 1.0', emoji: '🐴', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 0, refs_req: false, hook: "HappyHorse — matndan video." } },
-  { id: 'vidu/q3/reference-to-video', name: 'Vidu Q3', emoji: '🎬', badge: 'Reference', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 3, refs_req: true, hook: "Vidu Q3 — reference rasmlardan video." } },
+  { id: 'google/veo3.1/reference-to-video', name: 'Veo 3.1', emoji: '🎥', badge: '💎 Premium', meta: { resolutions: ['720p', '1080p', '4k'], aspects: [], dur_steps: [8], refs: 3, refs_req: true, hook: "Dunyo #1 AI video modeli. Rasmlarni reference bering — belgi va uslub saqlanadi.", hookRu: "Видеомодель №1 в мире. Дайте фото-референсы — персонаж и стиль сохранятся.", hookEn: "The world's #1 AI video model. Give image references — character and style are preserved." } },
+  { id: 'google/veo3.1-fast/image-to-video', name: 'Veo 3.1 Fast', emoji: '🎥', badge: '🖼→🎬 Rasm→Video', meta: { resolutions: ['720p', '1080p', '4k'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 2, refs_req: false, hook: "Rasmdan video. 1-rasm boshlang'ich, 2-rasm (ixtiyoriy) yakuniy kadr.", hookRu: "Видео из фото. 1-е фото — начальный, 2-е (опц.) — финальный кадр.", hookEn: "Image-to-video. 1st image is the start, 2nd (optional) is the end frame." } },
+  { id: 'google/veo3.1-lite/image-to-video', name: 'Veo 3.1 Lite', emoji: '🎥', badge: '💰 Tejamkor', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [4, 6, 8], refs: 1, refs_req: true, hook: "Eng arzon Veo. 1 rasm → video. Audio yo'q.", hookRu: "Самый дешёвый Veo. 1 фото → видео. Без аудио.", hookEn: "The cheapest Veo. 1 image → video. No audio." } },
+  { id: 'google/veo3.1-lite/start-end-frame-to-video', name: 'Veo 3.1 Start/End', emoji: '🎥', badge: '🎬 Boshi+Oxiri', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [8], refs: 2, refs_req: true, hook: "Birinchi va oxirgi kadr berasiz — Veo o'rtasini yaratadi.", hookRu: "Даёте первый и последний кадр — Veo создаёт середину.", hookEn: "You give the first and last frames — Veo creates the middle." } },
+  { id: 'bytedance/seedance-2.0/text-to-video', name: 'Seedance 2.0', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p', '1440p', '4k'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 7, refs_req: false, hook: "4K video + audio. Rasm/Audio/Video biriktirishingiz mumkin. Yuz nazorati kuchli.", hookRu: "4K видео + аудио. Можно прикрепить фото/аудио/видео. Сильный контроль лица.", hookEn: "4K video + audio. Attach image/audio/video. Strong face control." } },
+  { id: 'bytedance/seedance-2.0-fast/reference-to-video', name: 'Seedance 2.0 Fast', emoji: '⚡', badge: '⚡ Tez', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1', '4:3'], dur_steps: [4, 5, 6, 7, 8, 9, 10, 12, 15], refs: 9, refs_req: false, hook: "Seedance 2.0 ning 3x tezroq versiyasi. Lipsync + reference. ~20% arzon.", hookRu: "Версия Seedance 2.0 в 3 раза быстрее. Липсинк + референс. ~20% дешевле.", hookEn: "A 3x faster version of Seedance 2.0. Lipsync + reference. ~20% cheaper." } },
+  { id: 'bytedance/seedance-v1.5-pro/image-to-video-fast', name: 'Seedance 1.5 Pro', emoji: '🌱', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['adaptive', '16:9', '9:16', '1:1'], dur_steps: [4, 5, 6, 8, 10, 12], refs: 1, refs_req: true, hook: "Pro sifatli rasm→video, tezkor.", hookRu: "Pro-качество фото→видео, быстро.", hookEn: "Pro-quality image-to-video, fast." } },
+  { id: 'kwaivgi/kling-v3.0-std/image-to-video', name: 'Kling 3.0', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Kling 3.0 — silliq harakat, yuqori sifat.", hookRu: "Kling 3.0 — плавное движение, высокое качество.", hookEn: "Kling 3.0 — smooth motion, high quality." } },
+  { id: 'kwaivgi/kling-video-o3-pro/video-edit', name: 'Kling O3 Video', emoji: '🖥️', badge: '', meta: { resolutions: [], aspects: [], dur_steps: [], refs: 5, refs_req: true, needImage: true, needVideo: true, vidReq: true, hook: "Video tahrirlash — video yuklang (maks 10s), promptda o'zgartirishni ayting: fon, obyekt, effekt. Rasm ixtiyoriy (4 tagacha). Narx video uzunligiga qarab.", hookRu: "Редактирование видео — загрузите видео (макс 10s), в промпте укажите изменение: фон, объект, эффект. Фото опционально (до 4). Цена по длине видео.", hookEn: "Video editing — upload a video (max 10s), say the change in the prompt: background, object, effect. Images optional (up to 4). Price by video length." } },
+  { id: 'kwaivgi/kling-v2.6-std/motion-control', name: 'Kling Motion Control', emoji: '🤿', badge: '', meta: { resolutions: [], aspects: [], dur_steps: [], refs: 2, refs_req: true, needImage: true, needVideo: true, imgReq: true, vidReq: true, hook: "Harakat ko'chirish — xarakter rasmi + harakat videosi yuklang. Videodagi harakat rasmingizga ko'chadi. Narx video uzunligiga qarab (maks 60s).", hookRu: "Перенос движения — фото персонажа + видео движения. Движение из видео переносится на ваше фото. Цена по длине видео (макс 60s).", hookEn: "Motion transfer — a character photo + a motion video. The video's motion transfers to your photo. Price by video length (max 60s)." } },
+  { id: 'kwaivgi/kling-v2.5-turbo-pro/image-to-video', name: 'Kling 2.5 Turbo', emoji: '⚡️', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Tezkor Pro model, rasm→video.", hookRu: "Быстрая Pro-модель, фото→видео.", hookEn: "Fast Pro model, image-to-video." } },
+  { id: 'atlascloud/infinitetalk', name: 'InfiniteTalk', emoji: '🗣', badge: 'Lipsync', meta: { resolutions: ['480p', '720p'], aspects: [], dur_steps: [], refs: 2, refs_req: true, needImage: true, needAudio: true, imgReq: true, audReq: true, hook: "Rasm gapiradi — portret + ovoz yuklang, lablar ovozga sinxronlanadi. Narx audio uzunligiga qarab (maks 120s).", hookRu: "Фото говорит — загрузите портрет + голос, губы синхронизируются со звуком. Цена по длине аудио (макс 120s).", hookEn: "The photo talks — upload a portrait + a voice, the lips sync to the audio. Price by audio length (max 120s)." } },
+  { id: 'kwaivgi/kling-v2.6-pro/image-to-video', name: 'Kling 2.6', emoji: '⚡', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [5, 10], refs: 1, refs_req: true, hook: "Kling 2.6 Pro — yuqori sifatli animatsiya.", hookRu: "Kling 2.6 Pro — анимация высокого качества.", hookEn: "Kling 2.6 Pro — high-quality animation." } },
+  { id: 'alibaba/wan-2.7/text-to-video', name: 'Wan 2.7', emoji: '🌀', badge: '', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan video.", hookRu: "Wan 2.7 — видео из текста.", hookEn: "Wan 2.7 — text-to-video." } },
+  { id: 'alibaba/wan-2.7/image-to-video', name: 'Wan 2.7 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['480p', '720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8, 10, 12, 15], refs: 1, refs_req: true, hook: "Wan 2.7 — rasmdan video.", hookRu: "Wan 2.7 — видео из фото.", hookEn: "Wan 2.7 — image-to-video." } },
+  { id: 'minimax/hailuo-2.3/t2v-standard', name: 'Hailuo 2.3', emoji: '🌊', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 0, refs_req: false, hook: "Hailuo 2.3 — sifatli matndan video.", hookRu: "Hailuo 2.3 — качественное видео из текста.", hookEn: "Hailuo 2.3 — quality text-to-video." } },
+  { id: 'minimax/hailuo-2.3/fast', name: 'Hailuo 2.3 I2V', emoji: '🌀', badge: '🖼→🎬', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [6, 10], refs: 1, refs_req: true, hook: "Hailuo 2.3 — tezkor rasmdan video.", hookRu: "Hailuo 2.3 — быстрое видео из фото.", hookEn: "Hailuo 2.3 — fast image-to-video." } },
+  { id: 'xai/grok-imagine-video-v1.5/image-to-video', name: 'Grok Video 1.5', emoji: '🤖', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [2, 3, 4, 5, 6, 8], refs: 1, refs_req: true, hook: "xAI Grok — rasmdan video.", hookRu: "xAI Grok — видео из фото.", hookEn: "xAI Grok — image-to-video." } },
+  { id: 'alibaba/happyhorse-1.0/text-to-video', name: 'HappyHorse 1.0', emoji: '🐴', badge: '', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 0, refs_req: false, hook: "HappyHorse — matndan video.", hookRu: "HappyHorse — видео из текста.", hookEn: "HappyHorse — text-to-video." } },
+  { id: 'vidu/q3/reference-to-video', name: 'Vidu Q3', emoji: '🎬', badge: 'Reference', meta: { resolutions: ['720p', '1080p'], aspects: ['16:9', '9:16', '1:1'], dur_steps: [1, 2, 3, 4, 5, 6, 8], refs: 3, refs_req: true, hook: "Vidu Q3 — reference rasmlardan video.", hookRu: "Vidu Q3 — видео из фото-референсов.", hookEn: "Vidu Q3 — video from image references." } },
 ];
 
 const IMAGE_MODELS = [
-  { id: 'google/nano-banana-2/edit', name: 'Nano Banana 2', emoji: '🍌', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 3, refs_req: false, hook: "Nano Banana 2 — rasm tahrirlash va yaratish. Reference qo'llab-quvvatlaydi." } },
-  { id: 'google/nano-banana-pro/edit', name: 'Nano Banana Pro', emoji: '🍌', badge: 'Pro', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 4, refs_req: false, hook: "Nano Banana Pro — yuqori sifat, 4K, ko'p reference." } },
-  { id: 'openai/gpt-image-2/text-to-image', name: 'GPT Image 2', emoji: '🤖', badge: '', meta: { resolutions: ['low', 'medium', 'high'], aspects: ['1:1', '3:2', '2:3'], refs: 0, refs_req: false, hook: "OpenAI GPT Image 2 — matndan rasm." } },
-  { id: 'bytedance/seedream-v5.0-lite', name: 'Seedream 5.0', emoji: '🌸', badge: 'Yangi', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 5.0 Lite — chiroyli, tezkor rasm." } },
-  { id: 'alibaba/wan-2.7/text-to-image', name: 'Wan 2.7 Image', emoji: '🌀', badge: '', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan rasm." } },
-  { id: 'alibaba/wan-2.7-pro/text-to-image', name: 'Wan 2.7 Pro', emoji: '🌀', badge: 'Pro', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16', '4:3'], refs: 0, refs_req: false, hook: "Wan 2.7 Pro — yuqori sifatli rasm." } },
-  { id: 'xai/grok-imagine-image-quality/text-to-image', name: 'Grok Image', emoji: '🤖', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "xAI Grok — matndan rasm." } },
-  { id: 'qwen/qwen-image-2.0/text-to-image', name: 'Qwen Image 2.0', emoji: '🔮', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Qwen Image 2.0 — matndan rasm." } },
-  { id: 'black-forest-labs/flux-1.1-pro', name: 'Flux Pro 2.0', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3'], refs: 0, refs_req: false, hook: "Flux 1.1 Pro — yuqori sifatli rasm." } },
-  { id: 'black-forest-labs/flux-kontext-max', name: 'Flux Kontext', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16'], refs: 1, refs_req: false, hook: "Flux Kontext — rasm konteksti bilan ishlash." } },
-  { id: 'bytedance/seedream-v4.5/text-to-image', name: 'Seedream 4.5', emoji: '🌸', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 4.5 — chiroyli rasm." } },
+  { id: 'google/nano-banana-2/edit', name: 'Nano Banana 2', emoji: '🍌', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 3, refs_req: false, hook: "Nano Banana 2 — rasm tahrirlash va yaratish. Reference qo'llab-quvvatlaydi.", hookRu: "Nano Banana 2 — редактирование и создание фото. Поддерживает референсы.", hookEn: "Nano Banana 2 — image editing and creation. Supports references." } },
+  { id: 'google/nano-banana-pro/edit', name: 'Nano Banana Pro', emoji: '🍌', badge: 'Pro', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3', '4:3'], refs: 4, refs_req: false, hook: "Nano Banana Pro — yuqori sifat, 4K, ko'p reference.", hookRu: "Nano Banana Pro — высокое качество, 4K, много референсов.", hookEn: "Nano Banana Pro — high quality, 4K, many references." } },
+  { id: 'openai/gpt-image-2/text-to-image', name: 'GPT Image 2', emoji: '🤖', badge: '', meta: { resolutions: ['low', 'medium', 'high'], aspects: ['1:1', '3:2', '2:3'], refs: 0, refs_req: false, hook: "OpenAI GPT Image 2 — matndan rasm.", hookRu: "OpenAI GPT Image 2 — фото из текста.", hookEn: "OpenAI GPT Image 2 — text-to-image." } },
+  { id: 'bytedance/seedream-v5.0-lite', name: 'Seedream 5.0', emoji: '🌸', badge: 'Yangi', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 5.0 Lite — chiroyli, tezkor rasm.", hookRu: "Seedream 5.0 Lite — красивое, быстрое фото.", hookEn: "Seedream 5.0 Lite — beautiful, fast images." } },
+  { id: 'alibaba/wan-2.7/text-to-image', name: 'Wan 2.7 Image', emoji: '🌀', badge: '', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Wan 2.7 — matndan rasm.", hookRu: "Wan 2.7 — фото из текста.", hookEn: "Wan 2.7 — text-to-image." } },
+  { id: 'alibaba/wan-2.7-pro/text-to-image', name: 'Wan 2.7 Pro', emoji: '🌀', badge: 'Pro', meta: { resolutions: ['512', '1024', '2048'], aspects: ['1:1', '16:9', '9:16', '4:3'], refs: 0, refs_req: false, hook: "Wan 2.7 Pro — yuqori sifatli rasm.", hookRu: "Wan 2.7 Pro — фото высокого качества.", hookEn: "Wan 2.7 Pro — high-quality images." } },
+  { id: 'xai/grok-imagine-image-quality/text-to-image', name: 'Grok Image', emoji: '🤖', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "xAI Grok — matndan rasm.", hookRu: "xAI Grok — фото из текста.", hookEn: "xAI Grok — text-to-image." } },
+  { id: 'qwen/qwen-image-2.0/text-to-image', name: 'Qwen Image 2.0', emoji: '🔮', badge: '', meta: { resolutions: ['1k', '2k'], aspects: ['1:1', '16:9', '9:16'], refs: 0, refs_req: false, hook: "Qwen Image 2.0 — matndan rasm.", hookRu: "Qwen Image 2.0 — фото из текста.", hookEn: "Qwen Image 2.0 — text-to-image." } },
+  { id: 'black-forest-labs/flux-1.1-pro', name: 'Flux Pro 2.0', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '3:2', '2:3'], refs: 0, refs_req: false, hook: "Flux 1.1 Pro — yuqori sifatli rasm.", hookRu: "Flux 1.1 Pro — фото высокого качества.", hookEn: "Flux 1.1 Pro — high-quality images." } },
+  { id: 'black-forest-labs/flux-kontext-max', name: 'Flux Kontext', emoji: '⚡', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16'], refs: 1, refs_req: false, hook: "Flux Kontext — rasm konteksti bilan ishlash.", hookRu: "Flux Kontext — работа с контекстом изображения.", hookEn: "Flux Kontext — work with image context." } },
+  { id: 'bytedance/seedream-v4.5/text-to-image', name: 'Seedream 4.5', emoji: '🌸', badge: '', meta: { resolutions: ['1k', '2k', '4k'], aspects: ['1:1', '16:9', '9:16', '4:3', '3:4'], refs: 0, refs_req: false, hook: "Seedream 4.5 — chiroyli rasm.", hookRu: "Seedream 4.5 — красивые фото.", hookEn: "Seedream 4.5 — beautiful images." } },
 ];
 
 const STAR_PACKAGES = [
-  { tangacha: 20, bonus: 0, stars: 99, emoji: '🌱', label: 'Start', desc: "Sinab ko'rish uchun", badge: '' },
-  { tangacha: 60, bonus: 10, stars: 249, emoji: '🔥', label: 'Popular', desc: 'Eng mashhur paket', badge: '🔥' },
-  { tangacha: 150, bonus: 30, stars: 549, emoji: '⚡', label: 'Pro', desc: 'Jiddiy ijodkorlar', badge: '' },
-  { tangacha: 400, bonus: 120, stars: 1299, emoji: '💎', label: 'Biznes', desc: 'Katta hajmli loyihalar', badge: '' },
+  { tangacha: 20, bonus: 0, stars: 99, emoji: '🌱', label: 'Start', desc: "Sinab ko'rish uchun", descRu: "Попробовать", descEn: "Try it out", badge: '' },
+  { tangacha: 60, bonus: 10, stars: 249, emoji: '🔥', label: 'Popular', desc: 'Eng mashhur paket', descRu: "Самый популярный", descEn: "Most popular", badge: '🔥' },
+  { tangacha: 150, bonus: 30, stars: 549, emoji: '⚡', label: 'Pro', desc: 'Jiddiy ijodkorlar', descRu: "Для серьёзных авторов", descEn: "For serious creators", badge: '' },
+  { tangacha: 400, bonus: 120, stars: 1299, emoji: '💎', label: 'Biznes', desc: 'Katta hajmli loyihalar', descRu: "Крупные проекты", descEn: "Large projects", badge: '' },
 ];
 
 const FEATURED_IDS = [
@@ -195,7 +195,7 @@ const I18N = {
     image: 'Rasm',
     models_count: 'model',
     featured: 'Mashhur modellar',
-    templates_tools: 'Shablonlar va vositalar',
+    templates_tools: t('tpl_and_tools','Shablonlar va vositalar'),
     tools: 'Vositalar',
     tools_count: 'ta vosita',
     styles_count: 'uslub',
@@ -213,7 +213,7 @@ const I18N = {
     camera: 'Kamera',
     audio: 'Audio',
     upload: 'Yuklash',
-    choose_style: 'Uslub tanlang',
+    choose_style: t('choose_style','Uslub tanlang'),
     your_photo: 'Rasmingiz',
     your_photos: 'Rasmlar',
     info_fields: 'Ma\'lumotlar',
@@ -221,11 +221,11 @@ const I18N = {
     gallery_empty: 'Ijodlaringiz shu yerda',
     start_creating: 'Yaratishni boshlash',
     generating: 'Yaratilmoqda…',
-    gen_time: 'Bu 1-3 daqiqa olishi mumkin',
+    gen_time: t('takes_1_3_min','Bu 1-3 daqiqa olishi mumkin'),
     download: 'Yuklab olish',
-    retry: 'Qayta urinish',
+    retry: t('retry_btn','Qayta urinish'),
     close: 'Yopish',
-    result_saved: 'Ilovani yopsangiz ham, natija Galereyada saqlanadi.',
+    result_saved: t('close_app_note','Ilovani yopsangiz ham, natija Galereyada saqlanadi.'),
     refunded: 'Tangacha qaytarildi.',
     lang: 'Til',
     notifications: 'Bildirishnomalar',
@@ -233,7 +233,7 @@ const I18N = {
     help: 'Yordam',
     about: 'Biz haqimizda',
     choose_lang: 'Tilni tanlang',
-    not_enough: 'Balans yetarli emas',
+    not_enough: t('not_enough','Balans yetarli emas'),
     create_btn: 'Yaratish',
     continue_btn: 'Davom etish',
     confirm_send: 'Tasdiqlash va yuborish',
@@ -264,15 +264,59 @@ const I18N = {
     enhance_btn: 'Yaxshilash',
     enhance_hint: 'AI promptni professional darajaga chiqaradi',
     portrait_hint: 'Yuzingiz aniq ko\'ringan portret yuklang.',
-    tools_desc: 'Fotorasmlar bilan ishlash uchun vositalar',
+    tools_desc: t('tools_subtitle','Fotorasmlar bilan ishlash uchun vositalar'),
     gallery_empty2: 'Ijodlaringiz shu yerda',
-    gallery_sub: 'Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.',
+    gallery_sub: t('gallery_desc','Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.'),
     app_version: 'VoroCreator Studio · v2.0',
-    gen_time2: 'Bu 1-3 daqiqa olishi mumkin',
-    result_saved2: 'Ilovani yopsangiz ham, natija Galereyada saqlanadi.',
+    gen_time2: t('takes_1_3_min','Bu 1-3 daqiqa olishi mumkin'),
+    result_saved2: t('close_app_note','Ilovani yopsangiz ham, natija Galereyada saqlanadi.'),
     search_models: 'Model qidirish...',
     prompt_label: 'PROMPT',
-  },
+      tpl_and_tools: t('tpl_and_tools','Shablonlar va vositalar'),
+    tools_word: 'Vositalar',
+    tools_count_suffix: t('tools_count_suffix',' ta vosita'),
+    nothing_found: 'Hech narsa topilmadi. Qidiruv yoki filtrni o\'zgartirib ko\'ring.',
+    enh_err: t('enh_err','Yaxshilashda xato'),
+    upload_err: 'Yuklashda xato',
+    upload_err_code: 'Yuklashda xato (',
+    server_err: t('server_err','Server javobida xato'),
+    clip_no_img: 'Buferda rasm topilmadi — avval rasmni Copy qiling',
+    gallery_lock_err: 'Galereya ochilmadi — bu Telegram qulfi (Face ID) xatosi. «Kamera» yoki «Fayl» dan sinang.',
+    required_suffix: ' · MAJBURIY',
+    ref_hint_full: t('ref_hint_full','Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).'),
+    talkinghead_hint: t('talkinghead_hint','Portret rasm + audio yuklang.'),
+    need_audio_req: t('need_audio_req','Audio fayl yuklang (majburiy)'),
+    need_video_req: t('need_video_req','Video yuklang (majburiy)'),
+    need_portrait_req: t('need_portrait_req','Portret rasm yuklang (majburiy)'),
+    need_1img: t('need_1img','Bu model kamida 1 ta rasm talab qiladi'),
+    continue_arrow: t('continue_arrow','Davom etish →'),
+    confirm_deduct: t('confirm_deduct','Tasdiqlasangiz balansdan '),
+    upload_img: t('upload_img','Rasm yuklang'),
+    your_image: 'Rasmingiz',
+    portrait_hint: 'Yuzingiz aniq ko\'ringan portret yuklang.',
+    tools_subtitle: t('tools_subtitle','Fotorasmlar bilan ishlash uchun vositalar'),
+    upload_all_imgs: t('upload_all_imgs','Barcha rasmlarni yuklang'),
+    images_word: 'Rasmlar',
+    only_image_file: t('only_image_file','Faqat rasm fayli'),
+    img_too_big: t('img_too_big','Rasm 10 MB dan katta'),
+    gallery_desc: t('gallery_desc','Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.'),
+    nav_home: 'Bosh sahifa',
+    dl_loading: 'Yuklanmoqda…',
+    dl_saved: t('dl_saved','Saqlandi ✓'),
+    creating_dots: 'Yaratilmoqda…',
+    done_check: 'Tayyor ✓',
+    takes_1_3_min: t('takes_1_3_min','Bu 1-3 daqiqa olishi mumkin'),
+    retry_btn: t('retry_btn','Qayta urinish'),
+    close_app_note: t('close_app_note','Ilovani yopsangiz ham, natija Galereyada saqlanadi.'),
+    result_alt: 'natija',
+    error_word: 'Xatolik',
+    filter_img_from: '🖼 Rasmdan',
+    filter_all: 'Hammasi',
+    price_persec_tail: t('price_persec_tail',' yuklang, aniq narx chiqadi (maks '),
+    enhancing_word: 'Yaxshilanmoqda',
+    ph_video: 'G\'oyangizni yozing — o\'zbekcha yoki inglizcha. Masalan: yomg\'ir ostida yurgan superqahramon, kinematik kadr, dramatik yorug\'lik...',
+    ph_image: 'G\'oyangizni yozing. Masalan: futuristik robot portreti, elektr-ko\'k yog\'du, studiya yorug\'ligi...',
+},
   en: {
     welcome: 'Welcome',
     balance: 'Balance',
@@ -360,7 +404,51 @@ const I18N = {
     result_saved2: 'Even if you close the app, the result stays in the Gallery.',
     search_models: 'Search models...',
     prompt_label: 'PROMPT',
-  },
+      tpl_and_tools: 'Templates and tools',
+    tools_word: 'Tools',
+    tools_count_suffix: ' tools',
+    nothing_found: 'Nothing found. Change the search or filter.',
+    enh_err: 'Enhancement error',
+    upload_err: 'Upload error',
+    upload_err_code: 'Upload error (',
+    server_err: 'Server response error',
+    clip_no_img: 'No image in clipboard — copy an image first',
+    gallery_lock_err: 'Gallery didn\'t open — a Telegram lock (Face ID) error. Try \'Camera\' or \'File\'.',
+    required_suffix: ' · REQUIRED',
+    ref_hint_full: 'Image — face/style. Video — motion sample. Audio — voice (lipsync).',
+    talkinghead_hint: 'Upload a portrait + audio. Lips sync to the voice.',
+    need_audio_req: 'Upload an audio file (required)',
+    need_video_req: 'Upload a video (required)',
+    need_portrait_req: 'Upload a portrait image (required)',
+    need_1img: 'This model requires at least 1 image',
+    continue_arrow: 'Continue →',
+    confirm_deduct: 'On confirmation, your balance is charged ',
+    upload_img: 'Upload an image',
+    your_image: 'Your image',
+    portrait_hint: 'Upload a portrait with a clearly visible face.',
+    tools_subtitle: 'Tools for working with photos',
+    upload_all_imgs: 'Upload all images',
+    images_word: 'Images',
+    only_image_file: 'Image file only',
+    img_too_big: 'Image over 10 MB',
+    gallery_desc: 'Your images and videos created in the Mini App are saved in this gallery.',
+    nav_home: 'Home',
+    dl_loading: 'Downloading…',
+    dl_saved: 'Saved ✓',
+    creating_dots: 'Creating…',
+    done_check: 'Done ✓',
+    takes_1_3_min: 'This may take 1–3 minutes',
+    retry_btn: 'Retry',
+    close_app_note: 'Even if you close the app, the result is saved in the Gallery.',
+    result_alt: 'result',
+    error_word: 'Error',
+    filter_img_from: '🖼 From image',
+    filter_all: 'All',
+    price_persec_tail: ' upload, exact price will show (max ',
+    enhancing_word: 'Enhancing',
+    ph_video: 'Describe your idea — in any language. E.g.: a superhero walking in the rain, cinematic shot, dramatic lighting...',
+    ph_image: 'Describe your idea. E.g.: a futuristic robot portrait, electric-blue glow, studio lighting...',
+},
   ru: {
     welcome: 'Добро пожаловать',
     balance: 'Баланс',
@@ -448,7 +536,51 @@ const I18N = {
     result_saved2: 'Даже если закрыть приложение, результат останется в Галерее.',
     search_models: 'Поиск моделей...',
     prompt_label: 'PROMPT',
-  },
+      tpl_and_tools: 'Шаблоны и инструменты',
+    tools_word: 'Инструменты',
+    tools_count_suffix: ' инструментов',
+    nothing_found: 'Ничего не найдено. Измените поиск или фильтр.',
+    enh_err: 'Ошибка улучшения',
+    upload_err: 'Ошибка загрузки',
+    upload_err_code: 'Ошибка загрузки (',
+    server_err: 'Ошибка ответа сервера',
+    clip_no_img: 'В буфере нет изображения — сначала скопируйте фото',
+    gallery_lock_err: 'Галерея не открылась — ошибка блокировки Telegram (Face ID). Попробуйте «Камера» или «Файл».',
+    required_suffix: ' · ОБЯЗАТЕЛЬНО',
+    ref_hint_full: 'Фото — лицо/стиль. Видео — образец движения. Аудио — голос (липсинк).',
+    talkinghead_hint: 'Загрузите портрет + аудио. Губы синхронизируются со звуком.',
+    need_audio_req: 'Загрузите аудиофайл (обязательно)',
+    need_video_req: 'Загрузите видео (обязательно)',
+    need_portrait_req: 'Загрузите портретное фото (обязательно)',
+    need_1img: 'Эта модель требует минимум 1 фото',
+    continue_arrow: 'Продолжить →',
+    confirm_deduct: 'При подтверждении с баланса спишется ',
+    upload_img: 'Загрузите фото',
+    your_image: 'Ваше фото',
+    portrait_hint: 'Загрузите портрет с чётко видимым лицом.',
+    tools_subtitle: 'Инструменты для работы с фото',
+    upload_all_imgs: 'Загрузите все фото',
+    images_word: 'Фото',
+    only_image_file: 'Только файл изображения',
+    img_too_big: 'Фото больше 10 МБ',
+    gallery_desc: 'Ваши фото и видео, созданные в Mini App, хранятся в этой галерее.',
+    nav_home: 'Главная',
+    dl_loading: 'Загрузка…',
+    dl_saved: 'Сохранено ✓',
+    creating_dots: 'Создаётся…',
+    done_check: 'Готово ✓',
+    takes_1_3_min: 'Это может занять 1–3 минуты',
+    retry_btn: 'Повторить',
+    close_app_note: 'Даже если закроете приложение, результат сохранится в Галерее.',
+    result_alt: 'результат',
+    error_word: 'Ошибка',
+    filter_img_from: '🖼 Из фото',
+    filter_all: 'Все',
+    price_persec_tail: ' загрузите, точная цена появится (макс ',
+    enhancing_word: 'Улучшается',
+    ph_video: 'Опишите идею — на русском или английском. Например: супергерой идёт под дождём, кинематографичный кадр, драматичный свет...',
+    ph_image: 'Опишите идею. Например: портрет футуристического робота, электрик-синее свечение, студийный свет...',
+},
 };
 /* t(kalit, standart) — joriy tildagi matn; topilmasa standart (o'zbekcha) qaytadi */
 function t(key, fallback) {
@@ -721,7 +853,7 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
 
       {((templates && templates.length > 0) || (tools && tools.length > 0)) && (
         <React.Fragment>
-          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>{t('templates_tools','Shablonlar va vositalar')}</div>
+          <div style={{ padding: '22px 16px 8px', fontSize: 20, fontWeight: 700, color: c.text, letterSpacing: -0.3 }}>{t('templates_tools',t('tpl_and_tools','Shablonlar va vositalar'))}</div>
           <div className="rise noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 16px 6px', animationDelay: '160ms' }}>
             {tools && tools.length > 0 && (
               <button className="tap" onClick={() => { haptic('medium'); openToolList(); }} style={{ flex: '0 0 auto', width: 190, borderRadius: 20, padding: 16, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', ...glass, border: '1px solid rgba(95,230,255,0.24)' }}>
@@ -774,8 +906,8 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
 }
 
 /* ── MODEL LIST ── */
-const V_FILTERS = [['all', 'Hammasi'], ['fast', '⚡ Tez'], ['i2v', '🖼 Rasmdan'], ['t2v', '✍️ Matndan'], ['premium', '💎 Premium']];
-const I_FILTERS = [['all', 'Hammasi'], ['pro', 'Pro'], ['ref', '📎 Reference']];
+const V_FILTERS = [['all', t('filter_all','Hammasi')], ['fast', '⚡ Tez'], ['i2v', t('filter_img_from','🖼 Rasmdan')], ['t2v', '✍️ Matndan'], ['premium', '💎 Premium']];
+const I_FILTERS = [['all', t('filter_all','Hammasi')], ['pro', 'Pro'], ['ref', '📎 Reference']];
 const matchFilter = (m, f) => {
   const meta = getMeta(m);
   if (f === 'all') return true;
@@ -900,7 +1032,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         try { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success'); } catch (he) {}
       }
     } catch (e) {
-      setEnhErr((e && e.message) ? e.message : 'Yaxshilashda xato');
+      setEnhErr((e && e.message) ? e.message : t('enh_err','Yaxshilashda xato'));
     } finally { setEnhancing(false); }
   }
   const isSeedance = /seedance-2\.0/.test(model.id || '');   /* audio+video qabul qiladi */
@@ -932,8 +1064,8 @@ function ParamsScreen({ model, onBack, onSubmit }) {
     } finally { clearTimeout(timer); }
     let d = {};
     try { d = await r.json(); } catch (pe) { d = {}; }
-    if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
-    if (!d.upload_id) throw new Error('Server javobida xato');
+    if (!r.ok) throw new Error(d.error || (t('upload_err_code','Yuklashda xato (') + r.status + ')'));
+    if (!d.upload_id) throw new Error(t('server_err','Server javobida xato'));
     setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview, kind: kind || d.kind || 'image', duration: d.duration || 0 }]);
   };
 
@@ -972,7 +1104,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       if (it.kind === 'file' && it.type.indexOf('image/') === 0) { file = it.getAsFile(); break; }
     }
     setShowPasteBox(false);
-    if (!file) { setUpErr("Buferda rasm topilmadi \u2014 avval rasmni Copy qiling"); return; }
+    if (!file) { setUpErr(t('clip_no_img','Buferda rasm topilmadi')); return; }
     setUploading(true); setUpErr('');
     try { await uploadOne(file); haptic('light'); }
     catch (err) { setUpErr((err && err.message) || 'Yuklashda xato'); }
@@ -999,7 +1131,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             return;
           }
         }
-        setUpErr("Buferda rasm topilmadi \u2014 avval rasmni Copy qiling");
+        setUpErr(t('clip_no_img','Buferda rasm topilmadi'));
         return;
       } catch (err) { /* bloklangan (iOS Telegram) — paste-box'ga o'tamiz */ }
     }
@@ -1019,7 +1151,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         if (galleryTriedAt.current && !gotFileAfterTry.current) {
           setUploading(false);
           setUploadKey((k) => k + 1);
-          setUpErr("Galereya ochilmadi \u2014 bu Telegram qulfi (Face ID) xatosi. \u00ABKamera\u00BB ishlating yoki Telegram \u2192 Sozlamalar \u2192 Maxfiylik \u2192 Parolni vaqtincha o'chiring.");
+          setUpErr(t('gallery_lock_err','Galereya ochilmadi'));
         }
         galleryTriedAt.current = 0;
       }, 2500);
@@ -1056,7 +1188,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             {model.badge ? <div style={{ fontSize: 12, color: c.blue, fontWeight: 600, marginTop: 1 }}>{model.badge}</div> : null}
           </div>
         </div>
-        <div style={{ fontSize: 13.5, color: c.sub, lineHeight: 1.5, position: 'relative' }}>{meta.hook}</div>
+        <div style={{ fontSize: 13.5, color: c.sub, lineHeight: 1.5, position: 'relative' }}>{(CUR_LANG === "ru" && meta.hookRu) ? meta.hookRu : (CUR_LANG === "en" && meta.hookEn) ? meta.hookEn : meta.hook}</div>
       </div>
 
       {meta.resolutions.length > 0 && (
@@ -1081,7 +1213,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
       {psec && (
         <div className="rise" style={{ margin: '14px 16px 0', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 15px', borderRadius: 14, ...glass, fontSize: 13, color: c.text, lineHeight: 1.45, animationDelay: '150ms' }}>
           <Star size={16} fill={c.blue} color={c.blue} style={{ flex: 'none' }} />
-          <span>{psecPrice != null ? ('Narx: ' + psecPrice + ' \u26A1 (' + Math.round(psecDur) + 's ' + (psec.unit === 'audio' ? 'audio' : 'video') + ')') : ('Narx: har soniyasiga ~' + psec.perSec + ' \u26A1 — ' + (psec.unit === 'audio' ? 'audio' : 'video') + ' yuklang, aniq narx chiqadi (maks ' + psec.max + 's).')}</span>
+          <span>{psecPrice != null ? ('Narx: ' + psecPrice + ' \u26A1 (' + Math.round(psecDur) + 's ' + (psec.unit === 'audio' ? 'audio' : 'video') + ')') : ('Narx: har soniyasiga ~' + psec.perSec + ' \u26A1 — ' + (psec.unit === 'audio' ? 'audio' : 'video') + t('price_persec_tail',' yuklang, aniq narx chiqadi (maks ') + psec.max + 's).')}</span>
         </div>
       )}
 
@@ -1092,7 +1224,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             value={prompt}
             onChange={(e) => setPrompt(clampBytes(e.target.value, 3400))}
             rows={4}
-            placeholder={video ? "G'oyangizni yozing \u2014 o'zbekcha yoki inglizcha. Masalan: yomg'ir ostida yurgan superqahramon, kinematik kadr, dramatik yorug'lik..." : "G'oyangizni yozing. Masalan: futuristik robot portreti, elektr-ko'k yog'du, studiya yorug'ligi..."}
+            placeholder={video ? t('ph_video','') : t('ph_image','')}
             style={{ width: '100%', boxSizing: 'border-box', minHeight: 106, resize: 'none', borderRadius: 16, padding: 14, fontSize: 15, lineHeight: 1.45, color: c.text, outline: 'none', caretColor: c.blue, fontFamily: font, ...glass }}
           />
         </div>
@@ -1102,7 +1234,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             disabled={!prompt.trim() || enhancing}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 13, cursor: (!prompt.trim() || enhancing) ? 'default' : 'pointer', opacity: (!prompt.trim() || enhancing) ? 0.5 : 1, background: 'linear-gradient(135deg, rgba(56,132,255,0.28), rgba(56,132,255,0.12))', color: c.text, fontSize: 13.5, fontWeight: 600, fontFamily: font, WebkitBackdropFilter: 'blur(12px)', backdropFilter: 'blur(12px)', border: '1px solid rgba(56,132,255,0.35)' }}
           >
-            {enhancing ? '\u2728 Yaxshilanmoqda\u2026' : '\u2728 ' + t('enhance_btn','Yaxshilash')}
+            {enhancing ? '\u2728 ' + t('enhancing_word','Yaxshilanmoqda') + '\u2026' : '\u2728 ' + t('enhance_btn','Yaxshilash')}
           </button>
           {prompt.trim() ? <span style={{ fontSize: 11, color: c.faint, lineHeight: 1.35 }}>{t('enhance_hint','AI promptni professional darajaga chiqaradi')}</span> : null}
         </div>
@@ -1118,7 +1250,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
         return (
         <div className="rise" style={{ margin: '18px 16px 0', animationDelay: '200ms' }}>
           {/* ── RASM ── */}
-          <Label>{(isSeedance || needAudio) ? ('RASM' + (meta.imgReq ? ' \u00B7 MAJBURIY' : '')) : ('REFERENCE RASM' + (meta.refs_req ? ' \u00B7 MAJBURIY' : ''))}</Label>
+          <Label>{(isSeedance || needAudio) ? ('RASM' + (meta.imgReq ? t('required_suffix',' \u00B7 MAJBURIY') : '')) : ('REFERENCE RASM' + (meta.refs_req ? t('required_suffix',' \u00B7 MAJBURIY') : ''))}</Label>
           <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {imgRefs.map((rf) => (
               <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)' }}>
@@ -1144,7 +1276,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           {needVideo && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'VIDEO' + (videoReq ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY')}</Label>
+              <Label>{'VIDEO' + (videoReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 IXTIYORIY')}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {vidRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', background: '#000' }}>
@@ -1167,7 +1299,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           {needAudio && (
             <React.Fragment>
               <div style={{ height: 14 }} />
-              <Label>{'AUDIO' + (audioReq ? ' \u00B7 MAJBURIY' : ' \u00B7 IXTIYORIY')}</Label>
+              <Label>{'AUDIO' + (audioReq ? t('required_suffix',' \u00B7 MAJBURIY') : ' \u00B7 IXTIYORIY')}</Label>
               <div style={{ margin: '8px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {audRefs.map((rf) => (
                   <div key={rf.id} style={{ position: 'relative', width: 76, height: 76, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.14)', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.05)' }}>
@@ -1186,7 +1318,7 @@ function ParamsScreen({ model, onBack, onSubmit }) {
           )}
 
           {upErr ? <div style={{ padding: '10px 18px 0', fontSize: 12.5, color: '#FF6B6B' }}>{upErr}</div> : null}
-          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? 'Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).' : (needAudio ? 'Portret rasm + audio yuklang. Lablar ovozga sinxronlanadi.' : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'))}</div>
+          <div style={{ padding: '9px 18px 0', fontSize: 11.5, color: c.faint, lineHeight: 1.4 }}>{isSeedance ? t('ref_hint_full','Rasm — yuz/uslub. Video — harakat namunasi. Audio — ovoz (lipsync).') : (needAudio ? t('talkinghead_hint','Portret rasm + audio yuklang.') : (meta.refs_req ? 'Yuzni saqlash yoki uslub uchun rasm yuklang.' : 'Ixtiyoriy — rasm asosida natija olishingiz mumkin.'))}</div>
         </div>
         );
       })()}
@@ -1199,14 +1331,14 @@ function ParamsScreen({ model, onBack, onSubmit }) {
             <div style={{ fontSize: 12, color: c.sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...num }}>{summary || '—'}</div>
           </div>
           <button className="tap" onClick={() => {
-              if (needAudio && audioReq && !refs.some((r) => r.kind === 'audio')) { setUpErr('Audio fayl yuklang (majburiy)'); return; }
-              if (needVideo && videoReq && !refs.some((r) => r.kind === 'video')) { setUpErr('Video yuklang (majburiy)'); return; }
-              if (meta.imgReq && !refs.some((r) => (r.kind || 'image') === 'image')) { setUpErr('Portret rasm yuklang (majburiy)'); return; }
-              if (meta.refs_req && !meta.needAudio && refs.length === 0) { setUpErr('Bu model kamida 1 ta rasm talab qiladi'); return; }
+              if (needAudio && audioReq && !refs.some((r) => r.kind === 'audio')) { setUpErr(t('need_audio_req','Audio fayl yuklang (majburiy)')); return; }
+              if (needVideo && videoReq && !refs.some((r) => r.kind === 'video')) { setUpErr(t('need_video_req','Video yuklang (majburiy)')); return; }
+              if (meta.imgReq && !refs.some((r) => (r.kind || 'image') === 'image')) { setUpErr(t('need_portrait_req','Portret rasm yuklang (majburiy)')); return; }
+              if (meta.refs_req && !meta.needAudio && refs.length === 0) { setUpErr(t('need_1img','Bu model kamida 1 ta rasm talab qiladi')); return; }
               haptic('medium');
               onSubmit({ res, asp, dur, prompt: prompt.trim(), refs: refs.map((x) => x.id), refPreviews: refs.map((x) => x.preview), estPrice: psecPrice, psecDur: Math.round(psecDur) });
             }} style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 15, fontSize: 15, fontWeight: 700, ...glossy }}>
-            {((price != null ? price : psecPrice) != null ? (price != null ? price : psecPrice) + ' ⚡ · ' : '') + 'Davom etish →'}
+            {((price != null ? price : psecPrice) != null ? (price != null ? price : psecPrice) + ' ⚡ · ' : '') + t('continue_arrow','Davom etish →')}
           </button>
         </div>
       </div>
@@ -1263,7 +1395,7 @@ function ConfirmSheet({ model, params, balance, onClose, onConfirm, openBuy }) {
             Balansingizda {fmt(balance)} ⚡ bor — bu ish uchun {price} ⚡ kerak
           </div>
         ) : (
-          <div style={{ marginTop: 12, fontSize: 12, color: c.faint, textAlign: 'center' }}>{price != null ? 'Tasdiqlasangiz balansdan ' + price + ' ⚡ yechiladi' : "Aniq narx botda ko'rsatiladi va balansdan yechiladi"}</div>
+          <div style={{ marginTop: 12, fontSize: 12, color: c.faint, textAlign: 'center' }}>{price != null ? t('confirm_deduct','Tasdiqlasangiz balansdan ') + price + ' ⚡ yechiladi' : "Aniq narx botda ko'rsatiladi va balansdan yechiladi"}</div>
         )}
         {notEnough ? (
           <button className="tap" onClick={() => { haptic('medium'); openBuy && openBuy(); }} style={{ marginTop: 12, width: '100%', borderRadius: 16, padding: '15px 0', fontSize: 16.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...glossy }}>
@@ -1330,8 +1462,8 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
     finally { clearTimeout(timer); }
     let d = {};
     try { d = await r.json(); } catch (e) { d = {}; }
-    if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
-    if (!d.upload_id) throw new Error('Server javobida xato');
+    if (!r.ok) throw new Error(d.error || (t('upload_err_code','Yuklashda xato (') + r.status + ')'));
+    if (!d.upload_id) throw new Error(t('server_err','Server javobida xato'));
     setRefs((prev) => [...prev, { id: d.upload_id, url: d.url, preview }]);
   };
   const onFile = async (e) => {
@@ -1343,8 +1475,8 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
     if (slots <= 0) { setUpErr('Maksimal ' + maxRefs + ' ta rasm'); return; }
     setUploading(true);
     for (const file of files.slice(0, slots)) {
-      if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); continue; }
-      if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); continue; }
+      if (!/^image\//.test(file.type || '')) { setUpErr(t('only_image_file','Faqat rasm fayli')); continue; }
+      if (file.size > 10 * 1024 * 1024) { setUpErr(t('img_too_big','Rasm 10 MB dan katta')); continue; }
       try { await uploadOne(file); haptic('light'); }
       catch (err) { setUpErr(err.message || 'Ulanmadi'); }
     }
@@ -1355,9 +1487,9 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
 
   const canGen = styleId && refs.length > 0 && !notEnough;
   const doGen = () => {
-    if (!styleId) { setUpErr('Uslub tanlang'); return; }
-    if (refs.length === 0) { setUpErr('Rasm yuklang'); return; }
-    if (notEnough) { setUpErr('Balans yetarli emas'); return; }
+    if (!styleId) { setUpErr(t('choose_style','Uslub tanlang')); return; }
+    if (refs.length === 0) { setUpErr(t('upload_img','Rasm yuklang')); return; }
+    if (notEnough) { setUpErr(t('not_enough','Balans yetarli emas')); return; }
     haptic('medium');
     onGenerate({ template_id: template.id, style_id: styleId, refs: refs.map((r) => r.id), refPreviews: refs.map((r) => r.preview), cost: cost });
   };
@@ -1369,7 +1501,7 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
       {template.desc && <div style={{ padding: '4px 18px 0', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{template.desc}</div>}
 
       {/* USLUB TANLASH */}
-      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{t('choose_style','Uslub tanlang')}</div>
+      <div style={{ padding: '18px 16px 8px', fontSize: 15, fontWeight: 700, color: c.text }}>{t('choose_style',t('choose_style','Uslub tanlang'))}</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 16px' }}>
         {styles.map((st) => {
           const active = styleId === st.id;
@@ -1411,7 +1543,7 @@ function TemplateScreen({ template, balance, onBack, onGenerate }) {
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <button className="tap" onClick={doGen} disabled={!canGen} style={{ width: '100%', padding: '15px 0', borderRadius: 16, fontSize: 15.5, fontWeight: 700, ...(canGen ? glossy : { ...glass, color: c.faint }) }}>
-            {notEnough ? 'Balans yetarli emas' : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
+            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
           </button>
         </div>
       </div>
@@ -1428,7 +1560,7 @@ function ToolListScreen({ tools, onBack, openTool }) {
   return (
     <div>
       <Header title={t('tools','Vositalar')} onBack={onBack} />
-      <div style={{ padding: '4px 18px 14px', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{t('tools_desc','Fotorasmlar bilan ishlash uchun vositalar')}</div>
+      <div style={{ padding: '4px 18px 14px', fontSize: 13.5, color: c.sub, lineHeight: 1.5 }}>{t('tools_desc',t('tools_subtitle','Fotorasmlar bilan ishlash uchun vositalar'))}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 11, padding: '0 16px' }}>
         {tools.map((t, i) => (
           <button key={t.id} className="tap rise" onClick={() => openTool(t)} style={{ borderRadius: 16, padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 13, textAlign: 'left', animationDelay: Math.min(i * 45, 300) + 'ms', ...glass }}>
@@ -1476,8 +1608,8 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
     finally { clearTimeout(timer); }
     let d = {};
     try { d = await r.json(); } catch (e) { d = {}; }
-    if (!r.ok) throw new Error(d.error || ('Yuklashda xato (' + r.status + ')'));
-    if (!d.upload_id) throw new Error('Server javobida xato');
+    if (!r.ok) throw new Error(d.error || (t('upload_err_code','Yuklashda xato (') + r.status + ')'));
+    if (!d.upload_id) throw new Error(t('server_err','Server javobida xato'));
     setImgs((prev) => ({ ...prev, [slotKey]: { id: d.upload_id, url: d.url, preview } }));
   };
   const onFile = async (e, slotKey) => {
@@ -1486,8 +1618,8 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
     if (!files.length) { setUploadingKey(null); return; }
     setUpErr('');
     const file = files[0];
-    if (!/^image\//.test(file.type || '')) { setUpErr('Faqat rasm fayli'); return; }
-    if (file.size > 10 * 1024 * 1024) { setUpErr('Rasm 10 MB dan katta'); return; }
+    if (!/^image\//.test(file.type || '')) { setUpErr(t('only_image_file','Faqat rasm fayli')); return; }
+    if (file.size > 10 * 1024 * 1024) { setUpErr(t('img_too_big','Rasm 10 MB dan katta')); return; }
     setUploadingKey(slotKey);
     try { await uploadOne(file, slotKey); haptic('light'); }
     catch (err) { setUpErr(err.message || 'Ulanmadi'); }
@@ -1499,9 +1631,9 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
   const allFieldsFilled = fields.every((f) => (vals[f.key] || '').trim().length > 0);
   const canGen = allImgsReady && (fields.length === 0 || allFieldsFilled) && !notEnough;
   const doGen = () => {
-    if (!allImgsReady) { setUpErr('Barcha rasmlarni yuklang'); return; }
+    if (!allImgsReady) { setUpErr(t('upload_all_imgs','Barcha rasmlarni yuklang')); return; }
     if (fields.length > 0 && !allFieldsFilled) { setUpErr('Barcha maydonlarni to\'ldiring'); return; }
-    if (notEnough) { setUpErr('Balans yetarli emas'); return; }
+    if (notEnough) { setUpErr(t('not_enough','Balans yetarli emas')); return; }
     haptic('medium');
     /* rasmlar tartibi: imgSlots tartibida */
     const refIds = imgSlots.map((s) => imgs[s.key].id);
@@ -1559,7 +1691,7 @@ function ToolScreen({ tool, balance, onBack, onGenerate }) {
       <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 20, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: '14px 16px calc(16px + env(safe-area-inset-bottom))', pointerEvents: 'auto', background: 'linear-gradient(0deg, rgba(7,8,9,0.97) 55%, transparent)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <button className="tap" onClick={doGen} disabled={!canGen} style={{ width: '100%', padding: '15px 0', borderRadius: 16, fontSize: 15.5, fontWeight: 700, ...(canGen ? glossy : { ...glass, color: c.faint }) }}>
-            {notEnough ? 'Balans yetarli emas' : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
+            {notEnough ? t('not_enough','Balans yetarli emas') : ((cost != null ? cost + ' ⚡ · ' : '') + 'Yaratish')}
           </button>
         </div>
       </div>
@@ -1592,7 +1724,7 @@ function GalleryScreen({ goCreate }) {
         <div className="rise" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '70px 32px' }}>
           <IconTile icon={Images} size={64} tone="cyan" />
           <div style={{ fontSize: 18, fontWeight: 700, color: c.text, marginTop: 18 }}>{t('gallery_empty2','Ijodlaringiz shu yerda')}</div>
-          <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>{t('gallery_sub','Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.')}</div>
+          <div style={{ fontSize: 14, color: c.sub, marginTop: 6, lineHeight: 1.5, maxWidth: 280 }}>{t('gallery_sub',t('gallery_desc','Mini App orqali yaratilgan rasm va videolaringiz shu galereyada saqlanadi.'))}</div>
           <button className="tap" onClick={goCreate} style={{ marginTop: 20, borderRadius: 14, padding: '12px 22px', fontSize: 15, fontWeight: 700, ...glossy }}>{t('start_creating','Yaratishni boshlash')}</button>
         </div>
       </div>
@@ -1730,7 +1862,7 @@ function BuyScreen({ onClose }) {
                 <div style={{ fontSize: 17, fontWeight: 800, color: c.text, letterSpacing: -0.3, ...num }}>
                   {p.tangacha}{p.bonus > 0 ? <span style={{ color: c.blue, fontSize: 14 }}> +{p.bonus}</span> : null} ⚡
                 </div>
-                <div style={{ fontSize: 12.5, color: c.sub, marginTop: 2 }}>{p.desc}</div>
+                <div style={{ fontSize: 12.5, color: c.sub, marginTop: 2 }}>{(CUR_LANG === "ru" && p.descRu) ? p.descRu : (CUR_LANG === "en" && p.descEn) ? p.descEn : p.desc}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 'none', padding: '9px 14px', borderRadius: 30, fontSize: 15, fontWeight: 800, ...num, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>{p.stars} ⭐</div>
             </button>
@@ -1780,16 +1912,16 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
     /* 1-usul: Telegram downloadFile (galereyaga/Fayllarga saqlaydi, brauzerga O'TMAYDI) */
     try {
       if (tg && tg.downloadFile) {
-        setDlMsg('Yuklanmoqda…');
+        setDlMsg(t('dl_loading','Yuklanmoqda…'));
         tg.downloadFile({ url: mediaUrl, file_name: fname }, (ok) => {
-          setDlMsg(ok ? 'Saqlandi ✓' : '');
+          setDlMsg(ok ? t('dl_saved','Saqlandi ✓') : '');
         });
         return;
       }
     } catch (e) { /* keyingi usul */ }
     /* 2-usul: blob orqali <a download> (qurilmaga saqlaydi) */
     try {
-      setDlMsg('Yuklanmoqda…');
+      setDlMsg(t('dl_loading','Yuklanmoqda…'));
       const r = await fetch(mediaUrl);
       const blob = await r.blob();
       const url = URL.createObjectURL(blob);
@@ -1798,7 +1930,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
       document.body.appendChild(a); a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 4000);
-      setDlMsg('Saqlandi ✓');
+      setDlMsg(t('dl_saved','Saqlandi ✓'));
       return;
     } catch (e) { /* oxirgi chora */ }
     /* 3-usul: oxirgi chora — Telegram ichida ochish */
@@ -1813,7 +1945,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 15.5, fontWeight: 800, color: c.text }}>{job.model.name}</div>
             <div style={{ fontSize: 12.5, color: running ? c.blue : (done ? '#4ADE80' : '#FF6B6B'), fontWeight: 600 }}>
-              {running ? 'Yaratilmoqda…' : done ? 'Tayyor ✓' : 'Xatolik'}
+              {running ? t('creating_dots','Yaratilmoqda…') : done ? t('done_check','Tayyor ✓') : t('error_word','Xatolik')}
             </div>
           </div>
           {(done || failed) && (
@@ -1826,7 +1958,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
           {done && mediaUrl ? (
             job.type === 'video'
               ? <video src={mediaUrl} controls autoPlay playsInline loop style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
-              : <img src={mediaUrl} alt="natija" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              : <img src={mediaUrl} alt={t('result_alt','natija')} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : (
             <>
               {job.preview && <img src={job.preview} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25, filter: 'blur(2px)' }} />}
@@ -1841,7 +1973,7 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
                   <>
                     <div style={{ width: 54, height: 54, margin: '0 auto 14px', border: '3px solid rgba(43,212,255,0.25)', borderTopColor: c.blue, borderRadius: '50%', animation: 'spin 0.9s linear infinite' }} />
                     <div style={{ fontSize: 14.5, fontWeight: 700, color: c.text }}>{t('generating','Yaratilmoqda…')}</div>
-                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 4 }}>{t('gen_time2','Bu 1-3 daqiqa olishi mumkin')}</div>
+                    <div style={{ fontSize: 12.5, color: c.sub, marginTop: 4 }}>{t('gen_time2',t('takes_1_3_min','Bu 1-3 daqiqa olishi mumkin'))}</div>
                     <div style={{ width: 180, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.12)', margin: '14px auto 0', overflow: 'hidden' }}>
                       <div style={{ width: (job.progress || 5) + '%', height: '100%', background: c.blue, borderRadius: 3, transition: 'width 0.5s' }} />
                     </div>
@@ -1861,11 +1993,11 @@ function ResultSheet({ job, onClose, onRetry, goGallery }) {
             </>
           ) : failed ? (
             <>
-              <button className="tap" onClick={onRetry} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>{t('retry','Qayta urinish')}</button>
+              <button className="tap" onClick={onRetry} style={{ flex: 1, padding: '13px 0', borderRadius: 14, fontSize: 14.5, fontWeight: 700, ...glossy }}>{t('retry',t('retry_btn','Qayta urinish'))}</button>
               <button className="tap" onClick={onClose} style={{ flex: 'none', padding: '13px 18px', borderRadius: 14, fontSize: 14.5, fontWeight: 700, color: c.text, background: 'rgba(255,255,255,0.09)', border: 'none' }}>{t('close','Yopish')}</button>
             </>
           ) : (
-            <div style={{ flex: 1, textAlign: 'center', fontSize: 12.5, color: c.faint, padding: '6px 0' }}>{t('result_saved2','Ilovani yopsangiz ham, natija Galereyada saqlanadi.')}</div>
+            <div style={{ flex: 1, textAlign: 'center', fontSize: 12.5, color: c.faint, padding: '6px 0' }}>{t('result_saved2',t('close_app_note','Ilovani yopsangiz ham, natija Galereyada saqlanadi.'))}</div>
           )}
         </div>
       </div>
@@ -1890,10 +2022,9 @@ function App() {
   const [activeTool, setActiveTool] = useState(null);   /* tanlangan vosita */
   const [lang, setLangState] = useState(CUR_LANG);
   const [langSheet, setLangSheet] = useState(false);
-  const langChosenRef = useRef(false);
   const setLang = (l) => {
     if (!LANGS[l]) return;
-    CUR_LANG = l; setLangState(l); haptic('light'); langChosenRef.current = true;
+    CUR_LANG = l; setLangState(l); haptic('light');
     try { const tg = TG(); if (tg && tg.CloudStorage) tg.CloudStorage.setItem('voro_lang', l); } catch (e) {}
   };
 
@@ -1905,7 +2036,7 @@ function App() {
     try {
       if (tg.CloudStorage && tg.CloudStorage.getItem) {
         tg.CloudStorage.getItem('voro_lang', (err, val) => {
-          if (!err && val && LANGS[val]) { CUR_LANG = val; setLangState(val); langChosenRef.current = true; }
+          if (!err && val && LANGS[val]) { CUR_LANG = val; setLangState(val); }
           else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
         });
       } else { const d = detectLang(); CUR_LANG = d; setLangState(d); }
@@ -1926,10 +2057,6 @@ function App() {
       .then((me) => {
         if (me && me.name) setUserName(me.name);
         if (me && typeof me.balance === 'number') setBalance(me.balance);
-        /* Bot tilini olamiz — faqat foydalanuvchi Mini App'da o'zi tanlamagan bo'lsa */
-        if (me && me.lang && LANGS[me.lang] && !langChosenRef.current) {
-          CUR_LANG = me.lang; setLangState(me.lang);
-        }
       })
       .catch(() => { /* backend yetmasa start_param balansi qoladi */ });
     /* Shablonlar */
@@ -1994,7 +2121,7 @@ function App() {
 
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
@@ -2032,7 +2159,7 @@ function App() {
     const payload = { template_id: data.template_id, style_id: data.style_id, refs: data.refs };
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
@@ -2061,7 +2188,7 @@ function App() {
     if (data.fields) payload.fields = data.fields;
     const res = await apiPost('/tg/generate', payload);
     if (!res.ok || !res.data.job_id) {
-      const msg = res.status === 402 ? 'Balans yetarli emas' : (res.data.error || 'Xatolik yuz berdi');
+      const msg = res.status === 402 ? t('not_enough','Balans yetarli emas') : (res.data.error || 'Xatolik yuz berdi');
       setJob((j) => j ? { ...j, status: 'failed', error: msg } : null);
       return;
     }
