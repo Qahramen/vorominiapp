@@ -1007,7 +1007,7 @@ function HomeScreen({ balance, userName, goCat, openModel, openBuy, templates, o
                 <IconTile icon={TEMPLATE_ICON(t.id)} size={48} tone="gold" />
                 <div style={{ position: 'relative' }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(t.name || '').replace(/^(\p{Emoji}\uFE0F?\s*)/u, '')}</div>
-                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + t('styles_count_suffix',' uslub') : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
+                  <div style={{ fontSize: 12, color: c.sub, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.styles ? t.styles.length + (I18N[CUR_LANG] && I18N[CUR_LANG].styles_count_suffix || ' uslub') : ''}{t.cost ? ' · ' + t.cost + '⚡' : ''}</div>
                 </div>
               </button>
             ))}
