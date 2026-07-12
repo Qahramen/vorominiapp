@@ -1160,6 +1160,9 @@ function ParamsScreen({ model, onBack, onSubmit }) {
   async function doEnhance() {
     const idea = (prompt || '').trim();
     if (!idea || enhancing) return;
+    if (model && model.meta && model.meta.refs_req && (model.meta.refs || 0) > 0 && refs.length === 0) {
+      setEnhErr(t('enh_need_ref', "Avval reference yuklang — AI uni ko'rib prompt yozadi")); return;
+    }
     setEnhErr(''); setEnhancing(true);
     try {
       const tg = TG();
